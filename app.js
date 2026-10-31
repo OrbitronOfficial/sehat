@@ -6,7 +6,16 @@ const role = QS.get('role') || (() => { try { return sessionStorage.getItem('seh
 if (!ROLES[role]) { location.replace('login.html'); throw new Error('not logged in'); }
 // A signed-in person (created account or owner login) sees their own name; demo roles keep the demo people.
 const USER = (() => { try { return sessionStorage.getItem('sehat_user'); } catch { return null; } })();
-const R = Object.assign({}, ROLES[role] || ROLES.patient, USER && role === 'patient' ? { org: USER, sub: 'Sehat member' } : {});
+// A hospital, doctor or pharmacy device signs in as one entry of the registry (picked or registered at login).
+const ORG = (() => { try { return QS.get('org') || sessionStorage.getItem('sehat_org'); } catch { return null; } })();
+const orgInfo = (() => {
+  const d = Store.db; if (!ORG) return null;
+  if (role === 'hospital') { const h = (d.hospitals || []).find(x => x.name === ORG); return h && { org: h.name, sub: h.area }; }
+  if (role === 'pharmacy') { const p = (d.pharmacies || []).find(x => x.name === ORG); return p && { org: p.name, sub: `${p.area} · ${p.km} km` }; }
+  if (role === 'doctor') { const x = allDoctors(d).find(x => x.name === ORG); return x && { org: x.name, sub: `${x.spec} · ${x.hospital}` }; }
+  return null;
+})();
+const R = Object.assign({}, ROLES[role] || ROLES.patient, USER && role === 'patient' ? { org: USER, sub: 'Sehat member' } : {}, orgInfo || {});
 const askedView = QS.get('view') || (() => { try { const v = sessionStorage.getItem('sehat_view'); sessionStorage.removeItem('sehat_view'); return v; } catch { return null; } })();
 let view = askedView || 'dashboard';
 // Patient, doctor and nurse have their full Sehat Copilot workspace on the same site.
@@ -48,7 +57,7 @@ V.dashboard = () => {
   const d = Store.db, mine = rx => role === 'patient' ? rx.patient === R.org : role === 'pharmacy' ? rx.pharmacy === R.org : true;
   const low = Object.values(d.stock).filter(s => s.qty < s.min).length;
   const k = {
-    hospital: [['Appointments today', d.appointments.length], ['Checked in', d.appointments.filter(a => a.status === 'checked-in').length], ['Beds free', Object.values(d.beds).reduce((s, b) => s + b[0] - b[1], 0)], ['Agents active', installed().length]],
+    hospital: [['Appointments today', d.appointments.filter(a => hospOf(a) === R.org).length], ['Checked in', d.appointments.filter(a => hospOf(a) === R.org && a.status === 'checked-in').length], ['Beds free', Object.values(d.beds).reduce((s, b) => s + b[0] - b[1], 0)], ['Agents active', installed().length]],
     doctor: [['Patients today', d.appointments.filter(a => a.doctor === R.org).length], ['Prescriptions sent', d.prescriptions.filter(p => p.doctor === R.org).length], ['Pharmacy queries', d.prescriptions.filter(p => p.status === 'query').length], ['Agents active', installed().length]],
     pharmacy: [['New prescriptions', d.prescriptions.filter(p => mine(p) && p.status === 'sent').length], ['Ready to hand over', d.prescriptions.filter(p => mine(p) && p.status === 'ready').length], ['Low-stock items', low], ['Open POs', d.pos.filter(p => !['received', 'delivered'].includes(p.status)).length]],
     nurse: [['Open ward tasks', d.tasks.filter(t => !t.done).length], ['Done today', d.tasks.filter(t => t.done).length], ['Patients in queue', d.appointments.filter(a => a.status !== 'done').length], ['Agents active', installed().length]],
@@ -90,56 +99,78 @@ function toggle(aid) {
 }
 
 // ----- Appointment Desk -----
-function suggestDoctor(text) { const t = text.toLowerCase(); return DOCTORS.find(d => d.tags.test(t)) || DOCTORS[0]; }
 function freeSlot(doc, date) {
   const taken = Store.db.appointments.filter(a => a.doctor === doc && a.date === date).map(a => a.slot);
   return ['09:30', '10:00', '10:30', '11:15', '12:00', '14:00', '15:30', '16:15', '17:00'].find(s => !taken.includes(s)) || '18:00';
 }
+const pref = p => (Store.db.prefs || {})[p] || {};
+function setPref(k, v) { const p = role === 'patient' ? R.org : null; if (!p) return; act(`set preferred ${k}: ${v}`, d => { d.prefs = d.prefs || {}; d.prefs[p] = { ...(d.prefs[p] || {}), [k]: v }; }); toast('Saved'); }
+// Doctors for a problem: the right speciality first, then the rest; inside a hospital, or across all of them by distance.
+function recommend(text, hosp) {
+  const spec = specFor(text), docs = allDoctors(Store.db).filter(x => !hosp || x.hospital === hosp);
+  return docs.sort((x, y) => (y.spec === spec) - (x.spec === spec) || x.km - y.km);
+}
+const apHosp = () => role === 'hospital' ? R.org : ($('#ap_h') ? $('#ap_h').value : (pref(R.org).hospital || 'City Care Hospital'));
 V.appointments = () => {
-  const d = Store.db, list = role === 'patient' ? d.appointments.filter(a => a.patient === R.org) : d.appointments;
-  return head('📅 Appointment Desk', role === 'patient' ? 'Tell us what is wrong. The agent picks the right doctor and the earliest slot.' : 'Today\'s queue. Patients book themselves; you check them in.') +
+  const d = Store.db, mineA = a => role === 'patient' ? a.patient === R.org : role === 'hospital' ? hospOf(a) === R.org : role === 'doctor' ? a.doctor === R.org : true;
+  const list = d.appointments.filter(mineA), hs = [...(d.hospitals || [])].sort((x, y) => x.km - y.km), ph = [...(d.pharmacies || [])].sort((x, y) => x.km - y.km);
+  const myH = pref(R.org).hospital || 'City Care Hospital';
+  return head('📅 Appointment Desk', role === 'patient' ? 'Tell us what is wrong. Pick a hospital and Sehat recommends the right doctor and the earliest slot.' : `Bookings for ${esc(R.org)}. Patients book themselves; you check them in.`) +
     `<div class="grid g2"><div class="card"><h3>${role === 'patient' ? 'Book a visit' : 'Book for a walk-in'}</h3>
       ${role !== 'patient' ? '<label>Patient name</label><input id="ap_name" placeholder="e.g. Priya Sharma">' : ''}
       <label>What's the problem?</label><textarea id="ap_why" oninput="apSuggest()">${role === 'patient' ? 'Fever and body ache for 3 days' : 'Chest tightness and breathlessness when climbing stairs'}</textarea>
-      <label>Date</label><input id="ap_date" type="date" value="${new Date().toISOString().slice(0, 10)}" onchange="apSuggest()">
-      <div id="ap_sug" class="card" style="margin-top:12px;background:var(--soft);border:0"></div>
-      <button class="btn" style="margin-top:12px" onclick="apBook()">Confirm booking</button></div>
+      <div class="grid g2" style="gap:10px">${role === 'patient' ? `<div><label>Hospital</label><select id="ap_h" onchange="apSuggest()"><option value="">All hospitals (nearest first)</option>${hs.map(h => `<option ${h.name === myH ? 'selected' : ''} value="${esc(h.name)}">${esc(h.name)} · ${h.km} km</option>`).join('')}</select></div>` : ''}
+        <div><label>Date</label><input id="ap_date" type="date" value="${new Date().toISOString().slice(0, 10)}" onchange="apSuggest()"></div></div>
+      <label>Recommended doctors</label><div id="ap_sug"></div>
+      ${role === 'patient' ? `<label>Your pharmacy for prescriptions</label><select onchange="setPref('pharmacy',this.value)"><option value="">Nearest with stock (automatic)</option>${ph.map(p => `<option ${pref(R.org).pharmacy === p.name ? 'selected' : ''} value="${esc(p.name)}">${esc(p.name)} · ${p.km} km · ${esc(p.hours || '')}</option>`).join('')}</select>` : ''}</div>
      <div class="card"><h3>${role === 'patient' ? 'Your appointments' : 'Queue'}</h3><table><tr><th>Time</th><th>Patient</th><th>Doctor</th><th>Status</th><th></th></tr>
-      ${list.map(a => `<tr><td>${a.date.slice(5)} ${a.slot}</td><td>${esc(a.patient)}<br><small class="muted">${esc(a.reason)}</small></td><td>${esc(a.doctor)}<br><small class="muted">${a.spec}</small></td><td>${statusPill(a.status)}</td>
+      ${list.map(a => `<tr><td>${a.date.slice(5)} ${a.slot}</td><td>${esc(a.patient)}<br><small class="muted">${esc(a.reason)}</small></td><td>${esc(a.doctor)}<br><small class="muted">${esc(a.spec)}${role !== 'hospital' ? ' · ' + esc(hospOf(a)) : ''}</small></td><td>${statusPill(a.status)}</td>
         <td>${role === 'hospital' && a.status === 'booked' ? `<button class="btn sm" onclick="apCheck('${a.id}')">Check in</button>` : ''}</td></tr>`).join('') || '<tr><td colspan="5" class="muted">No appointments yet.</td></tr>'}</table></div></div>`;
 };
 V.appointments.after = () => apSuggest();
 function apSuggest() {
-  const doc = suggestDoctor($('#ap_why').value), slot = freeSlot(doc.name, $('#ap_date').value);
-  $('#ap_sug').innerHTML = `🤖 <b>Suggested:</b> ${doc.name} (${doc.spec}) at <b>${slot}</b><br><span class="muted">Matched from your symptoms. Earliest free slot that day.</span>`;
+  const why = $('#ap_why').value, date = $('#ap_date').value, spec = specFor(why), docs = recommend(why, apHosp()).slice(0, 4);
+  $('#ap_sug').innerHTML = `<p class="muted" style="margin:0 0 6px">🤖 Looks like a <b style="color:var(--ink)">${spec}</b> visit.</p>` + (docs.map((x, i) => `<div class="row" style="padding:9px 12px;border:1px solid ${i ? 'var(--line)' : 'var(--teal)'};border-radius:14px;margin-bottom:8px;background:${i ? 'var(--card-solid)' : 'var(--soft)'}">
+    <div><b>${esc(x.name)}</b> ${x.spec === spec ? '<span class="pill ok">match</span>' : ''}<br><span class="muted">${esc(x.spec)} · ${esc(x.hospital)} · ${x.km} km · next ${freeSlot(x.name, date)}</span></div><span class="sp"></span>
+    <button class="btn sm ${i ? 'ghost' : ''}" onclick="apBook('${esc(x.name)}','${esc(x.hospital)}')">Book</button></div>`).join('') || '<p class="muted">No doctors at this hospital yet.</p>');
 }
-function apBook() {
-  const why = $('#ap_why').value.trim(), date = $('#ap_date').value, doc = suggestDoctor(why), patient = role === 'patient' ? R.org : ($('#ap_name').value.trim() || 'Walk-in patient');
-  const a = { id: id('A'), patient, doctor: doc.name, spec: doc.spec, date, slot: freeSlot(doc.name, date), reason: why || 'General consultation', status: 'booked' };
-  act(`booked ${patient} with ${doc.name} at ${a.slot}`, d => d.appointments.push(a));
-  toast(`Booked ${a.slot} with ${doc.name}`);
+function apBook(docName, hospName) {
+  const why = $('#ap_why').value.trim(), date = $('#ap_date').value, patient = role === 'patient' ? R.org : ($('#ap_name').value.trim() || 'Walk-in patient');
+  const x = docName ? allDoctors(Store.db).find(y => y.name === docName && (!hospName || y.hospital === hospName)) : recommend(why, apHosp())[0];
+  if (!x) return toast('Pick a doctor');
+  const a = { id: id('A'), patient, doctor: x.name, spec: x.spec, hospital: x.hospital, date, slot: freeSlot(x.name, date), reason: why || 'General consultation', status: 'booked' };
+  act(`booked ${patient} with ${x.name} at ${x.hospital}, ${a.slot}`, d => { d.appointments.push(a); if (role === 'patient') { d.prefs = d.prefs || {}; d.prefs[patient] = { ...(d.prefs[patient] || {}), hospital: x.hospital }; } });
+  toast(`Booked ${a.slot} with ${x.name} at ${x.hospital}`);
 }
 function apCheck(aid) { act('checked in a patient', d => { d.appointments.find(a => a.id === aid).status = 'checked-in'; }); }
 
 // ----- e-Prescription Writer (doctor) -----
 let draft = [];
-function routePharmacy(meds) {
-  // Nearest pharmacy that can fill everything; our demo pharmacy holds the live stock.
-  const st = Store.db.stock, canFill = meds.every(m => (st[m.name]?.qty || 0) >= m.qty);
-  return canFill ? PHARMACIES[0] : PHARMACIES[1];
+// Which pharmacy a prescription goes to: the patient's choice, else the nearest that can fill it (only pharmacies
+// that share live stock on Sehat can be checked; the others are shown as "stock not shared").
+const canFill = (p, meds) => p.live && meds.every(m => (Store.db.stock[m.name]?.qty || 0) >= m.qty);
+function rxPharmacyFor(patient) {
+  const ph = [...(Store.db.pharmacies || [])].sort((x, y) => x.km - y.km), mine = pref(patient).pharmacy;
+  return ph.find(p => p.name === mine) || ph.find(p => canFill(p, draft)) || ph[0];
+}
+function rxPharmDraw() {
+  const s = $('#rx_ph'); if (!s) return;
+  const pick = rxPharmacyFor($('#rx_p').value), mine = pref($('#rx_p').value).pharmacy;
+  s.innerHTML = [...(Store.db.pharmacies || [])].sort((x, y) => x.km - y.km).map(p => `<option ${p.name === pick.name ? 'selected' : ''} value="${esc(p.name)}">${esc(p.name)} · ${p.km} km · ${p.live ? (canFill(p, draft) ? '✓ all in stock' : 'short on stock') : 'stock not shared'}${p.name === mine ? ' · patient\'s choice' : ''}</option>`).join('');
 }
 V.rxwriter = () => {
   const pts = Store.db.appointments.filter(a => a.doctor === R.org || role !== 'doctor');
   return head('📝 e-Prescription Writer', 'Sign once. The prescription goes straight to the nearest pharmacy with stock, and the patient is told.') +
-    `<div class="grid g2"><div class="card"><label>Patient</label><select id="rx_p">${pts.map(a => `<option>${esc(a.patient)}</option>`).join('')}</select>
+    `<div class="grid g2"><div class="card"><label>Patient</label><select id="rx_p" onchange="rxPharmDraw()">${pts.map(a => `<option>${esc(a.patient)}</option>`).join('')}</select>
       <label>Diagnosis / notes</label><input id="rx_dx" value="Viral fever">
       <label>Add medicine</label><div class="row"><input id="rx_m" list="medlist" placeholder="Start typing…" style="flex:2"><input id="rx_d" placeholder="1-0-1 × 5 days" style="flex:1"><input id="rx_q" type="number" value="10" style="width:80px"><button class="btn sm" onclick="rxAdd()">Add</button></div>
       <datalist id="medlist">${Object.keys(Store.db.stock).map(m => `<option>${m}</option>`).join('')}</datalist>
       <div id="rx_list" style="margin-top:10px"></div>
+      <label>Send to pharmacy</label><select id="rx_ph"></select>
       <button class="btn" style="margin-top:12px" onclick="rxSend()">✍️ Sign & send to pharmacy</button></div>
      <div class="card"><h3>Sent prescriptions</h3>${Store.db.prescriptions.filter(p => p.doctor === R.org || role !== 'doctor').map(p => `<div style="padding:10px 0;border-bottom:1px solid var(--line)"><div class="row"><b>${p.id}</b> · ${esc(p.patient)}<span class="sp"></span>${statusPill(p.status)}</div><small class="muted">${p.meds.map(m => m.name).join(', ')} → ${p.pharmacy}</small></div>`).join('') || '<p class="muted">Nothing sent yet.</p>'}</div></div>`;
 };
-V.rxwriter.after = () => { if (!draft.length) draft = [{ name: 'Paracetamol 650mg', dose: '1-0-1 × 5 days', qty: 10 }, { name: 'Cetirizine 10mg', dose: '0-0-1 × 5 days', qty: 5 }]; rxDraw(); };
+V.rxwriter.after = () => { if (!draft.length) draft = [{ name: 'Paracetamol 650mg', dose: '1-0-1 × 5 days', qty: 10 }, { name: 'Cetirizine 10mg', dose: '0-0-1 × 5 days', qty: 5 }]; rxDraw(); rxPharmDraw(); };
 function rxDraw() {
   const st = Store.db.stock;
   $('#rx_list').innerHTML = draft.map((m, i) => `<div class="row" style="padding:6px 0;border-bottom:1px dashed var(--line)"><b>${esc(m.name)}</b><span class="muted">${esc(m.dose)} · qty ${m.qty}</span><span class="sp"></span>
@@ -148,7 +179,8 @@ function rxDraw() {
 function rxAdd() { const n = $('#rx_m').value.trim(); if (!n) return; draft.push({ name: n, dose: $('#rx_d').value || 'as directed', qty: +$('#rx_q').value || 1 }); $('#rx_m').value = ''; rxDraw(); }
 function rxSend() {
   if (!draft.length) return toast('Add at least one medicine');
-  const ph = routePharmacy(draft), rx = { id: id('RX'), patient: $('#rx_p').value, doctor: ROLES.doctor.org, dx: $('#rx_dx').value, meds: draft, pharmacy: ph.name, km: ph.km, status: 'sent', t: Date.now(), rider: null };
+  const pn = $('#rx_ph') ? $('#rx_ph').value : rxPharmacyFor($('#rx_p').value).name, ph = (Store.db.pharmacies || []).find(p => p.name === pn) || PHARMACIES[0];
+  const rx = { id: id('RX'), patient: $('#rx_p').value, doctor: role === 'doctor' ? R.org : ROLES.doctor.org, dx: $('#rx_dx').value, meds: draft, pharmacy: ph.name, km: ph.km, status: 'sent', t: Date.now(), rider: null };
   act(`sent ${rx.id} for ${rx.patient} → ${ph.name} (${ph.km} km)`, d => {
     d.prescriptions.unshift(rx);
     d.journal.unshift({ date: new Date().toISOString().slice(0, 10), type: 'Prescription', text: `${rx.dx}: ${draft.map(m => m.name).join(', ')} (${rx.doctor})` });
@@ -240,7 +272,7 @@ function poRecv(pid) { act(`received ${pid}, stock updated`, d => { const p = d.
 // ----- Delivery Dispatch -----
 const RIDERS = ['Gurpreet (bike)', 'Ravi (bike)', 'Sahil (scooter)'];
 V.delivery = () => {
-  const list = Store.db.prescriptions.filter(p => ['ready', 'out for delivery', 'delivered'].includes(p.status));
+  const list = Store.db.prescriptions.filter(p => ['ready', 'out for delivery', 'delivered'].includes(p.status) && (role !== 'pharmacy' || p.pharmacy === R.org));
   return head('🛵 Delivery Dispatch', 'Assign a rider, share the ETA with the patient, close on delivery.') +
     `<div class="card"><table><tr><th>Order</th><th>Patient</th><th>Status</th><th>Rider</th><th></th></tr>${list.map(p => `<tr><td>${p.id}</td><td>${esc(p.patient)}</td><td>${statusPill(p.status)}</td><td>${p.rider || '—'}</td>
       <td>${p.status === 'ready' ? `<button class="btn sm" onclick="dlSend('${p.id}')">Assign rider</button>` : p.status === 'out for delivery' ? `<button class="btn sm" onclick="dlDone('${p.id}')">Delivered ✓</button>` : ''}</td></tr>`).join('') || '<tr><td colspan="5" class="muted">Nothing ready yet.</td></tr>'}</table></div>`;

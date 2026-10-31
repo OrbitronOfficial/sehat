@@ -24,7 +24,7 @@ const SUITES = [
     tabs: [['tasks', 'To-do'], ['mar', 'Medicine round'], ['vitals', 'Record vitals'], ['handover', 'Shift handover'], ['taskhistory', 'History']] },
   { id: 'sehat_hospital', ic: '🏥', name: 'Sehat Hospital', for: ['hospital'], price: '₹4,999/mo',
     desc: 'Run the whole hospital: live command centre, beds, appointments, ward tasks, duty roster and hospital inventory.',
-    tabs: [['command', 'Command centre'], ['beds', 'Beds'], ['appointments', 'Appointments'], ['tasks', 'Ward tasks'], ['roster', 'Duty roster'], ['supply', 'Inventory']] },
+    tabs: [['command', 'Command centre'], ['beds', 'Beds'], ['appointments', 'Appointments'], ['tasks', 'Ward tasks'], ['doctors', 'Doctors'], ['roster', 'Duty roster'], ['supply', 'Inventory']] },
   { id: 'sehat_pharmacy', ic: '💊', name: 'Sehat Pharmacy', for: ['pharmacy'], price: '₹1,499/mo',
     desc: 'Run the pharmacy: prescriptions straight from hospitals, doctor chat and calls, supply chain with auto POs, and delivery.',
     tabs: [['rxinbox', 'Prescriptions'], ['connect', 'Doctor connect'], ['supply', 'Supply chain'], ['expiry', 'Expiry'], ['refills', 'Refills due'], ['delivery', 'Delivery']] },
@@ -83,6 +83,19 @@ const SUPPLIERS = {
 };
 const VEHICLES = ['PB65 AK 2231 · Tata Ace', 'PB65 BX 0912 · Bolero Pickup', 'Bike courier · Harjit'];
 
+// Doctors are matched to a problem by speciality; the registry below says which hospital each one works at.
+const SPEC_TAGS = {
+  'General Physician': /fever|cold|cough|weak|tired|body|general|bp|sugar|diabet|headache|vomit|stomach/,
+  'Cardiologist': /chest|heart|palpitation|breath/,
+  'Orthopaedic': /bone|joint|knee|back|fracture|sprain/,
+  'Paediatrician': /child|baby|kid|infant/,
+  'Dermatologist': /skin|rash|itch|acne|hair/,
+};
+const SPECS = Object.keys(SPEC_TAGS);
+const specFor = t => SPECS.find(s => SPEC_TAGS[s].test(String(t || '').toLowerCase())) || 'General Physician';
+const allDoctors = d => (d.hospitals || []).flatMap(h => h.doctors.map(x => ({ ...x, hospital: h.name, km: h.km })));
+const hospOf = a => a.hospital || 'City Care Hospital';  // bookings made before the registry belong to City Care
+
 const PHARMACIES = [
   { name: 'Jain Medicos', km: 1.2 },
   { name: 'Apollo Pharmacy Ph-7', km: 2.8 },
@@ -94,7 +107,7 @@ function seed() {
   return {
     installs: JSON.parse(JSON.stringify(DEFAULT_INSTALLS)),
     appointments: [
-      { id: 'A101', patient: 'Rahul Mehra', doctor: 'Dr. R. K. Bansal', spec: 'General Physician', date: today, slot: '10:30', reason: 'Fever and body ache for 3 days', status: 'checked-in' },
+      { id: 'A101', patient: 'Rahul Mehra', doctor: 'Dr. R. K. Bansal', spec: 'General Physician', hospital: 'City Care Hospital', date: today, slot: '10:30', reason: 'Fever and body ache for 3 days', status: 'checked-in' },
       { id: 'A102', patient: 'Sunita Mehra', doctor: 'Dr. Meera Kaur', spec: 'Cardiologist', date: today, slot: '11:15', reason: 'BP follow-up', status: 'booked' },
       { id: 'A103', patient: 'Aman Verma', doctor: 'Dr. Arjun Sethi', spec: 'Orthopaedic', date: today, slot: '12:00', reason: 'Knee pain', status: 'booked' },
     ],
@@ -111,6 +124,18 @@ function seed() {
       'Ibuprofen 400mg':     { qty: 0,   min: 60,  perDay: 10, supplier: 'Punjab Pharma Distributors' },
     },
     pos: [],
+    // registry: hospitals and pharmacies on the network; new ones register from the login page
+    hospitals: [
+      { id: 'H1', name: 'City Care Hospital', area: 'Sector 69, Mohali', km: 2.1, doctors: [{ name: 'Dr. R. K. Bansal', spec: 'General Physician' }, { name: 'Dr. Meera Kaur', spec: 'Cardiologist' }, { name: 'Dr. Arjun Sethi', spec: 'Orthopaedic' }] },
+      { id: 'H2', name: 'Mohali Multispeciality Hospital', area: 'Phase 8, Mohali', km: 4.6, doctors: [{ name: 'Dr. Vikram Sood', spec: 'General Physician' }, { name: 'Dr. Nisha Gupta', spec: 'Paediatrician' }, { name: 'Dr. Kavya Rao', spec: 'Dermatologist' }] },
+      { id: 'H3', name: 'Sunrise Family Clinic', area: 'Sector 70, Mohali', km: 1.4, doctors: [{ name: 'Dr. Pooja Arora', spec: 'General Physician' }, { name: 'Dr. Harjit Gill', spec: 'Cardiologist' }] },
+    ],
+    pharmacies: [
+      { id: 'P1', name: 'Jain Medicos', area: 'Sector 70, Mohali', km: 1.2, hours: '8 am – 11 pm', live: true },
+      { id: 'P2', name: 'Apollo Pharmacy Ph-7', area: 'Phase 7, Mohali', km: 2.8, hours: 'Open 24 hours' },
+      { id: 'P3', name: 'Wellness Chemist', area: 'Sector 71, Mohali', km: 4.1, hours: '9 am – 10 pm' },
+    ],
+    prefs: {},  // per patient: preferred hospital and pharmacy
     warehouse: { 'Paracetamol 650mg': 12000, 'Azithromycin 500mg': 2400, 'Amlodipine 5mg': 5200, 'Ibuprofen 400mg': 3100 },
     batches: [
       { med: 'Azithromycin 500mg', batch: 'AZ2291', qty: 24, exp: '2026-11-20' },

@@ -47,7 +47,7 @@ footer{border-top:1px solid var(--line);padding:24px 0;color:var(--mut);font-siz
 
 <footer><span>© 2026 Sehat · Team ANTIJAREX · CGC University</span><span>Explains and organises. Never diagnoses. Emergency: 112</span></footer>
 </div>
-<script src="data.js?v=11"></script>
+<script src="data.js?v=20"></script>
 <script>
 const WHAT={hospital:['Sehat Hospital','Beds, appointments, roster','Command centre'],doctor:['Sehat Doctor','Consult queue → Rx','Pharmacy chat & call'],nurse:['Sehat Nurse','Ward to-do from doctors','Vitals & history'],pharmacy:['Sehat Pharmacy','Rx inbox & supply chain','Delivery dispatch'],patient:['Sehat Copilot','Report OCR & family','Reminders & tracking'],supplier:['Sehat Supply','Live PO inbox from pharmacies','Dispatch → stock updates itself']};
 document.getElementById('roles').innerHTML=Object.entries(ROLES).map(([k,r])=>`<button class="card role" data-role="${k}" onclick="enter('${k}')"><span class="ic">${r.ic}</span><h3 style="margin-top:6px">${r.label}</h3><span class="muted">${r.org}</span><ul>${WHAT[k].map(x=>`<li>${x}</li>`).join('')}</ul></button>`).join('');
@@ -58,7 +58,7 @@ function pick(aid){const a=SUITES.concat(AGENTS).find(x=>x.id===aid);try{session
   document.querySelectorAll('.role').forEach(b=>{const ok=a.for.includes(b.dataset.role);b.classList.toggle('hit',ok);b.classList.toggle('dim',!ok)});
   const h=document.getElementById('pickHint');h.style.display='';h.textContent=`${a.ic} ${a.name} is for ${a.for.map(r=>ROLES[r].label).join(' or ')}. Choose your role to open it.`;
   document.getElementById('start').scrollIntoView({behavior:'smooth'})}
-function enter(k){try{sessionStorage.setItem('sehat_role',k);sessionStorage.removeItem('sehat_user');if(WORKSPACE[k])sessionStorage.removeItem('sehat_view')}catch(e){}location.href=WORKSPACE[k]||'app.html'}
+function enter(k){try{sessionStorage.setItem('sehat_role',k);sessionStorage.removeItem('sehat_user');sessionStorage.removeItem('sehat_org');if(WORKSPACE[k])sessionStorage.removeItem('sehat_view')}catch(e){}location.href=WORKSPACE[k]||'app.html'}
 </script>
 <script src="assistant.js?v=5"></script>
 </body>

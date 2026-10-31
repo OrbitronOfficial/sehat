@@ -151,7 +151,7 @@ function rmFrom(pid) {
 // ---------- Sehat Doctor ----------
 V.consult = () => {
   const d = Store.db, urg = a => (/chest|breath|bleed|faint/i.test(a.reason) ? 30 : 0) + (a.status === 'checked-in' ? 5 : 0);
-  const q = d.appointments.filter(a => a.status !== 'done').sort((a, b) => urg(b) - urg(a));
+  const q = d.appointments.filter(a => a.status !== 'done' && (role !== 'doctor' || a.doctor === R.org)).sort((a, b) => urg(b) - urg(a));
   return head('Consult queue', 'Patients sorted by urgency. Your note creates the prescription and the nurse\'s tasks in one go.') +
     `<div class="grid g2"><div class="card"><h3>Waiting (${q.length})</h3>${q.map((a, i) => `<div class="row" style="padding:9px 0;border-bottom:1px solid var(--line)"><span class="pill ${urg(a) >= 30 ? 'bad' : urg(a) >= 5 ? 'warn' : ''}">${urg(a) >= 30 ? 'urgent' : a.status}</span><div><b>${esc(a.patient)}</b> · ${a.slot}<br><span class="muted">${esc(a.reason)}</span></div><span class="sp"></span><button class="btn sm ghost" onclick="$('#cs_p').value='${esc(a.patient)}'">Open</button></div>`).join('') || '<p class="muted">Queue is clear.</p>'}</div>
      <div class="card"><h3>Consultation note</h3><label>Patient</label><select id="cs_p">${q.map(a => `<option>${esc(a.patient)}</option>`).join('')}</select>
@@ -297,5 +297,19 @@ V.fleet = () => {
 V.catalogue = () => head('Warehouse', 'Your stock. Dispatching an order takes it out of here.') +
   `<div class="card"><table><tr><th>Item</th><th>In warehouse</th><th>Pending in open orders</th></tr>${Object.entries(Store.db.warehouse).map(([n, q]) => { const pend = myPOs().filter(p => ['sent', 'accepted'].includes(p.status)).flatMap(p => p.items).filter(i => i.n === n).reduce((s, i) => s + i.q, 0);
     return `<tr><td>${n}</td><td>${q.toLocaleString('en-IN')}</td><td>${pend || '—'}</td></tr>`; }).join('')}</table></div>`;
+
+// ---------- Sehat Hospital: its doctors on the network ----------
+V.doctors = () => {
+  const h = (Store.db.hospitals || []).find(x => x.name === R.org);
+  if (!h) return head('Doctors', 'This hospital is not in the network registry yet.');
+  return head('Doctors', `Doctors at ${esc(h.name)}. Patients see them as recommendations when they book.`) +
+    `<div class="grid g2"><div class="card">${h.doctors.map(x => `<div class="row" style="padding:9px 0;border-bottom:1px solid var(--line)"><b>${esc(x.name)}</b><span class="muted">${esc(x.spec)}</span><span class="sp"></span><span class="pill">${Store.db.appointments.filter(a => a.doctor === x.name && a.status !== 'done').length} waiting</span></div>`).join('')}</div>
+     <div class="card"><h3>Add a doctor</h3><label>Name</label><input id="dr_n" placeholder="e.g. Dr. Simran Kaur"><label>Speciality</label><select id="dr_s">${SPECS.map(x => `<option>${x}</option>`).join('')}</select><button class="btn" style="margin-top:12px" onclick="drAdd()">Add doctor</button></div></div>`;
+};
+function drAdd() {
+  let n = $('#dr_n').value.trim(); if (!n) return toast('Enter a name'); if (!/^dr\.?\s/i.test(n)) n = 'Dr. ' + n;
+  const sp = $('#dr_s').value; act(`added ${n} (${sp})`, d => { const h = d.hospitals.find(x => x.name === R.org); if (h && !h.doctors.some(x => x.name === n)) h.doctors.push({ name: n, spec: sp }); });
+  toast(n + ' added');
+}
 
 render();

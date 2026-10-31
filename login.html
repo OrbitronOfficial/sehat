@@ -126,7 +126,7 @@ input:focus{box-shadow:inset 0 0 0 2px var(--blue),0 0 0 6px color-mix(in srgb,v
   </div>
   <div class="foot">Explains and organises. Never diagnoses. Emergency: 112</div>
 </div>
-<script src="data.js?v=20"></script>
+<script src="data.js?v=21"></script>
 <script>
 var reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
 // Prototype auth: the owner's password is checked as a SHA-256 hash in the browser. A real build uses server-side auth.
@@ -235,16 +235,23 @@ function registerForm() {
   };
 }
 // ---- create account (prototype: saved on this device, password stored only as a salted SHA-256 hash) ----
-function accounts() { try { return JSON.parse(localStorage.getItem('sehat_accounts') || '[]'); } catch (x) { return []; } }
+function accounts() { var local = []; try { local = JSON.parse(localStorage.getItem('sehat_accounts') || '[]'); } catch (x) {} return (Store.db.accounts || []).concat(local.filter(function (a) { return !(Store.db.accounts || []).some(function (b) { return b.email === a.email; }); })); }
+// extra sign-up fields by role: a doctor picks a hospital and speciality; hospital or pharmacy staff pick theirs
+function suRole(el) {
+  var k = R[+el.value][4], box = document.getElementById('sxtra'), d = Store.db, opt = function (v, l) { return '<option value="' + String(v).replace(/"/g, '&quot;') + '">' + String(l).replace(/</g, '&lt;') + '</option>'; };
+  box.innerHTML = k === 'doctor' ? '<div class="two"><div><label for="sh">Hospital</label><select id="sh">' + (d.hospitals || []).map(function (h) { return opt(h.name, h.name); }).join('') + '</select></div><div><label for="ss">Speciality</label><select id="ss">' + SPECS.map(function (s) { return opt(s, s); }).join('') + '</select></div></div>'
+    : k === 'hospital' ? '<label for="sh">Your hospital</label><select id="sh">' + (d.hospitals || []).map(function (h) { return opt(h.name, h.name); }).join('') + '</select><p class="sb" style="font-size:12px;margin:6px 0 0">Not listed? Use "Register a hospital or pharmacy".</p>'
+    : k === 'pharmacy' ? '<label for="sh">Your pharmacy</label><select id="sh">' + (d.pharmacies || []).map(function (p) { return opt(p.name, p.name); }).join('') + '</select>' : '';
+}
 function signupForm() {
   if (busy) return; busy = true; bk.classList.add('su');
   bk.innerHTML = '<h2>Create account</h2><p class="sb">Join the Sehat network in a minute.</p><form id="sf" novalidate>' +
     '<label for="sn">Full name</label><input id="sn" autocomplete="name" placeholder="e.g. Priya Sharma">' +
     '<label for="se">Email</label><input id="se" type="email" autocomplete="email" placeholder="you@hospital.org">' +
     '<div class="two"><div><label for="sp">Password</label><input id="sp" type="password" autocomplete="new-password" placeholder="8+ characters"></div><div><label for="sp2">Confirm</label><input id="sp2" type="password" autocomplete="new-password"></div></div>' +
-    '<label for="sr2">I am a</label><select id="sr2">' + R.map(function (r, i) { return '<option value="' + i + '">' + r[0] + ' ' + r[1] + '</option>'; }).join('') + '</select>' +
+    '<label for="sr2">I am a</label><select id="sr2" onchange="suRole(this)">' + R.map(function (r, i) { return '<option value="' + i + '"' + (r[4] === 'patient' ? ' selected' : '') + '>' + r[0] + ' ' + r[1] + '</option>'; }).join('') + '</select><div id="sxtra"></div>' +
     '<p class="msg" id="smsg" aria-live="polite"></p><button class="go" type="submit">Create account</button><button class="go ghost" type="button" id="sx">Back to log in</button>' +
-    '<p class="sb" style="font-size:12px;margin:12px 0 0">Prototype: your account is saved on this device only.</p></form>';
+    '<p class="sb" style="font-size:12px;margin:12px 0 0">Prototype: saved in your Sehat network room with the password hashed.</p></form>';
   fl.classList.add('on');
   document.getElementById('sx').onclick = function () { back(); bk.classList.remove('su'); };
   document.getElementById('sf').onsubmit = async function (e) {
@@ -253,9 +260,16 @@ function signupForm() {
     var err = !n ? 'Please enter your name.' : !/^\S+@\S+\.\S+$/.test(m) ? 'Please enter a valid email.' : p.length < 8 ? 'Password needs at least 8 characters.' : p !== p2 ? 'The two passwords do not match.' : accounts().some(function (a) { return a.email === m; }) || m === OWNER.email ? 'An account with this email already exists. Log in instead.' : '';
     if (err) { sm.textContent = err; return; }
     var salt = Array.from(crypto.getRandomValues(new Uint8Array(12)), function (b) { return b.toString(16).padStart(2, '0'); }).join('');
-    var list = accounts(); list.push({ name: n, email: m, role: R[ri][4], salt: salt, h: await sha(salt + ':' + p), at: Date.now() });
-    try { localStorage.setItem('sehat_accounts', JSON.stringify(list)); sessionStorage.setItem('sehat_user', n); } catch (x) {}
-    bk.classList.remove('su'); show(ri, n);
+    var k = R[ri][4], org = null, sh = document.getElementById('sh');
+    if (k === 'doctor') { n = /^dr\.?\s/i.test(n) ? n : 'Dr. ' + n; org = n; }
+    else if (sh) org = sh.value;
+    var acc = { name: n, email: m, role: k, org: org, salt: salt, h: await sha(salt + ':' + p), at: Date.now() }, hs = sh ? sh.value : null, sp = (document.getElementById('ss') || {}).value;
+    Store.update(function (d) {
+      d.accounts = d.accounts || []; d.accounts.push(acc);
+      if (k === 'doctor') { var h = (d.hospitals || []).find(function (x) { return x.name === hs; }); if (h && !h.doctors.some(function (x) { return x.name === n; })) h.doctors.push({ name: n, spec: sp }); }
+    }, n, k === 'doctor' ? 'joined ' + hs + ' as ' + sp : 'created a Sehat account');
+    try { sessionStorage.setItem('sehat_user', n); org ? sessionStorage.setItem('sehat_org', org) : sessionStorage.removeItem('sehat_org'); } catch (x) {}
+    pickOrg = org; bk.classList.remove('su'); show(ri, k === 'patient' ? n : null);
   };
 }
 document.getElementById('fm').onsubmit = async function (e) {
@@ -263,7 +277,7 @@ document.getElementById('fm').onsubmit = async function (e) {
   var bad = !em.value || !pw.value, owner = !bad && em.value.trim().toLowerCase() === OWNER.email && await sha(pw.value) === OWNER.h;
   if (owner) { try { sessionStorage.setItem('sehat_user', OWNER.name); } catch (x) {} msg.style.color = 'var(--blue)'; msg.textContent = 'Signed in as ' + OWNER.name + '. Pick a workspace below.'; return; }
   var acc = !bad && accounts().find(function (a) { return a.email === em.value.trim().toLowerCase(); });
-  if (acc && await sha(acc.salt + ':' + pw.value) === acc.h) { try { sessionStorage.setItem('sehat_user', acc.name); } catch (x) {} busy = true; show(KEYS.indexOf(acc.role), acc.name); return; }
+  if (acc && await sha(acc.salt + ':' + pw.value) === acc.h) { try { sessionStorage.setItem('sehat_user', acc.name); acc.org ? sessionStorage.setItem('sehat_org', acc.org) : sessionStorage.removeItem('sehat_org'); } catch (x) {} pickOrg = acc.org || null; busy = true; show(KEYS.indexOf(acc.role), acc.role === 'patient' ? acc.name : null); return; }
   msg.style.color = ''; msg.textContent = bad ? 'Enter your email and password, or pick a demo account below.' : 'Wrong email or password. You can still pick a demo account below.';
   var t = bad ? (!em.value ? em : pw) : go; t.classList.remove('shake'); void t.offsetWidth; t.classList.add('shake');
 };

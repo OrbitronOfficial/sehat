@@ -47,7 +47,7 @@ footer{border-top:1px solid var(--line);padding:24px 0;color:var(--mut);font-siz
 
 <footer><span>© 2026 Sehat · Team ANTIJAREX · CGC University</span><span>Explains and organises. Never diagnoses. Emergency: 112</span></footer>
 </div>
-<script src="data.js?v=20"></script>
+<script src="data.js?v=21"></script>
 <script>
 const WHAT={hospital:['Sehat Hospital','Beds, appointments, roster','Command centre'],doctor:['Sehat Doctor','Consult queue → Rx','Pharmacy chat & call'],nurse:['Sehat Nurse','Ward to-do from doctors','Vitals & history'],pharmacy:['Sehat Pharmacy','Rx inbox & supply chain','Delivery dispatch'],patient:['Sehat Copilot','Report OCR & family','Reminders & tracking'],supplier:['Sehat Supply','Live PO inbox from pharmacies','Dispatch → stock updates itself']};
 document.getElementById('roles').innerHTML=Object.entries(ROLES).map(([k,r])=>`<button class="card role" data-role="${k}" onclick="enter('${k}')"><span class="ic">${r.ic}</span><h3 style="margin-top:6px">${r.label}</h3><span class="muted">${r.org}</span><ul>${WHAT[k].map(x=>`<li>${x}</li>`).join('')}</ul></button>`).join('');

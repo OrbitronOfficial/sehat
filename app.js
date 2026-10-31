@@ -15,7 +15,7 @@ const orgInfo = (() => {
   if (role === 'doctor') { const x = allDoctors(d).find(x => x.name === ORG); return x && { org: x.name, sub: `${x.spec} · ${x.hospital}` }; }
   return null;
 })();
-const R = Object.assign({}, ROLES[role] || ROLES.patient, USER && role === 'patient' ? { org: USER, sub: 'Sehat member' } : {}, orgInfo || {});
+const R = Object.assign({}, ROLES[role] || ROLES.patient, USER && role === 'patient' && !ORG ? { org: USER, sub: 'Sehat member' } : {}, orgInfo || {});  // a staff sign-in never renames the patient
 const askedView = QS.get('view') || (() => { try { const v = sessionStorage.getItem('sehat_view'); sessionStorage.removeItem('sehat_view'); return v; } catch { return null; } })();
 let view = askedView || 'dashboard';
 // Patient, doctor and nurse have their full Sehat Copilot workspace on the same site.
@@ -47,8 +47,12 @@ function render() {
 Store.onChange(render);
 
 const head = (t, p) => `<div class="head"><h1>${t}</h1>${p ? `<p>${p}</p>` : ''}</div>`;
-const statusPill = s => `<span class="pill ${{ delivered: 'ok', ready: 'ok', 'out for delivery': 'warn', sent: 'warn', accepted: '', query: 'bad', 'checked-in': 'ok', booked: '', done: 'ok', dispatched: 'warn', received: 'ok', draft: '' }[s] ?? ''}">${s}</span>`;
-const RX_STEPS = ['sent', 'accepted', 'ready', 'out for delivery', 'delivered'];
+const statusPill = s => `<span class="pill ${{ delivered: 'ok', ready: 'ok', 'out for delivery': 'warn', sent: 'warn', quoted: 'warn', accepted: '', query: 'bad', 'checked-in': 'ok', booked: '', done: 'ok', dispatched: 'warn', received: 'ok', draft: '' }[s] ?? ''}">${s}</span>`;
+const RX_STEPS = ['sent', 'quoted', 'accepted', 'ready', 'out for delivery', 'delivered'];
+// price per unit (₹) for the demo pharmacy's catalogue; anything else is priced at ₹5 a unit
+const PRICES = { 'Paracetamol 650mg': 2, 'Azithromycin 500mg': 12, 'Cetirizine 10mg': 1.5, 'Metformin 500mg': 1.8, 'Amlodipine 5mg': 2.5, 'Pantoprazole 40mg': 6, 'ORS sachet': 20, 'Ibuprofen 400mg': 2 };
+const billOf = p => { const items = p.meds.map(m => ({ n: m.name, q: m.qty, r: PRICES[m.name] ?? 5 })); const sub = items.reduce((s, i) => s + i.q * i.r, 0); return { items, sub, delivery: 20, total: Math.round(sub + 20) }; };
+const billHTML = b => `<table><tr><th>Medicine</th><th>Qty</th><th>Rate</th><th>Amount</th></tr>${b.items.map(i => `<tr><td>${esc(i.n)}</td><td>${i.q}</td><td>₹${i.r}</td><td>₹${(i.q * i.r).toFixed(0)}</td></tr>`).join('')}<tr><td colspan="3">Delivery</td><td>₹${b.delivery}</td></tr><tr><th colspan="3">Total</th><th>₹${b.total}</th></tr></table>`;
 
 // ---------- views ----------
 const V = {};
@@ -197,12 +201,15 @@ V.rxinbox = () => {
       <div class="steps">${RX_STEPS.map(s => `<span class="${RX_STEPS.indexOf(p.status) >= RX_STEPS.indexOf(s) ? 'on' : ''}"></span>`).join('')}</div>
       <table><tr><th>Medicine</th><th>Dose</th><th>Qty</th><th>Stock</th></tr>${p.meds.map(m => { const q = st[m.name]?.qty || 0; return `<tr><td>${esc(m.name)}</td><td>${esc(m.dose)}</td><td>${m.qty}</td><td><span class="pill ${q >= m.qty ? 'ok' : 'bad'}">${q >= m.qty ? q + ' in stock' : 'short (' + q + ')'}</span></td></tr>`; }).join('')}</table>
       <div class="row" style="margin-top:10px">
-        ${p.status === 'sent' || p.status === 'query' ? `<button class="btn sm" onclick="rxAccept('${p.id}')">Accept</button>` : ''}
+        ${p.status === 'sent' || p.status === 'query' ? `<button class="btn sm" onclick="rxAccept('${p.id}')">Accept · send bill to patient</button>` : ''}
+        ${p.status === 'quoted' ? `<span class="pill warn">Waiting for ${esc(p.patient)} to approve ₹${(p.bill || billOf(p)).total}</span>` : ''}
         ${p.status === 'accepted' ? `<button class="btn sm" onclick="rxReady('${p.id}')">Packed · mark ready</button>` : ''}
         ${p.status === 'ready' ? `<button class="btn sm" onclick="go('delivery')">Send for delivery →</button>` : ''}
         <button class="btn sm ghost" onclick="askDoctor('${p.id}')">📞 Ask doctor</button></div></div>`).join('') || `<div class="card"><p class="muted">No prescriptions yet. Log in as Doctor in another tab and send one.</p></div>`);
 };
-function rxAccept(pid) { act(`accepted ${pid}`, d => { d.prescriptions.find(p => p.id === pid).status = 'accepted'; }); }
+// The pharmacist accepts and sends the bill; the patient approves it; only then is it packed.
+function rxAccept(pid) { act(`accepted ${pid} and sent the bill to the patient`, d => { const p = d.prescriptions.find(x => x.id === pid); p.status = 'quoted'; p.bill = billOf(p); }); }
+function rxApprove(pid) { act(`approved the bill for ${pid}`, d => { const p = d.prescriptions.find(x => x.id === pid); if (p.status === 'quoted') { p.status = 'accepted'; p.approvedAt = Date.now(); } }); toast('Approved. The pharmacy will pack it now.'); }
 function rxReady(pid) {
   act(`packed ${pid}, ready for pickup/delivery`, d => { const p = d.prescriptions.find(x => x.id === pid); p.status = 'ready'; p.meds.forEach(m => { if (d.stock[m.name]) d.stock[m.name].qty = Math.max(0, d.stock[m.name].qty - m.qty); }); });
 }
@@ -283,12 +290,13 @@ function dlDone(pid) { act(`delivered ${pid}`, d => { d.prescriptions.find(x => 
 // ----- My Medicines (patient) -----
 V.orders = () => {
   const list = Store.db.prescriptions.filter(p => p.patient === R.org);
-  const label = { sent: 'Sent to pharmacy', accepted: 'Pharmacist accepted', ready: 'Packed & ready', 'out for delivery': 'On the way', delivered: 'Delivered' };
+  const label = { sent: 'Sent to pharmacy', quoted: 'Bill sent', accepted: 'You approved', ready: 'Packed & ready', 'out for delivery': 'On the way', delivered: 'Delivered' };
   return head('🧾 My Medicines', 'From your doctor to your door. No queue at the counter.') +
     (list.map(p => `<div class="card" style="margin-bottom:12px"><div class="row"><h3>${p.id}</h3><span class="muted">${esc(p.doctor)} → ${esc(p.pharmacy)} (${p.km} km)</span><span class="sp"></span>${statusPill(p.status)}</div>
       <div class="steps">${RX_STEPS.map(s => `<span class="${RX_STEPS.indexOf(p.status === 'query' ? 'sent' : p.status) >= RX_STEPS.indexOf(s) ? 'on' : ''}"></span>`).join('')}</div>
       <div class="row muted">${RX_STEPS.map(s => `<span style="flex:1;font-size:12px">${label[s]}</span>`).join('')}</div>
       ${p.status === 'query' ? '<p class="pill warn">Pharmacist is confirming something with your doctor</p>' : ''}
+      ${p.status === 'quoted' ? `<div class="ai" style="margin-top:10px"><span style="font-size:22px">🧾</span><div style="flex:1"><b>${esc(p.pharmacy)} sent your bill</b>${billHTML(p.bill || billOf(p))}<div class="row" style="margin-top:10px"><button class="btn" onclick="rxApprove('${p.id}')">✓ Approve · pay on delivery</button><span class="muted">They pack it only after you approve.</span></div></div></div>` : ''}
       ${p.rider && p.status === 'out for delivery' ? `<p>🛵 ${p.rider} · arriving in ~${Math.max(1, Math.round((p.eta - Date.now()) / 60000))} min</p>` : ''}
       <ul>${p.meds.map(m => `<li>${esc(m.name)} — ${esc(m.dose)}</li>`).join('')}</ul></div>`).join('') || '<div class="card"><p class="muted">No prescriptions yet. After your visit, the doctor\'s prescription appears here automatically.</p></div>');
 };

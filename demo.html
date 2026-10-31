@@ -46,7 +46,7 @@ body.split .panes{grid-template-columns:repeat(4,1fr)}body.split .pane{display:f
 <div class="stats" id="stats"></div>
 <p class="hint" id="hint"></p>
 <div class="panes" id="panes"></div>
-<script src="data.js?v=20"></script>
+<script src="data.js?v=21"></script>
 <script>
 // One role on screen at a time. Every pane stays loaded in the background so the shared store keeps
 // them in sync; a red dot marks a role whose screen changed since you last looked at it.
@@ -75,7 +75,8 @@ Store.onChange(() => {
   const ap = Store.db.appointments[Store.db.appointments.length - 1];
   if (ap && ap.status === 'booked') who.add('hospital');
   if (ap && ap.status === 'checked-in') who.add('doctor');
-  if (rx && ['sent', 'query'].includes(rx.status)) who.add('pharmacy');
+  if (rx && ['sent', 'query', 'accepted'].includes(rx.status)) who.add('pharmacy');
+  if (rx && rx.status === 'quoted') who.add('patient');
   if (rx && ['out for delivery', 'delivered', 'ready'].includes(rx.status)) who.add('patient');
   if (po && ['sent', 'accepted'].includes(po.status)) who.add('supplier');
   if (po && ['dispatched', 'delivered'].includes(po.status)) who.add('pharmacy');
@@ -105,7 +106,7 @@ const TOUR = [
   { role: 'patient', go: () => openTab('patient', 'sehat_copilot', 'appointments'), t: 'Namaste! I am Dr. Saathi. I will walk you through Sehat, one role at a time. This is Rahul\'s app: in Book, describe the problem and tap "Confirm booking". The agent picks the right doctor and the earliest slot.', done: () => !!newAp(), wait: 'Waiting for Rahul to book…' },
   { role: 'hospital', go: () => openTab('hospital', 'sehat_hospital', 'appointments'), t: 'City Care\'s appointment list got Rahul\'s booking live. Tap "Check in" and he joins Dr. Bansal\'s queue.', done: () => newAp()?.status === 'checked-in', wait: 'Waiting for City Care to check Rahul in…' },
   { role: 'doctor', t: 'Rahul is in Dr. Bansal\'s queue now. In the Consult queue, tap "Save note → write prescription", then "Sign & send to pharmacy".', done: () => Store.db.prescriptions.length > dgStart.rx, wait: 'Waiting for the doctor to approve a prescription…' },
-  { role: 'pharmacy', go: () => openTab('pharmacy', 'sehat_pharmacy', 'rxinbox'), t: 'The prescription just reached Jain Medicos, the nearest pharmacy with stock, with a live stock check. Tap Accept, then "Packed · mark ready".', done: () => ['ready', 'out for delivery', 'delivered'].includes(rx0()?.status), wait: 'Waiting for the pharmacist to pack it…' },
+  { role: 'pharmacy', go: () => openTab('pharmacy', 'sehat_pharmacy', 'rxinbox'), t: 'The prescription just reached Jain Medicos, the nearest pharmacy with stock, with a live stock check. Tap Accept to send Rahul the bill; once he approves it in his Medicines tab, tap "Packed · mark ready".', done: () => ['ready', 'out for delivery', 'delivered'].includes(rx0()?.status), wait: 'Waiting for the pharmacist to pack it…' },
   { role: 'pharmacy', go: () => openTab('pharmacy', 'sehat_pharmacy', 'delivery'), t: 'Packed! Now hand it to a rider: tap "Assign rider". The patient gets the ETA instantly.', done: () => ['out for delivery', 'delivered'].includes(rx0()?.status), wait: 'Waiting for a rider to be assigned…' },
   { role: 'patient', go: () => openTab('patient', 'sehat_copilot', 'orders'), t: 'Here is Rahul\'s app. His medicine tracker shows it on the way, and the prescription is already in his records. No queue at the counter.' },
   { role: 'pharmacy', go: () => openTab('pharmacy', 'sehat_pharmacy', 'supply'), t: 'Now the shelves. Supply Chain AI predicts what runs out first (see the AI insight). Tap "Draft POs", check them, then "Send to distributor".', done: () => po0() && po0().status !== 'draft', wait: 'Waiting for a purchase order to be sent…' },
@@ -166,7 +167,7 @@ async function autoPlay() {
       d.prescriptions.unshift({ id: rid, patient: pt, doctor: 'Dr. R. K. Bansal', dx: 'Viral fever', meds: [{ name: 'Paracetamol 650mg', dose: '1-0-1 × 5 days', qty: 10 }, { name: 'Cetirizine 10mg', dose: '0-0-1 × 5 days', qty: 5 }], pharmacy: 'Jain Medicos', km: 1.2, status: 'sent', t: Date.now(), rider: null });
       d.journal.unshift({ date: new Date().toISOString().slice(0, 10), type: 'Prescription', text: `Viral fever: Paracetamol 650mg, Cetirizine 10mg (Dr. R. K. Bansal)` });
     }, 'Dr. R. K. Bansal', `approved ${rid} for ${pt} → Jain Medicos (1.2 km)`));
-    await step(3, () => { inPane('pharmacy', `rxAccept('${rid}')`); setTimeout(() => inPane('pharmacy', `rxReady('${rid}')`), 1200); }, 3200);
+    await step(3, () => { inPane('pharmacy', `rxAccept('${rid}')`); setTimeout(() => inPane('patient', `rxApprove('${rid}')`), 1400); setTimeout(() => inPane('pharmacy', `rxReady('${rid}')`), 2800); }, 4200);
     await step(4, () => inPane('pharmacy', `dlSend('${rid}')`));
     await step(5, () => {}, 3200);
     await step(6, () => { inPane('pharmacy', 'poDraft()'); setTimeout(() => inPane('pharmacy', 'poSendAll()'), 1400); }, 3400);

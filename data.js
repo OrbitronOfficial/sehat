@@ -15,7 +15,7 @@ const ROLES = {
 const SUITES = [
   { id: 'sehat_copilot', ic: '💚', name: 'Sehat Copilot', for: ['patient'], price: 'Free',
     desc: 'Your personal health copilot: read reports from a photo, explain them in your language, family profiles, medicine reminders, journal and order tracking.',
-    tabs: [['records', 'Records & OCR'], ['family', 'Family'], ['reminders', 'Reminders'], ['journal', 'Journal'], ['orders', 'Medicines'], ['appointments', 'Book'], ['sos', 'Emergency']] },
+    tabs: [['records', 'Records & OCR'], ['family', 'Family'], ['reminders', 'Reminders'], ['journal', 'Journal'], ['orders', 'Medicines'], ['appointments', 'Book'], ['sos', 'Emergency'], ['psettings', 'Settings']] },
   { id: 'sehat_doctor', ic: '🩺', name: 'Sehat Doctor', for: ['doctor'], price: '₹999/mo',
     desc: 'Clinic workspace: patients sorted by urgency, consultation notes that create the prescription and nurse tasks, history, labs and pharmacy chat.',
     tabs: [['consult', 'Consult queue'], ['rxwriter', 'Prescriptions'], ['history', 'Patient history'], ['labs', 'Labs'], ['connect', 'Pharmacy chat']] },
@@ -135,7 +135,10 @@ function seed() {
       { id: 'P2', name: 'Apollo Pharmacy Ph-7', area: 'Phase 7, Mohali', km: 2.8, hours: 'Open 24 hours' },
       { id: 'P3', name: 'Wellness Chemist', area: 'Sector 71, Mohali', km: 4.1, hours: '9 am – 10 pm' },
     ],
-    prefs: {},  // per patient: preferred hospital and pharmacy
+    prefs: {},  // per person: preferred hospital and pharmacy, senior mode, voice language, caregiver
+    accounts: [],  // sign-ups (salted SHA-256 password hashes), shared so an account works on any device
+    sos: [],  // SOS alerts raised from Senior Mode; City Care's command centre shows them
+    alerts: [],  // caregiver alerts (missed doses)
     warehouse: { 'Paracetamol 650mg': 12000, 'Azithromycin 500mg': 2400, 'Amlodipine 5mg': 5200, 'Ibuprofen 400mg': 3100 },
     batches: [
       { med: 'Azithromycin 500mg', batch: 'AZ2291', qty: 24, exp: '2026-11-20' },

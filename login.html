@@ -37,13 +37,19 @@ body::before{display:none}
 .seg{display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(7,116,196,.06);border:1px solid var(--glass-line);margin-top:18px}
 .seg button{flex:1;border:0;background:none;border-radius:999px;padding:8px;font-weight:600;color:var(--muted);cursor:pointer}.seg button.on{background:var(--card-solid);color:var(--teal-dark);box-shadow:0 4px 14px -6px rgba(7,40,80,.3)}
 /* demo roles: glass tiles that flip to show what each role gets */
-.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
-.flip{perspective:700px;height:96px;cursor:pointer;border:0;background:none;padding:0;font:inherit;color:inherit}
-.flip .in{position:relative;width:100%;height:100%;transition:transform .6s cubic-bezier(.2,.8,.2,1);transform-style:preserve-3d}
-.flip:hover .in,.flip:focus-visible .in{transform:rotateY(180deg)}
-.flip .f,.flip .b{position:absolute;inset:0;border-radius:18px;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:8px;text-align:center}
-.flip .f{background:var(--glass-hi);border:1px solid var(--glass-line)}.flip .f span{font-size:24px}.flip .f b{font-family:var(--display);font-size:.92rem}
-.flip .b{transform:rotateY(180deg);background:linear-gradient(135deg,#1A86D6,#04437A);color:#fff;font-size:.74rem;line-height:1.35}.flip .b b{font-size:.84rem}
+/* role cards: equal tiles in an even grid. On hover the face cross-fades to what the role gets.
+   (A true 3D flip breaks inside a backdrop-filter card, where the back face shows through.) */
+.roles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
+.flip{position:relative;height:118px;cursor:pointer;border:0;background:none;padding:0;font:inherit;color:inherit;border-radius:18px;transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.flip:hover,.flip:focus-visible{transform:translateY(-3px)}
+.flip .in{position:absolute;inset:0}
+.flip .f,.flip .b{position:absolute;inset:0;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px 12px;text-align:center;transition:opacity .35s ease,transform .35s cubic-bezier(.2,.8,.2,1)}
+.flip .f{background:var(--glass-hi);border:1px solid var(--glass-line);box-shadow:0 8px 24px -16px rgba(7,40,80,.35)}
+.flip .f span{font-size:26px;line-height:1}.flip .f b{font-family:var(--display);font-size:.98rem}
+.flip .f small{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;max-width:100%;font-size:.76rem;line-height:1.3}
+.flip .b{opacity:0;transform:scale(.96);background:linear-gradient(135deg,#1A86D6,#04437A);color:#fff;font-size:.78rem;line-height:1.4;box-shadow:0 14px 30px -14px rgba(7,116,196,.7)}
+.flip .b b{font-family:var(--display);font-size:.9rem}.flip .b em{font-style:normal;font-weight:700;opacity:.85;font-size:.74rem;margin-top:2px}
+.flip:hover .f,.flip:focus-visible .f{opacity:0;transform:scale(.96)}.flip:hover .b,.flip:focus-visible .b{opacity:1;transform:none}
 @media(max-width:860px){.shell{grid-template-columns:1fr;padding:24px 16px}.tiles{display:none}.roles{grid-template-columns:repeat(2,1fr)}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -87,7 +93,7 @@ body::before{display:none}
 const OWNER = { email: 'yashjain.vis@gmail.com', h: '1484c13c9fc7ab1a7062679e01ca34f1cc3d9dc1fe271920f6f1d51fd83086b0', name: 'Yash' };
 const sha = async t => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)))].map(b => b.toString(16).padStart(2, '0')).join('');
 const GETS = { hospital: 'Command centre, beds, ER triage, roster', doctor: 'Voice consult → AI Rx, urgent-first queue', nurse: 'Ward to-do, medicine round, handover', pharmacy: 'Rx inbox, AI stock-out, POs, riders', patient: 'Reports in your language, live tracker', supplier: 'Live PO inbox, dispatch, auto restock' };
-const roleBtns = () => Object.entries(ROLES).map(([k, r]) => `<button class="flip" onclick="enter('${k}')" aria-label="Enter as ${r.label}"><div class="in"><div class="f"><span>${r.ic}</span><b>${r.label}</b><small class="muted">${r.org}</small></div><div class="b"><b>${r.label}</b>${GETS[k]}<br>Tap to enter →</div></div></button>`).join('');
+const roleBtns = () => Object.entries(ROLES).map(([k, r]) => `<button class="flip" onclick="enter('${k}')" aria-label="Enter as ${r.label}"><div class="in"><div class="f"><span>${r.ic}</span><b>${r.label}</b><small class="muted">${r.org}</small></div><div class="b"><b>${r.label}</b>${GETS[k]}<em>Tap to enter →</em></div></div></button>`).join('');
 document.getElementById('demoRoles').innerHTML = roleBtns();
 function tab(t) { document.getElementById('paneDemo').style.display = t === 'demo' ? '' : 'none'; document.getElementById('paneOwn').style.display = t === 'own' ? '' : 'none';
   document.getElementById('tDemo').classList.toggle('on', t === 'demo'); document.getElementById('tOwn').classList.toggle('on', t === 'own'); }

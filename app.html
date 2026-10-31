@@ -14,7 +14,7 @@
 <header class="topbar">
   <a class="brand" href="/" aria-label="Sehat home"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Sehat</span></a>
   <div class="top-right">
-    <span class="userchip" id="userChip"></span>
+    <span class="pill" id="netChip"></span><span class="userchip" id="userChip"></span>
     <button type="button" class="themebtn" onclick="flipTheme()" aria-label="Switch theme">◐</button>
     <button class="btn sm ghost" onclick="logout()">Switch role</button>
   </div>
@@ -28,11 +28,16 @@
 </div>
 <div id="toast"></div>
 <script>function flipTheme(){var t=document.documentElement.dataset.theme==="dark"?"light":"dark";document.documentElement.dataset.theme=t;try{localStorage.setItem("sehat_theme",t)}catch(e){}}</script>
-<script src="data.js?v=10"></script>
+<script src="data.js?v=11"></script>
 <script src="app.js?v=13"></script>
 <script src="suites.js?v=14"></script>
 <script src="journal.js?v=10"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.0/dist/tesseract.min.js"></script>
+<script>
+// network status chip: shows whether this screen is live-synced with other devices in the same room
+function paintNet(){var c=document.getElementById('netChip');if(!c||typeof Store==='undefined')return;var n=Store.cloud,t={live:['ok','● Live network'],connecting:['warn','◌ Connecting…'],error:['bad','● Offline · this device only'],off:['','● This device only']}[n.status]||['',''];c.className='pill '+t[0];c.textContent=t[1]+(n.status==='live'?' · room '+n.room:'');c.title='Every device that opens Sehat in room '+n.room+' shares the same live data. Join another room with ?room=NAME';}
+addEventListener('sehat-cloud',paintNet);addEventListener('load',paintNet);
+</script>
 <script src="assistant.js?v=5"></script>
 </body>
 </html>

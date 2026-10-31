@@ -156,25 +156,75 @@ function seed() {
   };
 }
 
+// Cloud network: every device in the same room shares one live store through Supabase (Postgres +
+// realtime). The anon key is a public, browser-safe key; access is limited by row-level security.
+// Offline or without a key, everything keeps working on this device exactly as before.
+const CLOUD = { url: 'https://twksjeogwwhvxjnndbbo.supabase.co', key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3a3NqZW9nd3dodnhqbm5kYmJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM0NjA0MjMsImV4cCI6MjEwOTAzNjQyM30.So_-VtnM68317k4GJnsBxKM1UOy7ErnHaz7rXsmkOAc' };
+const ROOM = (() => {
+  let r = null;
+  try { r = new URLSearchParams(location.search).get('room'); if (r) localStorage.setItem('sehat_room', r); r = r || localStorage.getItem('sehat_room'); } catch {}
+  return String(r || 'GRAVITON').toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 40) || 'GRAVITON';
+})();
+
 const Store = (() => {
   const KEY = 'sehat_db_v2';
   const ch = 'BroadcastChannel' in window ? new BroadcastChannel('sehat') : null;
   let db;
   try { db = JSON.parse(localStorage.getItem(KEY)) || seed(); } catch { db = seed(); }
   // Older saved demos lack newer collections (supplier, roster…): fill them in without wiping data.
-  const base = seed();
-  Object.keys(base).forEach(k => { if (!(k in db)) db[k] = base[k]; });
-  Object.keys(DEFAULT_INSTALLS).forEach(r => { db.installs[r] = db.installs[r] || [...DEFAULT_INSTALLS[r]]; });
+  const fill = d => {
+    const base = seed();
+    Object.keys(base).forEach(k => { if (!(k in d)) d[k] = base[k]; });
+    Object.keys(DEFAULT_INSTALLS).forEach(r => { d.installs[r] = d.installs[r] || [...DEFAULT_INSTALLS[r]]; });
+    return d;
+  };
+  fill(db);
   const listeners = [];
+  const cloud = { id: Math.random().toString(36).slice(2), sb: null, status: CLOUD.key ? 'connecting' : 'off', t: 0 };
+  const cloudEvent = () => { try { dispatchEvent(new CustomEvent('sehat-cloud', { detail: { status: cloud.status, room: ROOM } })); } catch {} };
+  const push = () => {
+    if (!cloud.sb) return;
+    clearTimeout(cloud.t);
+    cloud.t = setTimeout(() => cloud.sb.from('networks').upsert({ room: ROOM, data: db, updated_by: cloud.id, updated_at: new Date().toISOString() })
+      .then(r => { if (r.error) { cloud.status = 'error'; cloudEvent(); } }), 250);
+  };
   const save = () => {
     try { localStorage.setItem(KEY, JSON.stringify(db)); } catch {}
     ch && ch.postMessage('sync');
+    push();
   };
   const reload = () => { try { db = JSON.parse(localStorage.getItem(KEY)) || db; } catch {} listeners.forEach(f => f()); };
   ch && (ch.onmessage = reload);
   addEventListener('storage', e => e.key === KEY && reload());
+  // a change made on another device: take it, share it with this device's other tabs, redraw
+  const remote = data => {
+    db = fill(data);
+    try { localStorage.setItem(KEY, JSON.stringify(db)); } catch {}
+    ch && ch.postMessage('sync');
+    listeners.forEach(f => f());
+  };
+  if (CLOUD.key) {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js';
+    s.onload = async () => {
+      try {
+        cloud.sb = window.supabase.createClient(CLOUD.url, CLOUD.key);
+        const { data, error } = await cloud.sb.from('networks').select('data').eq('room', ROOM).maybeSingle();
+        if (error) throw error;
+        if (data && data.data) remote(data.data); else push();  // first device in this room seeds it
+        cloud.sb.channel('room-' + ROOM)
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'networks', filter: 'room=eq.' + ROOM }, p => {
+            if (p.new && p.new.data && p.new.updated_by !== cloud.id) remote(p.new.data);
+          })
+          .subscribe(st => { cloud.status = st === 'SUBSCRIBED' ? 'live' : st === 'CHANNEL_ERROR' || st === 'TIMED_OUT' ? 'error' : cloud.status; cloudEvent(); });
+      } catch (e) { cloud.status = 'error'; cloudEvent(); }
+    };
+    s.onerror = () => { cloud.status = 'error'; cloudEvent(); };
+    document.head.appendChild(s);
+  }
   return {
     get db() { return db; },
+    get cloud() { return { status: cloud.status, room: ROOM }; },
     update(fn, who, text) {
       fn(db);
       if (text) db.activity.unshift({ t: Date.now(), who, text });

@@ -2,3 +2,10 @@
 **/.env
 __pycache__/
 .pytest_cache/
+
+# demo video intermediates (re-create with pitch/video/rec.py + compose.py)
+pitch/video/clips/
+pitch/video/seg/
+pitch/video/audio/
+pitch/video/cards/
+pitch/video/chk/

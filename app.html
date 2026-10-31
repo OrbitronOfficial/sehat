@@ -36,7 +36,7 @@
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.0/dist/tesseract.min.js"></script>
 <script>
 // network status chip: shows whether this screen is live-synced with other devices in the same room
-function paintNet(){var c=document.getElementById('netChip');if(!c||typeof Store==='undefined')return;var n=Store.cloud,t={live:['ok','● Live network'],connecting:['warn','◌ Connecting…'],error:['bad','● Offline · this device only'],off:['','● This device only']}[n.status]||['',''];c.className='pill '+t[0];c.textContent=t[1]+(n.status==='live'?' · room '+n.room:'');c.title='Every device that opens Sehat in room '+n.room+' shares the same live data. Join another room with ?room=NAME';}
+function paintNet(){var c=document.getElementById('netChip');if(!c||typeof Store==='undefined')return;if(window.top!==window){c.style.display='none';return;}var n=Store.cloud,t={live:['ok','● Live network'],connecting:['warn','◌ Connecting…'],error:['bad','● Offline · this device only'],off:['','● This device only']}[n.status]||['',''];c.className='pill '+t[0];c.textContent=t[1]+(n.status==='live'?' · room '+n.room:'');c.title='Every device that opens Sehat in room '+n.room+' shares the same live data. Join another room with ?room=NAME';}
 addEventListener('sehat-cloud',paintNet);addEventListener('load',paintNet);
 </script>
 <script src="assistant.js?v=5"></script>

@@ -51,10 +51,11 @@ body.split .panes{grid-template-columns:repeat(4,1fr)}body.split .pane{display:f
 // One role on screen at a time. Every pane stays loaded in the background so the shared store keeps
 // them in sync; a red dot marks a role whose screen changed since you last looked at it.
 const STEPS = [
+  ['patient', '💚', 'Patient', 'app.html?role=patient&view=sehat_copilot', 'Rahul books a visit from his symptoms, then tracks his medicine from the pharmacy to his door.'],
+  ['hospital', '🏥', 'City Care', 'app.html?role=hospital&view=sehat_hospital', 'Every booking lands in City Care\'s appointment list live. Check the patient in and they join the doctor\'s queue.'],
   ['doctor', '🩺', 'Doctor', 'app.html?role=doctor&view=sehat_doctor', 'Save the consult note, then sign the prescription. Sehat routes it to the nearest pharmacy with stock.'],
   ['pharmacy', '💊', 'Pharmacy', 'app.html?role=pharmacy&view=sehat_pharmacy', 'The prescription arrives with a stock check: accept, pack, send a rider. In Supply chain, draft POs and send them to the distributor.'],
   ['supplier', '🚚', 'Supplier', 'app.html?role=supplier&view=sehat_supply', 'Punjab Pharma gets the purchase order live: accept, dispatch, deliver. The pharmacy\'s stock goes up by itself.'],
-  ['patient', '💚', 'Patient', '/login?demo=1', 'The patient sees the medicine moving from pharmacy to door, and it lands in their records.'],
 ];
 let cur = 'doctor';
 document.getElementById('roles').innerHTML = STEPS.map(([k, ic, l], i) => `<button data-k="${k}" onclick="show('${k}')"><span class="n">${i + 1}</span>${ic} ${l}<span class="ping"></span></button>`).join('');
@@ -67,10 +68,13 @@ function show(k) {
 }
 function toggleSplit() { const on = document.body.classList.toggle('split'); document.getElementById('splitBtn').textContent = on ? '▣ One at a time' : '⇆ Side by side'; }
 // mark the role that a network change concerns, so the presenter knows where to click next
-let seen = JSON.stringify(Store.db.prescriptions.map(p => p.status)) + JSON.stringify(Store.db.pos.map(p => p.status));
+let seen = JSON.stringify(Store.db.prescriptions.map(p => p.status)) + JSON.stringify(Store.db.pos.map(p => p.status)) + JSON.stringify(Store.db.appointments.map(a => a.status));
 Store.onChange(() => {
-  const d = Store.db, now = JSON.stringify(d.prescriptions.map(p => p.status)) + JSON.stringify(d.pos.map(p => p.status)); if (now === seen) return; seen = now;
+  const d = Store.db, now = JSON.stringify(d.prescriptions.map(p => p.status)) + JSON.stringify(d.pos.map(p => p.status)) + JSON.stringify(d.appointments.map(a => a.status)); if (now === seen) return; seen = now;
   const rx = d.prescriptions[0], po = d.pos[0], who = new Set();
+  const ap = Store.db.appointments[Store.db.appointments.length - 1];
+  if (ap && ap.status === 'booked') who.add('hospital');
+  if (ap && ap.status === 'checked-in') who.add('doctor');
   if (rx && ['sent', 'query'].includes(rx.status)) who.add('pharmacy');
   if (rx && ['out for delivery', 'delivered', 'ready'].includes(rx.status)) who.add('patient');
   if (po && ['sent', 'accepted'].includes(po.status)) who.add('supplier');
@@ -98,15 +102,18 @@ const dgEl = document.getElementById('dg'), frame = k => document.querySelector(
 const openTab = (k, suite, tab) => { try { frame(k).eval(`suiteTab.${suite}='${tab}';render()`); } catch (e) {} };
 const rx0 = () => Store.db.prescriptions[0], po0 = () => Store.db.pos.find(p => p.supplier === ROLES.supplier.org);
 const TOUR = [
-  { role: 'doctor', t: 'Namaste! I am Dr. Saathi. I will walk you through Sehat, one role at a time. This is Dr. Bansal\'s clinic. In the Consult queue, tap "Save note → write prescription", then "Sign & send to pharmacy".', done: () => Store.db.prescriptions.length > dgStart.rx, wait: 'Waiting for the doctor to approve a prescription…' },
+  { role: 'patient', go: () => openTab('patient', 'sehat_copilot', 'appointments'), t: 'Namaste! I am Dr. Saathi. I will walk you through Sehat, one role at a time. This is Rahul\'s app: in Book, describe the problem and tap "Confirm booking". The agent picks the right doctor and the earliest slot.', done: () => !!newAp(), wait: 'Waiting for Rahul to book…' },
+  { role: 'hospital', go: () => openTab('hospital', 'sehat_hospital', 'appointments'), t: 'City Care\'s appointment list got Rahul\'s booking live. Tap "Check in" and he joins Dr. Bansal\'s queue.', done: () => newAp()?.status === 'checked-in', wait: 'Waiting for City Care to check Rahul in…' },
+  { role: 'doctor', t: 'Rahul is in Dr. Bansal\'s queue now. In the Consult queue, tap "Save note → write prescription", then "Sign & send to pharmacy".', done: () => Store.db.prescriptions.length > dgStart.rx, wait: 'Waiting for the doctor to approve a prescription…' },
   { role: 'pharmacy', go: () => openTab('pharmacy', 'sehat_pharmacy', 'rxinbox'), t: 'The prescription just reached Jain Medicos, the nearest pharmacy with stock, with a live stock check. Tap Accept, then "Packed · mark ready".', done: () => ['ready', 'out for delivery', 'delivered'].includes(rx0()?.status), wait: 'Waiting for the pharmacist to pack it…' },
   { role: 'pharmacy', go: () => openTab('pharmacy', 'sehat_pharmacy', 'delivery'), t: 'Packed! Now hand it to a rider: tap "Assign rider". The patient gets the ETA instantly.', done: () => ['out for delivery', 'delivered'].includes(rx0()?.status), wait: 'Waiting for a rider to be assigned…' },
-  { role: 'patient', t: 'Here is Rahul\'s app. His medicine tracker shows it on the way, and the prescription is already in his records. No queue at the counter.' },
+  { role: 'patient', go: () => openTab('patient', 'sehat_copilot', 'orders'), t: 'Here is Rahul\'s app. His medicine tracker shows it on the way, and the prescription is already in his records. No queue at the counter.' },
   { role: 'pharmacy', go: () => openTab('pharmacy', 'sehat_pharmacy', 'supply'), t: 'Now the shelves. Supply Chain AI predicts what runs out first (see the AI insight). Tap "Draft POs", check them, then "Send to distributor".', done: () => po0() && po0().status !== 'draft', wait: 'Waiting for a purchase order to be sent…' },
   { role: 'supplier', go: () => openTab('supplier', 'sehat_supply', 'poinbox'), t: 'Punjab Pharma Distributors got the order live, sorted by urgency. Tap Accept, pick a vehicle, Dispatch, then Delivered.', done: () => po0()?.status === 'delivered', wait: 'Waiting for the delivery…' },
   { role: 'pharmacy', go: () => openTab('pharmacy', 'sehat_pharmacy', 'supply'), t: 'Delivered, and Jain Medicos\' stock went up by itself. Doctor → pharmacy → patient → distributor, all connected. That is Sehat!' },
 ];
-let dgI = 0, dgVoice = false, dgStart = { rx: Store.db.prescriptions.length };
+let dgI = 0, dgVoice = false, dgStart = { rx: Store.db.prescriptions.length, ap: Store.db.appointments.map(a => a.id) };
+const newAp = () => Store.db.appointments.find(a => !dgStart.ap.includes(a.id));  // the booking made during this demo
 function dgSay(t) { if (!dgVoice || !('speechSynthesis' in window)) return; const u = new SpeechSynthesisUtterance(t); u.lang = 'en-IN'; speechSynthesis.cancel(); speechSynthesis.speak(u); }
 function dgShow(i) {
   dgI = Math.max(0, Math.min(TOUR.length - 1, i)); const s = TOUR[dgI], r = STEPS.find(x => x[0] === s.role);
@@ -148,22 +155,26 @@ const inPane = (k, code) => { try { return frame(k).eval(code); } catch (e) { re
 async function autoPlay() {
   if (autoOn) { autoOn = false; return; }
   autoOn = true; const btn = document.getElementById('autoBtn'); btn.classList.add('on'); btn.textContent = '■ Stop';
-  const PATIENTS = ['Rahul Mehra', 'Sunita Mehra', 'Aman Verma'], pt = PATIENTS[Store.db.prescriptions.length % 3], rid = 'RX' + Math.random().toString(36).slice(2, 6).toUpperCase();
+  const PATIENTS = ['Rahul Mehra', 'Sunita Mehra', 'Aman Verma'], pt0 = PATIENTS[Store.db.prescriptions.length % 3], rid = 'RX' + Math.random().toString(36).slice(2, 6).toUpperCase();
+  let pt = pt0;
   const step = async (i, fn, wait = 2600) => { if (!autoOn) throw 0; dgShow(i); await nap(900); if (!autoOn) throw 0; fn(); await nap(wait); };
   try {
-    await step(0, () => Store.update(d => {   // the doctor signs; the store routes it like SehatNet.routeRx does
+    await step(0, () => inPane('patient', "document.getElementById('ap_why').value='Fever and body ache for 3 days'; apSuggest(); apBook()"), 2800);
+    await step(1, () => { const a = newAp(); if (a) inPane('hospital', `apCheck('${a.id}')`); }, 2800);
+    pt = newAp()?.patient || pt0;
+    await step(2, () => Store.update(d => {   // the doctor signs; the store routes it like SehatNet.routeRx does
       d.prescriptions.unshift({ id: rid, patient: pt, doctor: 'Dr. R. K. Bansal', dx: 'Viral fever', meds: [{ name: 'Paracetamol 650mg', dose: '1-0-1 × 5 days', qty: 10 }, { name: 'Cetirizine 10mg', dose: '0-0-1 × 5 days', qty: 5 }], pharmacy: 'Jain Medicos', km: 1.2, status: 'sent', t: Date.now(), rider: null });
       d.journal.unshift({ date: new Date().toISOString().slice(0, 10), type: 'Prescription', text: `Viral fever: Paracetamol 650mg, Cetirizine 10mg (Dr. R. K. Bansal)` });
     }, 'Dr. R. K. Bansal', `approved ${rid} for ${pt} → Jain Medicos (1.2 km)`));
-    await step(1, () => { inPane('pharmacy', `rxAccept('${rid}')`); setTimeout(() => inPane('pharmacy', `rxReady('${rid}')`), 1200); }, 3200);
-    await step(2, () => inPane('pharmacy', `dlSend('${rid}')`));
-    await step(3, () => {}, 3200);
-    await step(4, () => { inPane('pharmacy', 'poDraft()'); setTimeout(() => inPane('pharmacy', 'poSendAll()'), 1400); }, 3400);
+    await step(3, () => { inPane('pharmacy', `rxAccept('${rid}')`); setTimeout(() => inPane('pharmacy', `rxReady('${rid}')`), 1200); }, 3200);
+    await step(4, () => inPane('pharmacy', `dlSend('${rid}')`));
+    await step(5, () => {}, 3200);
+    await step(6, () => { inPane('pharmacy', 'poDraft()'); setTimeout(() => inPane('pharmacy', 'poSendAll()'), 1400); }, 3400);
     const pid = () => Store.db.pos.find(p => p.supplier === ROLES.supplier.org && !['delivered', 'received', 'draft'].includes(p.status))?.id;
-    await step(5, () => { const p = pid(); if (!p) return; inPane('supplier', `spAccept('${p}')`);
+    await step(7, () => { const p = pid(); if (!p) return; inPane('supplier', `spAccept('${p}')`);
       setTimeout(() => { inPane('supplier', `render()`); const v = inPane('supplier', `document.getElementById('veh_${p}')`); if (v) inPane('supplier', `spDispatch('${p}')`); }, 1300);
       setTimeout(() => inPane('supplier', `spDeliver('${p}')`), 2800); }, 4200);
-    await step(6, () => {}, 1500);
+    await step(8, () => {}, 1500);
   } catch (e) { /* stopped */ }
   autoOn = false; btn.classList.remove('on'); btn.textContent = '▶ Auto-play';
 }

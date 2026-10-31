@@ -100,7 +100,7 @@ V.appointments = () => {
   return head('📅 Appointment Desk', role === 'patient' ? 'Tell us what is wrong. The agent picks the right doctor and the earliest slot.' : 'Today\'s queue. Patients book themselves; you check them in.') +
     `<div class="grid g2"><div class="card"><h3>${role === 'patient' ? 'Book a visit' : 'Book for a walk-in'}</h3>
       ${role !== 'patient' ? '<label>Patient name</label><input id="ap_name" placeholder="e.g. Priya Sharma">' : ''}
-      <label>What's the problem?</label><textarea id="ap_why" oninput="apSuggest()">Chest tightness and breathlessness when climbing stairs</textarea>
+      <label>What's the problem?</label><textarea id="ap_why" oninput="apSuggest()">${role === 'patient' ? 'Fever and body ache for 3 days' : 'Chest tightness and breathlessness when climbing stairs'}</textarea>
       <label>Date</label><input id="ap_date" type="date" value="${new Date().toISOString().slice(0, 10)}" onchange="apSuggest()">
       <div id="ap_sug" class="card" style="margin-top:12px;background:var(--soft);border:0"></div>
       <button class="btn" style="margin-top:12px" onclick="apBook()">Confirm booking</button></div>

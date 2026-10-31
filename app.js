@@ -4,7 +4,9 @@ const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '
 const QS = new URLSearchParams(location.search);  // ?role=&view= lets the live demo show several roles at once
 const role = QS.get('role') || (() => { try { return sessionStorage.getItem('sehat_role'); } catch { return null; } })();
 if (!ROLES[role]) { location.replace('login.html'); throw new Error('not logged in'); }
-const R = ROLES[role] || ROLES.patient;
+// A signed-in person (created account or owner login) sees their own name; demo roles keep the demo people.
+const USER = (() => { try { return sessionStorage.getItem('sehat_user'); } catch { return null; } })();
+const R = Object.assign({}, ROLES[role] || ROLES.patient, USER && role === 'patient' ? { org: USER, sub: 'Sehat member' } : {});
 const askedView = QS.get('view') || (() => { try { const v = sessionStorage.getItem('sehat_view'); sessionStorage.removeItem('sehat_view'); return v; } catch { return null; } })();
 let view = askedView || 'dashboard';
 // Patient, doctor and nurse have their full Sehat Copilot workspace on the same site.
@@ -23,7 +25,7 @@ const id = p => p + Math.random().toString(36).slice(2, 6).toUpperCase();
 function go(v) { view = v; render(); scrollTo(0, 0); const m = $('#main'); m.classList.add('rise'); clearTimeout(m._r); m._r = setTimeout(() => m.classList.remove('rise'), 600); }
 function render() {
   $('#org').innerHTML = `<span class="eyebrow">${R.label}</span><b>${R.org}</b><span class="muted">${R.sub}</span>`;
-  $('#userChip').innerHTML = `<i>${R.ic}</i>${R.org}`;
+  $('#userChip').innerHTML = `<i>${R.ic}</i>${USER && role !== 'patient' ? esc(USER) + ' · ' : ''}${esc(R.org)}`;
   $('#nav').innerHTML = (WORKSPACE ? `<a class="ws" href="${WORKSPACE[0]}">✚ My ${WORKSPACE[1]} workspace</a>` : '') +
     `<a class="${view === 'dashboard' ? 'on' : ''}" onclick="go('dashboard')">🏠 Network dashboard</a>
     <a class="${view === 'market' ? 'on' : ''}" onclick="go('market')">🛒 Agent Marketplace</a>

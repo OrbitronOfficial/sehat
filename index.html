@@ -58,7 +58,7 @@ function pick(aid){const a=SUITES.concat(AGENTS).find(x=>x.id===aid);try{session
   document.querySelectorAll('.role').forEach(b=>{const ok=a.for.includes(b.dataset.role);b.classList.toggle('hit',ok);b.classList.toggle('dim',!ok)});
   const h=document.getElementById('pickHint');h.style.display='';h.textContent=`${a.ic} ${a.name} is for ${a.for.map(r=>ROLES[r].label).join(' or ')}. Choose your role to open it.`;
   document.getElementById('start').scrollIntoView({behavior:'smooth'})}
-function enter(k){try{sessionStorage.setItem('sehat_role',k);if(WORKSPACE[k])sessionStorage.removeItem('sehat_view')}catch(e){}location.href=WORKSPACE[k]||'app.html'}
+function enter(k){try{sessionStorage.setItem('sehat_role',k);sessionStorage.removeItem('sehat_user');if(WORKSPACE[k])sessionStorage.removeItem('sehat_view')}catch(e){}location.href=WORKSPACE[k]||'app.html'}
 </script>
 <script src="assistant.js?v=5"></script>
 </body>

@@ -182,12 +182,13 @@ var rl = document.getElementById('rl'), rbs = [], em = document.getElementById('
 R.forEach(function (r, i) { var b = document.createElement('button'); b.type = 'button'; b.className = 'rb'; b.setAttribute('aria-pressed', false); b.innerHTML = '<b>' + r[0] + ' ' + r[1] + '</b><small>' + r[2] + '</small>'; b.onclick = function () { login(i); }; b.onmouseenter = function () { hov = i; }; b.onmouseleave = function () { hov = -1; }; b.onfocus = function () { hov = i; }; b.onblur = function () { hov = -1; }; rl.appendChild(b); rbs.push(b); });
 function type(el, t, done) { el.value = ''; var i = 0; (function n() { el.value = t.slice(0, i++); if (i <= t.length) setTimeout(n, reduce ? 0 : 24); else if (done) done(); })(); }
 function login(i) {
+  try { sessionStorage.removeItem('sehat_user'); } catch (x) {}
   if (busy) return; busy = true; sel = i; msg.textContent = ''; rbs.forEach(function (b, j) { b.setAttribute('aria-pressed', j === i); });
   type(em, R[i][3], function () { type(pw, 'demo-1234', function () { go.classList.add('ld'); go.textContent = 'Signing in…'; setTimeout(function () { show(i); go.classList.remove('ld'); go.textContent = 'Log in'; }, reduce ? 0 : 1100); }); });
 }
 function show(i, who) {
   var r = R[i];
-  bk.innerHTML = '<svg class="ck" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" pathLength="1"/><path pathLength="1" d="M30 52l14 14 27-30"/></svg><h2>' + (who ? 'Welcome, ' + who.replace(/[<>&"]/g, '').split(' ')[0] : 'Signed in') + '</h2><p class="sb" style="margin-bottom:0">' + r[0] + ' ' + r[1] + ' · ' + r[2] + '</p>' +
+  bk.innerHTML = '<svg class="ck" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" pathLength="1"/><path pathLength="1" d="M30 52l14 14 27-30"/></svg><h2>' + (who ? 'Welcome, ' + who.replace(/[<>&"]/g, '').split(' ')[0] : 'Signed in') + '</h2><p class="sb" style="margin-bottom:0">' + r[0] + ' ' + r[1] + ' · ' + (who && r[4] === 'patient' ? who.replace(/[<>&"]/g, '') : r[2]) + '</p>' +
     '<div class="st">' + stats(r[4]).map(function (m) { return '<div><div class="r"><span>' + m[0] + '</span><span class="mono">' + m[1] + '</span></div><div class="t"><i style="--w:' + m[2] + '%"></i></div></div>'; }).join('') + '</div>' +
     '<p class="sb" style="font-size:12px;margin:-6px 0 8px">Live numbers from the demo network</p><button class="go" type="button" id="en">Enter workspace →</button><button class="go ghost" type="button" id="sr">Switch role</button>';
   document.getElementById('sr').onclick = back; document.getElementById('en').onclick = function () { enter(r[4]); }; fl.classList.add('on');

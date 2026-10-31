@@ -149,7 +149,7 @@ function pickRole(k){roleNow=k;const r=ROLES[k],s=SUITE_OF(k);
     <div class="k">${KPI[k].map(([l,v])=>`<div><b>${v}</b><span>${l}</span></div>`).join('')}</div></div>`;
   requestAnimationFrame(()=>document.querySelectorAll('.mini .bars i').forEach((el,i)=>el.style.height=[48,72,56,88,64,94,70][i]+'%'));}
 const WORKSPACE={patient:'/hub/app.html?role=patient&view=sehat_copilot',doctor:'/hub/app.html?role=doctor&view=sehat_doctor',nurse:'/hub/app.html?role=nurse&view=sehat_nurse'};
-function enter(k,view){try{sessionStorage.setItem('sehat_role',k);if(view&&!WORKSPACE[k])sessionStorage.setItem('sehat_view',view);else sessionStorage.removeItem('sehat_view')}catch(e){}location.href=WORKSPACE[k]||'/hub/app.html'}
+function enter(k,view){try{sessionStorage.setItem('sehat_role',k);sessionStorage.removeItem('sehat_user');if(view&&!WORKSPACE[k])sessionStorage.setItem('sehat_view',view);else sessionStorage.removeItem('sehat_view')}catch(e){}location.href=WORKSPACE[k]||'/hub/app.html'}
 addEventListener('load',()=>pickRole('hospital'));addEventListener('resize',()=>pickRole(roleNow));
 
 // agents: filter chips + glass cards with a cursor glow; a card opens the role that uses it

@@ -26,21 +26,66 @@ V.market = () => {
 };
 
 // ---------- Sehat Copilot (patient) ----------
-V.records = () => head('Records & OCR', 'Photo of a lab report or prescription → text → every value explained.') +
-  `<div class="grid g2"><div class="card"><label>Upload a photo of a report</label><input type="file" id="oc_f" accept="image/*">
-    <div class="row" style="margin-top:8px"><select id="oc_lang" style="width:auto"><option value="eng">English report</option><option value="hin+eng">Hindi + English</option></select><button class="btn sm" onclick="ocRead()">Read photo</button><span id="oc_p" class="muted"></span></div>
-    <label>Report text (from the photo, or paste)</label><textarea id="lb_t" style="min-height:150px">Haemoglobin 10.4 g/dL\nFasting Blood Sugar 118 mg/dL\nHbA1c 6.4 %\nVitamin D 14 ng/mL</textarea>
-    <div class="row" style="margin-top:10px"><select id="lb_l" style="width:auto"><option value="en">English</option><option value="hi">हिन्दी</option></select><button class="btn" onclick="lbRun()">Explain</button><button class="btn ghost" onclick="lbSave();toast('Saved to journal')">Save to journal</button></div></div>
+V.records = () => head('Records & OCR', 'Photo or PDF of a lab report or prescription → read by AI → every value explained in your language.') +
+  `<div class="grid g2"><div class="card"><label>Upload a photo or PDF of a report</label><input type="file" id="oc_f" accept="image/*,application/pdf">
+    <div class="row" style="margin-top:8px"><button class="btn sm" onclick="ocRead()">Read with AI</button><span id="oc_p" class="muted"></span></div>
+    <label>Report text (from the file, or paste)</label><textarea id="lb_t" style="min-height:150px">Haemoglobin 10.4 g/dL\nFasting Blood Sugar 118 mg/dL\nHbA1c 6.4 %\nVitamin D 14 ng/mL</textarea>
+    <div class="row" style="margin-top:10px"><select id="lb_l" style="width:auto">${[['en', 'English'], ['hi', 'हिन्दी'], ['pa', 'ਪੰਜਾਬੀ'], ['bn', 'বাংলা'], ['ta', 'தமிழ்'], ['te', 'తెలుగు'], ['mr', 'मराठी'], ['gu', 'ગુજરાતી'], ['kn', 'ಕನ್ನಡ'], ['ml', 'മലയാളം']].map(([v, l]) => `<option value="${v}">${l}</option>`).join('')}</select>
+      <button class="btn" onclick="ocExplain()">Explain</button><button class="btn ghost" onclick="lbSave();toast('Saved to journal')">Save to journal</button></div></div>
    <div class="card" id="lb_o"><p class="muted">Explained values appear here.</p></div></div>`;
-async function ocRead() {
-  const f = $('#oc_f').files[0]; if (!f) return toast('Choose a photo first');
-  if (!window.Tesseract) return toast('OCR needs internet the first time');
-  $('#oc_p').textContent = 'Reading… 0%';
-  try {
-    const { data } = await Tesseract.recognize(f, $('#oc_lang').value, { logger: m => { if (m.status === 'recognizing text') $('#oc_p').textContent = 'Reading… ' + Math.round(m.progress * 100) + '%'; } });
-    $('#lb_t').value = data.text.trim(); $('#oc_p').textContent = `Done · ${Math.round(data.confidence)}% confidence`; lbRun();
-  } catch (e) { $('#oc_p').textContent = 'OCR failed: ' + e.message; }
+// The AI reader (/api/extract) reads photos and PDFs, lab reports or prescriptions; /api/explain writes the
+// explanation in the chosen language. Without AI, the on-device OCR + lab-value checker is the backup.
+let ocRec = null;
+const fileToData = f => new Promise((res, rej) => {
+  if (f.type === 'application/pdf') { const r = new FileReader(); r.onload = () => res({ mime: 'application/pdf', data: String(r.result).split(',')[1] }); r.onerror = rej; return r.readAsDataURL(f); }
+  const img = new Image(); img.onload = () => { const k = Math.min(1, 1800 / Math.max(img.width, img.height)), c = document.createElement('canvas');
+    c.width = img.width * k; c.height = img.height * k; c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(img.src);
+    res({ mime: 'image/jpeg', data: c.toDataURL('image/jpeg', .88).split(',')[1] }); };
+  img.onerror = rej; img.src = URL.createObjectURL(f);
+});
+const postJSON = async (url, body) => { const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || 'AI unavailable'); return j; };
+function recText(r) {
+  return [...(r.tests || []).map(t => `${t.name} ${t.value ?? ''} ${t.unit || ''}`.trim()), ...(r.medicines || []).map(m => [m.name, m.strength, m.dose, m.frequency, m.duration].filter(Boolean).join(' · ')),
+    ...(r.diagnoses || []).map(d => 'Diagnosis: ' + d.name), r.advice ? 'Advice: ' + r.advice : ''].filter(Boolean).join('\n');
 }
+async function ocRead() {
+  const f = $('#oc_f').files[0]; if (!f) return toast('Choose a photo or PDF first');
+  $('#oc_p').textContent = 'Reading with AI…'; ocRec = null;
+  try {
+    const { mime, data } = await fileToData(f);
+    const res = await postJSON('/api/extract', { filename: f.name, mime, data, lang: $('#lb_l').value });
+    ocRec = res.record; $('#lb_t').value = recText(ocRec) || '(nothing readable found)';
+    $('#oc_p').textContent = `Read by AI · ${(ocRec.tests || []).length} tests, ${(ocRec.medicines || []).length} medicines`; ocExplain();
+  } catch (e) {
+    if (f.type === 'application/pdf' || !window.Tesseract) { $('#oc_p').textContent = 'AI reader is busy. Try again in a minute.'; return; }
+    $('#oc_p').textContent = 'AI busy · reading on this device… 0%';
+    try {
+      const { data } = await Tesseract.recognize(f, 'eng', { logger: m => { if (m.status === 'recognizing text') $('#oc_p').textContent = 'Reading on this device… ' + Math.round(m.progress * 100) + '%'; } });
+      $('#lb_t').value = data.text.trim(); $('#oc_p').textContent = `Read on this device · ${Math.round(data.confidence)}% confidence (less accurate)`; lbRun();
+    } catch (e2) { $('#oc_p').textContent = 'Could not read this file: ' + e2.message; }
+  }
+}
+async function ocExplain() {
+  const lang = $('#lb_l').value, out = $('#lb_o'), cls = { critical: 'bad', high: 'warn', low: 'warn', normal: 'ok', unknown: '' };
+  if (!ocRec) {  // typed or pasted text: lab values are checked here; anything else is read by the AI first
+    if (lbParse().length) return lbRun();
+    out.innerHTML = '<p class="muted">Reading the text with AI…</p>';
+    try { ocRec = (await postJSON('/api/extract', { filename: 'pasted.txt', mime: 'text/plain', data: textToB64($('#lb_t').value), lang })).record; }
+    catch (e) { out.innerHTML = '<p class="muted">No lab values found in this text, and the AI reader is busy. Try a clearer photo or paste values like "Haemoglobin 10.4 g/dL".</p>'; return; }
+  }
+  const r = ocRec;
+  out.innerHTML = `<h3>${(r.tests || []).length} values · ${(r.medicines || []).length} medicines</h3>` +
+    (r.tests || []).map(t => `<div style="padding:7px 0;border-bottom:1px solid var(--line)"><b>${esc(t.name)}</b> ${esc(t.value ?? '')} ${esc(t.unit || '')} <span class="pill ${cls[t.flag] ?? ''}">${esc(t.flag || 'unknown')}</span>${t.ref_text ? `<br><small class="muted">Normal ${esc(t.ref_text)}</small>` : ''}</div>`).join('') +
+    (r.medicines || []).map(m => `<div style="padding:7px 0;border-bottom:1px solid var(--line)">💊 <b>${esc(m.name)}</b> <span class="muted">${esc([m.strength, m.dose, m.frequency, m.duration].filter(Boolean).join(' · '))}</span></div>`).join('') +
+    '<p class="muted" id="oc_x">Writing the explanation…</p>';
+  try {
+    const x = (await postJSON('/api/explain', { record: r, lang })).explanation || {};
+    $('#oc_x').outerHTML = `<div class="ai" style="margin-top:12px"><span style="font-size:22px">🤖</span><div><span class="eyebrow">AI explanation</span><p style="margin:6px 0">${esc(x.summary || '')}</p>` +
+      (x.findings || []).map(f => `<p style="margin:4px 0"><b>${esc(f.name)}</b>: ${esc(f.meaning)}</p>`).join('') + (x.medicines || []).map(m => `<p style="margin:4px 0">💊 <b>${esc(m.name)}</b>: ${esc(m.purpose)}</p>`).join('') +
+      ((x.questions || []).length ? `<p style="margin:8px 0 2px"><b>Ask your doctor</b></p><ul style="margin:0">${x.questions.map(q => `<li>${esc(q)}</li>`).join('')}</ul>` : '') + '</div></div><p class="muted">Explains, never diagnoses. Show this to your doctor.</p>';
+  } catch (e) { $('#oc_x').textContent = 'The explanation is busy right now. The values above are read and flagged.'; }
+}
+function textToB64(t) { return btoa(String.fromCharCode(...new TextEncoder().encode(t))); }
 
 V.family = () => head('Family', 'One account for the whole family. Each member has their own records and reminders.') +
   `<div class="grid g3">${Store.db.family.map((m, i) => `<div class="card"><div class="row"><span style="font-size:28px">${m.age < 12 ? '🧒' : m.age > 55 ? '👵' : '🧑'}</span><div><b>${esc(m.name)}</b><br><span class="muted">${m.rel} · ${m.age} y</span></div></div>

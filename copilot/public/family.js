@@ -89,7 +89,8 @@ const SehatFamily = (function () {
       pin_reset: 'Reset PIN', pin_reset_note: 'The account holder can set a new PIN for every protected profile without the old one.',
       pin_reset_owner: 'To reset the PIN, open the account holder\'s profile ({name}) first.', pin_reset_sure: 'Yes, replace the PIN on every protected profile', pin_reset_go: 'Reset the PIN',
       pin_err_match: 'The two new PINs do not match.', pin_err_sure: 'Tick the box to confirm the reset.', pin_err_owner: 'Only the account holder can reset the PIN.',
-      pin_changed: 'PIN changed for {n} profiles.', pin_was_reset: 'PIN reset for {n} profiles.', pin_demo: 'Demo PIN: 1000'
+      pin_changed: 'PIN changed for {n} profiles.', pin_was_reset: 'PIN reset for {n} profiles.', pin_demo: 'Demo PIN: 1000',
+      pin_forgot: 'Forgot PIN?', pin_forgot_title: 'Forgot the PIN?', pin_forgot_note: 'No problem. The account holder ({name}) can set a new PIN for every protected profile without the old one.', pin_forgot_go: 'Reset it as {name}', pin_back: 'Back'
     });
     Object.assign(STR.hi, {
       fam_switch: 'परिवार प्रोफ़ाइल बदलें', fam_add: 'परिवार का सदस्य जोड़ें', fam_edit: 'बदलें', fam_remove: 'सदस्य हटाएँ',
@@ -111,6 +112,7 @@ const SehatFamily = (function () {
       fam_alerts: '{n} खुराकें अभी दर्ज नहीं (2+ घंटे देर या छोड़ी गई)', fam_alert_one: '1 खुराक अभी दर्ज नहीं (2+ घंटे देर या छोड़ी गई)', fam_add_card: 'परिवार का सदस्य जोड़ें', fam_add_hint: 'माता-पिता, जीवनसाथी या बच्चे के रिकॉर्ड भी यहीं रखें।',
       fam_age_n: '{n} वर्ष', fam_locked_note: 'लॉक है। खोलने के लिए पिन डालें।', fam_hidden_tag: 'बच्चों की प्रोफ़ाइल से छिपा', fam_go_health: 'मेरी सेहत'
     });
+    if (STR.hi) Object.assign(STR.hi, { pin_forgot: 'पिन भूल गए?', pin_forgot_title: 'पिन भूल गए?', pin_forgot_note: 'कोई बात नहीं। खाता धारक ({name}) पुराने पिन के बिना हर सुरक्षित प्रोफ़ाइल का नया पिन रख सकते हैं।', pin_forgot_go: '{name} के रूप में रीसेट करें', pin_back: 'वापस' });
   }
 
   function norm(list) {
@@ -323,7 +325,21 @@ const SehatFamily = (function () {
     FAM.modal = { kind: 'pin', id }; FAM.menu = false; paint();
     modal('<form id="famPin" novalidate><h2>' + esc(p ? t('fam_pin_title', { name: nameOf(p) }) : t('fam_pin_any_title')) + '</h2>' +
       '<p class="muted small">' + esc(t('fam_lock_note')) + '</p><label>' + esc(t('fam_pin')) + '<input name="pin" type="password" inputmode="numeric" pattern="\\d{4}" maxlength="4" autocomplete="off" class="fam-pinbox"></label>' +
-      '<p class="fam-err" role="alert"></p><div class="row fam-btns"><button type="submit" class="btn">' + esc(t('fam_open')) + '</button>' + (FAM.bootLock ? '' : '<button type="button" class="btn secondary" data-fam="close">' + esc(t('fam_cancel')) + '</button>') + '</div></form>');
+      '<p class="fam-err" role="alert"></p><div class="row fam-btns"><button type="submit" class="btn">' + esc(t('fam_open')) + '</button>' + (FAM.bootLock ? '' : '<button type="button" class="btn secondary" data-fam="close">' + esc(t('fam_cancel')) + '</button>') + '</div>' +
+      '<p class="small" style="margin:12px 0 0"><button type="button" class="btn link" data-fam="forgot">' + esc(t('pin_forgot')) + '</button></p></form>');
+  }
+  /* Forgot PIN: the account holder resets it without the old one (Settings, Parental control PIN). */
+  function openForgot() {
+    const self = byId('self'), back = FAM.modal && FAM.modal.id;
+    FAM.modal = { kind: 'pin', id: back, forgot: true }; paint();
+    modal('<div><h2>' + esc(t('pin_forgot_title')) + '</h2><p class="muted">' + esc(t('pin_forgot_note', { name: nameOf(self) })) + '</p>' +
+      '<div class="row fam-btns"><button type="button" class="btn" data-fam="forgotgo">' + esc(t('pin_forgot_go', { name: nameOf(self) })) + '</button><button type="button" class="btn secondary" data-fam="forgotback" data-id="' + esc(back || '*') + '">' + esc(t('pin_back')) + '</button></div></div>');
+  }
+  async function forgotGo() {
+    FAM.bootLock = null; FAM.modal = null; const m = document.getElementById('famModal'); if (m) m.remove();
+    await switchTo('self', { force: true });
+    FAM.pinUi = { reset: true }; go('settings');
+    setTimeout(() => { const c = document.getElementById('pinCard'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 120);
   }
   async function submitPin(form) {
     const id = FAM.modal && FAM.modal.id;
@@ -510,6 +526,9 @@ const SehatFamily = (function () {
     else if (a === 'edit') openForm(id);
     else if (a === 'add') openForm(null);
     else if (a === 'pinany') openPin('*');
+    else if (a === 'forgot') openForgot();
+    else if (a === 'forgotgo') forgotGo();
+    else if (a === 'forgotback') openPin(id);
     else if (a === 'close') closeModal();
     else if (a === 'remove') removeMember(id);
     else if (a === 'pinreset' || a === 'pinresetx') { FAM.pinUi = { reset: a === 'pinreset' }; render(); }

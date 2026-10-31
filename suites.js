@@ -74,7 +74,8 @@ async function ocExplain() {
     catch (e) { out.innerHTML = '<p class="muted">No lab values found in this text, and the AI reader is busy. Try a clearer photo or paste values like "Haemoglobin 10.4 g/dL".</p>'; return; }
   }
   const r = ocRec;
-  out.innerHTML = `<h3>${(r.tests || []).length} values · ${(r.medicines || []).length} medicines</h3>` +
+  const pt = r.patient || {};
+  out.innerHTML = `<h3>${(r.tests || []).length} values · ${(r.medicines || []).length} medicines</h3>` + (pt.name ? `<p class="muted" style="margin:4px 0 8px">👤 <b style="color:var(--ink)">${esc(pt.name)}</b>${pt.age ? ' · ' + esc(pt.age) : ''}${pt.sex ? ' · ' + esc(pt.sex) : ''}${r.doctor ? ' · ' + esc(r.doctor) : ''}${r.date ? ' · ' + esc(r.date) : ''}</p>` : '') +
     (r.tests || []).map(t => `<div style="padding:7px 0;border-bottom:1px solid var(--line)"><b>${esc(t.name)}</b> ${esc(t.value ?? '')} ${esc(t.unit || '')} <span class="pill ${cls[t.flag] ?? ''}">${esc(t.flag || 'unknown')}</span>${t.ref_text ? `<br><small class="muted">Normal ${esc(t.ref_text)}</small>` : ''}</div>`).join('') +
     (r.medicines || []).map(m => `<div style="padding:7px 0;border-bottom:1px solid var(--line)">💊 <b>${esc(m.name)}</b> <span class="muted">${esc([m.strength, m.dose, m.frequency, m.duration].filter(Boolean).join(' · '))}</span></div>`).join('') +
     '<p class="muted" id="oc_x">Writing the explanation…</p>';

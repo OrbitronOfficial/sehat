@@ -43,7 +43,7 @@ const STR = {
     review_sub: 'Compare with the original document. Fix anything that looks wrong, then save.',
     edit_title: 'Edit record',
     original: 'Original document', no_preview: 'The original file is not stored for this record.',
-    f_type: 'Document type', f_title: 'Title', f_date: 'Date', f_facility: 'Hospital / lab', f_doctor: 'Doctor', f_followup: 'Follow-up',
+    f_type: 'Document type', f_title: 'Title', f_date: 'Date', f_facility: 'Hospital / lab', f_doctor: 'Doctor', f_patient: 'Patient', f_age: 'Age', f_followup: 'Follow-up',
     type_lab_report: 'Lab report', type_prescription: 'Prescription', type_discharge_summary: 'Discharge summary',
     type_diagnostic_report: 'Diagnostic report', type_other: 'Other',
     sec_tests: 'Tests', sec_meds: 'Medicines', sec_dx: 'Diagnoses', sec_advice: 'Advice',
@@ -239,7 +239,7 @@ const STR = {
     review_sub: 'मूल दस्तावेज़ से मिलान करें। जो गलत लगे उसे ठीक करें, फिर सहेजें।',
     edit_title: 'रिकॉर्ड संपादित करें',
     original: 'मूल दस्तावेज़', no_preview: 'इस रिकॉर्ड की मूल फ़ाइल सहेजी नहीं गई है।',
-    f_type: 'दस्तावेज़ का प्रकार', f_title: 'शीर्षक', f_date: 'तारीख', f_facility: 'अस्पताल / लैब', f_doctor: 'डॉक्टर', f_followup: 'अगली मुलाकात',
+    f_type: 'दस्तावेज़ का प्रकार', f_title: 'शीर्षक', f_date: 'तारीख', f_facility: 'अस्पताल / लैब', f_doctor: 'डॉक्टर', f_patient: 'मरीज़', f_age: 'उम्र', f_followup: 'अगली मुलाकात',
     type_lab_report: 'लैब रिपोर्ट', type_prescription: 'पर्चा', type_discharge_summary: 'डिस्चार्ज सारांश',
     type_diagnostic_report: 'जाँच रिपोर्ट', type_other: 'अन्य',
     sec_tests: 'जाँचें', sec_meds: 'दवाइयाँ', sec_dx: 'निदान', sec_advice: 'सलाह',
@@ -1300,6 +1300,8 @@ function viewReview() {
     fld(t('f_title'), 'title', d.title, { cls: 'wide' }) +
     fld(t('f_facility'), 'facility', d.facility, { cls: 'w2' }) +
     fld(t('f_doctor'), 'doctor', d.doctor, { cls: 'w2' }) +
+    fld(t('f_patient'), 'patient.name', (d.patient || {}).name, { cls: 'w2' }) +
+    fld(t('f_age'), 'patient.age', (d.patient || {}).age, { cls: 'w2' }) +
     '</div></div>' +
     '<div class="card"><div class="sec-title"><h2>' + esc(t('sec_tests')) + '</h2><button type="button" class="btn small secondary" data-act="addrow" data-kind="tests">' + esc(t('add_test')) + '</button></div>' +
     (d.tests.length ? d.tests.map(testRow).join('') : '<p class="muted">' + esc(t('no_items')) + '</p>') + '</div>' +
@@ -1396,7 +1398,7 @@ function viewDetail() {
   if (!r) { S.view = 'timeline'; return viewTimeline(); }
   const tests = arr(r.tests), meds = arr(r.medicines), dx = arr(r.diagnoses), adv = arr(r.advice);
   const oc = isNum(r.overall_confidence) ? Math.round(Number(r.overall_confidence) * 100) : null;
-  const kv = [[t('f_type'), typeLabel(r.doc_type)], [t('f_date'), r.date ? fmtDate(r.date) : ''], [t('f_facility'), r.facility], [t('f_doctor'), r.doctor]]
+  const kv = [[t('f_type'), typeLabel(r.doc_type)], [t('f_date'), r.date ? fmtDate(r.date) : ''], [t('f_facility'), r.facility], [t('f_doctor'), r.doctor], [t('f_patient'), [(r.patient || {}).name, (r.patient || {}).age].filter(Boolean).join(', ')]]
     .filter(x => x[1]).map(x => '<dt>' + esc(x[0]) + '</dt><dd>' + esc(x[1]) + '</dd>').join('');
   return '<button type="button" class="btn link" data-act="nav" data-view="timeline" style="margin-bottom:8px">&larr; ' + esc(t('back')) + '</button>' +
     '<div class="row between" style="margin-bottom:12px"><div><h1>' + esc(r.title || typeLabel(r.doc_type)) + '</h1>' +

@@ -8,6 +8,7 @@ const ROLES = {
   pharmacy: { label: 'Pharmacy', ic: '💊', org: 'Jain Medicos',       sub: 'Sector 70, Mohali · 1.2 km' },
   nurse:    { label: 'Nurse',    ic: '🧑‍⚕️', org: 'Sr. Anita Thomas',  sub: 'Ward B · City Care' },
   patient:  { label: 'Patient',  ic: '🙂', org: 'Rahul Mehra',        sub: '34 y · Mohali' },
+  supplier: { label: 'Supplier', ic: '🚚', org: 'Punjab Pharma Distributors', sub: 'Distributor · Industrial Area Ph-8, Mohali' },
 };
 
 // Sehat suites: one install gives a role its whole toolkit. `tabs` are feature views.
@@ -20,13 +21,16 @@ const SUITES = [
     tabs: [['consult', 'Consult queue'], ['rxwriter', 'Prescriptions'], ['history', 'Patient history'], ['labs', 'Labs'], ['connect', 'Pharmacy chat']] },
   { id: 'sehat_nurse', ic: '🧑‍⚕️', name: 'Sehat Nurse', for: ['nurse', 'hospital'], price: '₹499/mo',
     desc: 'Ward to-do list fed by doctors\' orders, vitals entry that lands in the patient record, and task history by date.',
-    tabs: [['tasks', 'To-do'], ['vitals', 'Record vitals'], ['taskhistory', 'History']] },
+    tabs: [['tasks', 'To-do'], ['mar', 'Medicine round'], ['vitals', 'Record vitals'], ['handover', 'Shift handover'], ['taskhistory', 'History']] },
   { id: 'sehat_hospital', ic: '🏥', name: 'Sehat Hospital', for: ['hospital'], price: '₹4,999/mo',
     desc: 'Run the whole hospital: live command centre, beds, appointments, ER triage, ward tasks and hospital inventory.',
-    tabs: [['command', 'Command centre'], ['beds', 'Beds'], ['appointments', 'Appointments'], ['triage', 'ER triage'], ['tasks', 'Ward tasks'], ['supply', 'Inventory']] },
+    tabs: [['command', 'Command centre'], ['beds', 'Beds'], ['appointments', 'Appointments'], ['triage', 'ER triage'], ['tasks', 'Ward tasks'], ['roster', 'Duty roster'], ['supply', 'Inventory']] },
   { id: 'sehat_pharmacy', ic: '💊', name: 'Sehat Pharmacy', for: ['pharmacy'], price: '₹1,499/mo',
     desc: 'Run the pharmacy: prescriptions straight from hospitals, doctor chat and calls, supply chain with auto POs, and delivery.',
-    tabs: [['rxinbox', 'Prescriptions'], ['connect', 'Doctor connect'], ['supply', 'Supply chain'], ['delivery', 'Delivery']] },
+    tabs: [['rxinbox', 'Prescriptions'], ['connect', 'Doctor connect'], ['supply', 'Supply chain'], ['expiry', 'Expiry'], ['refills', 'Refills due'], ['delivery', 'Delivery']] },
+  { id: 'sehat_supply', ic: '🚚', name: 'Sehat Supply', for: ['supplier'], price: '₹2,499/mo',
+    desc: 'For distributors: purchase orders from pharmacies and hospitals arrive live with urgency, you accept, dispatch and deliver, and their stock updates itself.',
+    tabs: [['poinbox', 'PO inbox'], ['supdash', 'Dashboard'], ['fleet', 'Dispatch'], ['catalogue', 'Warehouse']] },
 ];
 
 // Every agent a role can install. `for` = roles that can use it.
@@ -62,6 +66,7 @@ const DEFAULT_INSTALLS = {
   nurse: ['sehat_nurse'],
   pharmacy: ['sehat_pharmacy'],
   patient: ['sehat_copilot'],
+  supplier: ['sehat_supply'],
 };
 
 const DOCTORS = [
@@ -71,6 +76,14 @@ const DOCTORS = [
   { name: 'Dr. Nisha Gupta', spec: 'Paediatrician', tags: /child|baby|kid|infant/ },
   { name: 'Dr. Kavya Rao', spec: 'Dermatologist', tags: /skin|rash|itch|acne|hair/ },
 ];
+
+// Distributors and how far each customer is from them (km), for the supplier's PO inbox.
+const SUPPLIERS = {
+  'Punjab Pharma Distributors': { onSehat: true, km: { 'Jain Medicos': 6.4, 'City Care Hospital': 5.1, 'Apollo Pharmacy Ph-7': 3.9 } },
+  'MedLine Wholesale': { onSehat: false, km: {} },
+  'Tricity Healthcare': { onSehat: false, km: {} },
+};
+const VEHICLES = ['PB65 AK 2231 · Tata Ace', 'PB65 BX 0912 · Bolero Pickup', 'Bike courier · Harjit'];
 
 const PHARMACIES = [
   { name: 'Jain Medicos', km: 1.2 },
@@ -94,12 +107,37 @@ function seed() {
       'Azithromycin 500mg':  { qty: 36,  min: 40,  perDay: 9,  supplier: 'Punjab Pharma Distributors' },
       'Cetirizine 10mg':     { qty: 210, min: 80,  perDay: 14, supplier: 'MedLine Wholesale' },
       'Metformin 500mg':     { qty: 300, min: 120, perDay: 22, supplier: 'MedLine Wholesale' },
-      'Amlodipine 5mg':      { qty: 18,  min: 60,  perDay: 11, supplier: 'Tricity Healthcare' },
+      'Amlodipine 5mg':      { qty: 11,  min: 60,  perDay: 11, supplier: 'Punjab Pharma Distributors' },
       'Pantoprazole 40mg':   { qty: 150, min: 60,  perDay: 12, supplier: 'Tricity Healthcare' },
       'ORS sachet':          { qty: 95,  min: 50,  perDay: 8,  supplier: 'MedLine Wholesale' },
       'Ibuprofen 400mg':     { qty: 0,   min: 60,  perDay: 10, supplier: 'Punjab Pharma Distributors' },
     },
     pos: [],
+    warehouse: { 'Paracetamol 650mg': 12000, 'Azithromycin 500mg': 2400, 'Amlodipine 5mg': 5200, 'Ibuprofen 400mg': 3100 },
+    batches: [
+      { med: 'Azithromycin 500mg', batch: 'AZ2291', qty: 24, exp: '2026-11-20' },
+      { med: 'ORS sachet', batch: 'OR1180', qty: 40, exp: '2026-12-05' },
+      { med: 'Cetirizine 10mg', batch: 'CT0457', qty: 60, exp: '2027-01-30' },
+      { med: 'Paracetamol 650mg', batch: 'PC8812', qty: 200, exp: '2027-09-14' },
+    ],
+    refills: [
+      { patient: 'Sunita Mehra', med: 'Amlodipine 5mg', qty: 30, due: 2, phone: '98xxxxxx21' },
+      { patient: 'Rahul Mehra', med: 'Metformin 500mg', qty: 60, due: 5, phone: '98xxxxxx07' },
+      { patient: 'Harbhajan Singh', med: 'Metformin 500mg', qty: 60, due: 0, phone: '97xxxxxx44' },
+    ],
+    roster: [
+      { name: 'Dr. R. K. Bansal', role: 'General Physician', shift: 'OPD 09–17', on: true },
+      { name: 'Dr. Meera Kaur', role: 'Cardiologist', shift: 'OPD 10–16', on: true },
+      { name: 'Dr. Arjun Sethi', role: 'Orthopaedic', shift: 'On call', on: false },
+      { name: 'Sr. Anita Thomas', role: 'Nurse · Ward B', shift: 'Day 08–20', on: true },
+      { name: 'Br. Manpreet Gill', role: 'Nurse · ER', shift: 'Night 20–08', on: false },
+    ],
+    mar: [
+      { patient: 'Sunita Mehra', bed: 'B-12', med: 'Amlodipine 5mg', dose: '1 tab', time: '09:00', given: null },
+      { patient: 'Sunita Mehra', bed: 'B-12', med: 'Pantoprazole 40mg', dose: '1 tab before food', time: '08:00', given: null },
+      { patient: 'Aman Verma', bed: 'B-07', med: 'Ibuprofen 400mg', dose: '1 tab after food', time: '14:00', given: null },
+    ],
+    handover: [],
     journal: [
       { date: '2026-08-12', type: 'Lab', text: 'HbA1c 6.1 % (borderline high)' },
       { date: '2026-09-20', type: 'Reading', text: 'BP 128/84 mmHg' },
@@ -125,6 +163,10 @@ const Store = (() => {
   const ch = 'BroadcastChannel' in window ? new BroadcastChannel('sehat') : null;
   let db;
   try { db = JSON.parse(localStorage.getItem(KEY)) || seed(); } catch { db = seed(); }
+  // Older saved demos lack newer collections (supplier, roster…): fill them in without wiping data.
+  const base = seed();
+  Object.keys(base).forEach(k => { if (!(k in db)) db[k] = base[k]; });
+  Object.keys(DEFAULT_INSTALLS).forEach(r => { db.installs[r] = db.installs[r] || [...DEFAULT_INSTALLS[r]]; });
   const listeners = [];
   const save = () => {
     try { localStorage.setItem(KEY, JSON.stringify(db)); } catch {}

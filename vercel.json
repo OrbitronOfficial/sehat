@@ -1,0 +1,22 @@
+{
+  "builds": [
+    { "src": "copilot/api/index.py", "use": "@vercel/python",
+      "config": { "maxDuration": 60,
+                  "includeFiles": ["copilot/server.py", "copilot/pipeline.py", "copilot/ranges.py", "copilot/fhir.py", "copilot/llm.py", "copilot/safety.py", "copilot/insights.py", "copilot/cloud.py", "copilot/team.py", "copilot/clinic.py", "copilot/data/**"] } },
+    { "src": "copilot/public/**", "use": "@vercel/static" },
+    { "src": "*.html", "use": "@vercel/static" },
+    { "src": "*.js", "use": "@vercel/static" },
+    { "src": "*.css", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/copilot/api/index.py" },
+    { "src": "/", "status": 302, "headers": { "Location": "/hub/" } },
+    { "src": "/hub/?", "dest": "/index.html" },
+    { "src": "/hub/(.*)", "dest": "/$1" },
+    { "src": "/copilot/?", "dest": "/copilot/public/landing.html" },
+    { "src": "/app/?", "dest": "/copilot/public/index.html" },
+    { "src": "/login/?", "dest": "/copilot/public/login.html" },
+    { "src": "/pricing/?", "dest": "/copilot/public/pricing.html" },
+    { "src": "/(.*)", "dest": "/copilot/public/$1" }
+  ]
+}

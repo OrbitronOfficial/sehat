@@ -1,4 +1,4 @@
-// Sehat suites: Copilot, Doctor, Nurse, Hospital, Pharmacy.
+// Sehat suites: Copilot, Doctor, Nurse, Hospital, Pharmacy, Supply.
 // A suite is a tabbed agent; each tab is a feature view (some shared with the single agents in app.js).
 const suiteTab = {};
 const today = () => new Date().toISOString().slice(0, 10);
@@ -7,8 +7,8 @@ const now = () => new Date().toTimeString().slice(0, 5);
 SUITES.forEach(s => {
   V[s.id] = () => {
     const t = suiteTab[s.id] || s.tabs[0][0];
-    return `<div class="row" style="margin-bottom:16px"><span style="font-size:30px">${s.ic}</span><div><h2>${s.name}</h2><span class="muted">${s.desc}</span></div></div>
-      <div class="row" style="gap:6px;margin-bottom:18px;border-bottom:1px solid var(--line);padding-bottom:10px">${s.tabs.map(([k, l]) => `<button class="btn sm ${k === t ? '' : 'ghost'}" onclick="suiteTab['${s.id}']='${k}';render()">${l}</button>`).join('')}</div>` +
+    return `<div class="hero-card"><span class="eyebrow">${s.for.map(r => ROLES[r].label).join(' · ')} suite · ${R.org}</span><h2>${s.name}</h2><p>${s.desc}</p><span class="orbic">${s.ic}</span></div>
+      <div class="tabs">${s.tabs.map(([k, l]) => `<button class="${k === t ? 'on' : ''}" onclick="suiteTab['${s.id}']='${k}';render()">${l}</button>`).join('')}</div>` +
       (V[t] ? V[t]() : '');
   };
   V[s.id].after = () => { const t = suiteTab[s.id] || s.tabs[0][0]; V[t]?.after?.(); };
@@ -127,5 +127,89 @@ V.beds = () => head('Beds', 'Admit and discharge. Occupancy updates the command 
   `<div class="grid g3">${Object.entries(Store.db.beds).map(([n, [t, o]]) => `<div class="card"><div class="row"><h3>${n}</h3><span class="sp"></span><span class="pill ${o / t > .85 ? 'bad' : o / t > .6 ? 'warn' : 'ok'}">${t - o} free</span></div>
     <p class="muted">${o} of ${t} occupied</p><div class="row"><button class="btn sm" onclick="bdMove('${n}',1)" ${o >= t ? 'disabled' : ''}>Admit</button><button class="btn sm ghost" onclick="bdMove('${n}',-1)" ${o <= 0 ? 'disabled' : ''}>Discharge</button></div></div>`).join('')}</div>`;
 function bdMove(n, k) { act(`${k > 0 ? 'admitted a patient to' : 'discharged a patient from'} ${n}`, d => { d.beds[n][1] += k; }); }
+
+// ---------- Sehat Pharmacy: expiry + refills ----------
+const daysTo = d => Math.ceil((new Date(d) - new Date(today())) / 864e5);
+V.expiry = () => {
+  const b = [...Store.db.batches].sort((x, y) => x.exp.localeCompare(y.exp));
+  return head('Expiry tracker', 'Batches sorted by expiry. Sell near-expiry stock first, or send it back to the distributor before it is wasted.') +
+    `<div class="card"><table><tr><th>Medicine</th><th>Batch</th><th>Qty</th><th>Expires</th><th></th></tr>${b.map(x => { const n = daysTo(x.exp);
+      return `<tr><td>${esc(x.med)}</td><td class="muted">${x.batch}</td><td>${x.qty}</td><td><span class="pill ${n <= 30 ? 'bad' : n <= 90 ? 'warn' : 'ok'}">${n < 0 ? 'expired' : n + ' days'}</span></td>
+        <td>${x.ret ? '<span class="pill">return requested</span>' : n <= 90 ? `<button class="btn sm ghost" onclick="exReturn('${x.batch}')">Return to distributor</button>` : ''}</td></tr>`; }).join('')}</table></div>`;
+};
+function exReturn(bt) { act(`requested return of batch ${bt}`, d => { d.batches.find(x => x.batch === bt).ret = true; }); toast('Return request sent'); }
+V.refills = () => head('Refills due', 'Patients on long-term medicines who run out soon. Pack it before they ask.') +
+  `<div class="card">${Store.db.refills.map((r, i) => `<div class="row" style="padding:10px 0;border-bottom:1px solid var(--line)"><span class="pill ${r.due <= 1 ? 'bad' : r.due <= 3 ? 'warn' : ''}">${r.due === 0 ? 'today' : 'in ' + r.due + ' d'}</span><div><b>${esc(r.patient)}</b><br><span class="muted">${esc(r.med)} × ${r.qty}</span></div><span class="sp"></span>
+    ${r.done ? '<span class="pill ok">' + r.done + '</span>' : `<button class="btn sm ghost" onclick="rfDo(${i},'Reminder sent')">Send reminder</button><button class="btn sm" onclick="rfDo(${i},'Packed')">Pack refill</button>`}</div>`).join('')}</div>`;
+function rfDo(i, what) { act(`${what.toLowerCase()} for ${Store.db.refills[i].patient}'s ${Store.db.refills[i].med}`, d => { d.refills[i].done = what; }); }
+
+// ---------- Sehat Hospital: duty roster ----------
+V.roster = () => head('Duty roster', 'Who is on shift right now. Toggle anyone on or off duty.') +
+  `<div class="grid g3">${Store.db.roster.map((p, i) => `<div class="card"><div class="row"><b>${esc(p.name)}</b><span class="sp"></span><span class="pill ${p.on ? 'ok' : ''}">${p.on ? 'on duty' : 'off'}</span></div><p class="muted" style="margin:6px 0 10px">${esc(p.role)} · ${esc(p.shift)}</p>
+    <button class="btn sm ghost" onclick="rsToggle(${i})">${p.on ? 'Mark off duty' : 'Mark on duty'}</button></div>`).join('')}</div>`;
+function rsToggle(i) { const p = Store.db.roster[i]; act(`marked ${p.name} ${p.on ? 'off' : 'on'} duty`, d => { d.roster[i].on = !d.roster[i].on; }); }
+
+// ---------- Sehat Nurse: medicine round + shift handover ----------
+V.mar = () => head('Medicine round', 'Each due dose on the ward. Mark it given and the time and nurse are recorded.') +
+  `<div class="card"><table><tr><th>Time</th><th>Patient</th><th>Medicine</th><th></th></tr>${Store.db.mar.map((m, i) => [m, i]).sort((a, b) => a[0].time.localeCompare(b[0].time)).map(([m, i]) => `<tr><td><b>${m.time}</b></td><td>${esc(m.patient)}<br><span class="muted">${m.bed}</span></td><td>${esc(m.med)}<br><span class="muted">${esc(m.dose)}</span></td>
+    <td>${m.given ? `<span class="pill ${m.given.held ? 'warn' : 'ok'}">${m.given.held ? 'held' : 'given'} ${m.given.at} · ${esc(m.given.by)}</span>` : `<button class="btn sm" onclick="marGive(${i})">Given ✓</button> <button class="link" onclick="marGive(${i},1)">Hold</button>`}</td></tr>`).join('')}</table></div>`;
+function marGive(i, held) { const m = Store.db.mar[i]; act(`${held ? 'held' : 'gave'} ${m.med} for ${m.patient}`, d => { d.mar[i].given = { at: now(), by: R.org, held: !!held }; }); }
+V.handover = () => {
+  const open = Store.db.tasks.filter(t => !t.done), due = Store.db.mar.filter(m => !m.given);
+  return head('Shift handover', 'Pre-filled from open tasks and pending doses. Add your notes, then hand over.') +
+    `<div class="grid g2"><div class="card"><h3>Auto summary</h3><p class="muted">${open.length} open task(s) · ${due.length} dose(s) not yet given</p>
+      <ul>${open.map(t => `<li>${esc(t.patient)} (${t.bed}): ${esc(t.text)}</li>`).join('')}${due.map(m => `<li>${esc(m.patient)}: ${esc(m.med)} due ${m.time}</li>`).join('')}</ul>
+      <label>Notes for the next shift</label><textarea id="ho_n" placeholder="e.g. B-12 had a headache at 18:00, BP rechecked 138/88"></textarea>
+      <button class="btn" style="margin-top:10px" onclick="hoSave()">Hand over</button></div>
+     <div class="card"><h3>Past handovers</h3>${Store.db.handover.map(h => `<div style="padding:9px 0;border-bottom:1px solid var(--line)"><b>${esc(h.by)}</b> <small class="muted">${new Date(h.t).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' })}</small><br>${esc(h.summary)}${h.note ? '<br>📝 ' + esc(h.note) : ''}</div>`).join('') || '<p class="muted">None yet.</p>'}</div></div>`;
+};
+function hoSave() {
+  const open = Store.db.tasks.filter(t => !t.done).length, due = Store.db.mar.filter(m => !m.given).length, note = $('#ho_n').value.trim();
+  act('handed over the shift', d => d.handover.unshift({ t: Date.now(), by: R.org, summary: `${open} open task(s), ${due} dose(s) pending`, note }));
+  toast('Shift handed over');
+}
+
+// ---------- Sehat Supply (distributor) ----------
+const myPOs = () => Store.db.pos.filter(p => p.supplier === R.org && p.status !== 'draft');  // drafts stay with the pharmacy until sent
+const coverTxt = c => c == null ? '—' : c <= 0 ? 'out of stock' : c === 1 ? '1 day of cover' : c + ' days of cover';
+const etaMin = p => Math.max(1, Math.round((p.eta - Date.now()) / 60000));
+const sortPO = (a, b) => PO_STEPS.indexOf(a.status) - PO_STEPS.indexOf(b.status) || (a.urgency ?? 99) - (b.urgency ?? 99);
+V.poinbox = () => head('📥 Purchase order inbox', 'Orders from pharmacies and hospitals on Sehat arrive here the moment they are sent, most urgent first.') +
+  (myPOs().sort(sortPO).map(p => `<div class="card" style="margin-bottom:14px"><div class="row"><h3>${p.id}</h3><span class="pill ${p.urgency <= 1 ? 'bad' : p.urgency <= 4 ? 'warn' : ''}">${coverTxt(p.urgency)}</span><span class="sp"></span>${statusPill(p.status)}</div>
+    <p class="muted" style="margin:6px 0 0">${ROLES[p.fromRole]?.ic || '🏪'} <b style="color:var(--ink)">${esc(p.from || 'Jain Medicos')}</b> · ${p.km != null ? p.km + ' km away' : 'distance unknown'}${p.t ? ' · requested ' + new Date(p.t).toLocaleTimeString('en-IN', { timeStyle: 'short' }) + ' (' + ago(p.t) + ')' : ''}</p>
+    ${poSteps(p)}
+    <table><tr><th>Item</th><th>Qty</th><th>Their cover</th><th>Our warehouse</th></tr>${p.items.map(i => { const w = Store.db.warehouse[i.n] ?? 0; return `<tr><td>${esc(i.n)}</td><td><b>${i.q}</b></td><td>${coverTxt(i.cover)}</td><td><span class="pill ${w >= i.q || p.status === 'dispatched' || p.status === 'delivered' ? 'ok' : 'bad'}">${w >= i.q ? w + ' available' : 'short (' + w + ')'}</span></td></tr>`; }).join('')}</table>
+    <div class="row" style="margin-top:12px">${p.status === 'sent' ? `<button class="btn sm" onclick="spAccept('${p.id}')">Accept order</button>` : ''}
+      ${p.status === 'accepted' ? `<select id="veh_${p.id}" style="width:auto">${VEHICLES.map(v => `<option>${v}</option>`).join('')}</select><select id="eta_${p.id}" style="width:auto">${[30, 45, 60, 90, 120].map(m => `<option value="${m}">ETA ${m} min</option>`).join('')}</select><button class="btn sm" onclick="spDispatch('${p.id}')">🚚 Dispatch</button>` : ''}
+      ${p.status === 'dispatched' ? `<span class="muted">🚚 ${esc(p.vehicle)} · ETA ~${etaMin(p)} min</span><button class="btn sm" onclick="spDeliver('${p.id}')">Delivered ✓</button>` : ''}
+      ${p.status === 'delivered' ? `<span class="muted">Delivered ${p.deliveredAt ? ago(p.deliveredAt) : ''} · ${esc(p.from)}'s stock updated</span>` : ''}</div></div>`).join('')
+    || '<div class="card"><p class="muted">No purchase orders yet. In another tab, open Sehat Pharmacy → Supply chain and draft POs; they land here live.</p></div>');
+function spAccept(pid) { act(`accepted ${pid}`, d => { d.pos.find(p => p.id === pid).status = 'accepted'; }); toast('Order accepted'); }
+function spDispatch(pid) {
+  const v = $('#veh_' + pid).value, m = +$('#eta_' + pid).value;
+  act(`dispatched ${pid} · ${v} · ETA ${m} min`, d => { const p = d.pos.find(x => x.id === pid); Object.assign(p, { status: 'dispatched', vehicle: v, eta: Date.now() + m * 60000, dispatchedAt: Date.now() }); p.items.forEach(i => { if (d.warehouse[i.n] != null) d.warehouse[i.n] = Math.max(0, d.warehouse[i.n] - i.q); }); });
+}
+function spDeliver(pid) {
+  act(`delivered ${pid}, customer stock updated`, d => { const p = d.pos.find(x => x.id === pid); p.status = 'delivered'; p.deliveredAt = Date.now(); p.items.forEach(i => { if (d.stock[i.n]) d.stock[i.n].qty += i.q; }); });
+  toast('Delivered · their stock went up');
+}
+V.supdash = () => {
+  const po = myPOs(), isToday = t => t && new Date(t).toDateString() === new Date().toDateString();
+  const by = {}; po.forEach(p => { by[p.from] = (by[p.from] || 0) + 1; });
+  const low = Object.entries(Store.db.stock).filter(([, s]) => s.supplier === R.org && s.qty < s.min);
+  return head('Distributor dashboard', 'Your customers on Sehat, live.') +
+    `<div class="grid g4">${[['Open orders', po.filter(p => ['sent', 'accepted'].includes(p.status)).length], ['Dispatched today', po.filter(p => isToday(p.dispatchedAt)).length], ['Delivered today', po.filter(p => isToday(p.deliveredAt)).length], ['Customers ordering', Object.keys(by).length]].map(([l, v]) => `<div class="card kpi"><b>${v}</b><span>${l}</span></div>`).join('')}</div>
+    <div class="grid g2" style="margin-top:16px"><div class="card"><h3>Top requesting customers</h3>${Object.entries(by).sort((a, b) => b[1] - a[1]).map(([n, c]) => `<div class="row" style="padding:8px 0;border-bottom:1px solid var(--line)"><b>${esc(n)}</b><span class="sp"></span><span class="pill">${c} order${c > 1 ? 's' : ''}</span></div>`).join('') || '<p class="muted">No orders yet.</p>'}</div>
+     <div class="card"><h3>Low stock at your customers</h3><p class="muted">Items you supply that are below minimum at Jain Medicos, before they even order.</p>${low.map(([n, s]) => `<div class="row" style="padding:8px 0;border-bottom:1px solid var(--line)"><b>${n}</b><span class="muted">${s.qty} left · min ${s.min}</span><span class="sp"></span><span class="pill ${s.qty / s.perDay < 2 ? 'bad' : 'warn'}">${coverTxt(Math.floor(s.qty / s.perDay))}</span></div>`).join('') || '<p class="muted">All good.</p>'}</div></div>`;
+};
+V.fleet = () => {
+  const out = myPOs().filter(p => p.status === 'dispatched');
+  return head('Dispatch', 'Vehicles and what each one is carrying.') +
+    `<div class="grid g3">${VEHICLES.map(v => { const p = out.find(x => x.vehicle === v); return `<div class="card"><div class="row"><b>🚚 ${v}</b><span class="sp"></span><span class="pill ${p ? 'warn' : 'ok'}">${p ? 'on the road' : 'free'}</span></div>
+      <p class="muted" style="margin-top:8px">${p ? `${p.id} → ${esc(p.from)} · ETA ~${etaMin(p)} min` : 'Waiting at warehouse'}</p></div>`; }).join('')}</div>`;
+};
+V.catalogue = () => head('Warehouse', 'Your stock. Dispatching an order takes it out of here.') +
+  `<div class="card"><table><tr><th>Item</th><th>In warehouse</th><th>Pending in open orders</th></tr>${Object.entries(Store.db.warehouse).map(([n, q]) => { const pend = myPOs().filter(p => ['sent', 'accepted'].includes(p.status)).flatMap(p => p.items).filter(i => i.n === n).reduce((s, i) => s + i.q, 0);
+    return `<tr><td>${n}</td><td>${q.toLocaleString('en-IN')}</td><td>${pend || '—'}</td></tr>`; }).join('')}</table></div>`;
 
 render();

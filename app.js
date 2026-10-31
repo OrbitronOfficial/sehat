@@ -1,23 +1,31 @@
 // Sehat workspace: role shell, agent marketplace, and the agents themselves.
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const role = (() => { try { return sessionStorage.getItem('sehat_role'); } catch { return null; } })();
-if (!ROLES[role]) location.replace('index.html#start');
+const QS = new URLSearchParams(location.search);  // ?role=&view= lets the live demo show several roles at once
+const role = QS.get('role') || (() => { try { return sessionStorage.getItem('sehat_role'); } catch { return null; } })();
+if (!ROLES[role]) { location.replace('login.html'); throw new Error('not logged in'); }
 const R = ROLES[role] || ROLES.patient;
-let view = 'dashboard';
+const askedView = QS.get('view') || (() => { try { const v = sessionStorage.getItem('sehat_view'); sessionStorage.removeItem('sehat_view'); return v; } catch { return null; } })();
+let view = askedView || 'dashboard';
+// Patient, doctor and nurse have their full Sehat Copilot workspace on the same site.
+const WORKSPACE = { patient: ['/app', 'Sehat Copilot'], doctor: ['/doctor.html', 'Sehat Doctor'], nurse: ['/staff.html', 'Sehat Nurse'] }[role];
+// Patient, doctor and nurse land in their Sehat Copilot workspace unless they asked for a network page.
+if (WORKSPACE && !askedView) { location.replace(WORKSPACE[0]); throw new Error('opening workspace'); }
 
 function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('on'); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('on'), 2200); }
-function logout() { try { sessionStorage.removeItem('sehat_role'); } catch {} location.href = 'index.html'; }
+function logout() { try { sessionStorage.removeItem('sehat_role'); } catch {} location.href = 'login.html'; }
 const ago = t => { const m = Math.round((Date.now() - t) / 60000); return m < 1 ? 'just now' : m < 60 ? m + ' min ago' : Math.round(m / 60) + ' h ago'; };
 const installed = () => Store.db.installs[role] || [];
 const agent = id => AGENTS.find(a => a.id === id) || SUITES.find(s => s.id === id);
 const act = (text, fn = () => {}) => Store.update(fn, R.org, text);
 const id = p => p + Math.random().toString(36).slice(2, 6).toUpperCase();
 
-function go(v) { view = v; render(); scrollTo(0, 0); }
+function go(v) { view = v; render(); scrollTo(0, 0); const m = $('#main'); m.classList.add('rise'); clearTimeout(m._r); m._r = setTimeout(() => m.classList.remove('rise'), 600); }
 function render() {
-  $('#org').innerHTML = `${R.ic} ${R.label}<b>${R.org}</b><span class="muted">${R.sub}</span>`;
-  $('#nav').innerHTML = `<a class="${view === 'dashboard' ? 'on' : ''}" onclick="go('dashboard')">🏠 Dashboard</a>
+  $('#org').innerHTML = `<span class="eyebrow">${R.label}</span><b>${R.org}</b><span class="muted">${R.sub}</span>`;
+  $('#userChip').innerHTML = `<i>${R.ic}</i>${R.org}`;
+  $('#nav').innerHTML = (WORKSPACE ? `<a class="ws" href="${WORKSPACE[0]}">✚ My ${WORKSPACE[1]} workspace</a>` : '') +
+    `<a class="${view === 'dashboard' ? 'on' : ''}" onclick="go('dashboard')">🏠 Network dashboard</a>
     <a class="${view === 'market' ? 'on' : ''}" onclick="go('market')">🛒 Agent Marketplace</a>
     <div class="h">Your agents</div>` +
     installed().map(i => { const a = agent(i); return `<a class="${view === i ? 'on' : ''}" onclick="go('${i}')">${a.ic} ${a.name}</a>`; }).join('') +
@@ -28,7 +36,7 @@ function render() {
 Store.onChange(render);
 
 const head = (t, p) => `<div class="head"><h1>${t}</h1>${p ? `<p>${p}</p>` : ''}</div>`;
-const statusPill = s => `<span class="pill ${{ delivered: 'ok', ready: 'ok', 'out for delivery': 'warn', sent: 'warn', accepted: '', query: 'bad', 'checked-in': 'ok', booked: '', done: 'ok' }[s] ?? ''}">${s}</span>`;
+const statusPill = s => `<span class="pill ${{ delivered: 'ok', ready: 'ok', 'out for delivery': 'warn', sent: 'warn', accepted: '', query: 'bad', 'checked-in': 'ok', booked: '', done: 'ok', dispatched: 'warn', received: 'ok', draft: '' }[s] ?? ''}">${s}</span>`;
 const RX_STEPS = ['sent', 'accepted', 'ready', 'out for delivery', 'delivered'];
 
 // ---------- views ----------
@@ -40,10 +48,11 @@ V.dashboard = () => {
   const k = {
     hospital: [['Appointments today', d.appointments.length], ['Checked in', d.appointments.filter(a => a.status === 'checked-in').length], ['ER queue', d.triage.length], ['Agents active', installed().length]],
     doctor: [['Patients today', d.appointments.filter(a => a.doctor === R.org).length], ['Prescriptions sent', d.prescriptions.filter(p => p.doctor === R.org).length], ['Pharmacy queries', d.prescriptions.filter(p => p.status === 'query').length], ['Agents active', installed().length]],
-    pharmacy: [['New prescriptions', d.prescriptions.filter(p => mine(p) && p.status === 'sent').length], ['Ready to hand over', d.prescriptions.filter(p => mine(p) && p.status === 'ready').length], ['Low-stock items', low], ['Open POs', d.pos.filter(p => p.status !== 'received').length]],
+    pharmacy: [['New prescriptions', d.prescriptions.filter(p => mine(p) && p.status === 'sent').length], ['Ready to hand over', d.prescriptions.filter(p => mine(p) && p.status === 'ready').length], ['Low-stock items', low], ['Open POs', d.pos.filter(p => !['received', 'delivered'].includes(p.status)).length]],
     nurse: [['Open ward tasks', d.tasks.filter(t => !t.done).length], ['Done today', d.tasks.filter(t => t.done).length], ['Patients in queue', d.appointments.filter(a => a.status !== 'done').length], ['Agents active', installed().length]],
+    supplier: [['Open purchase orders', d.pos.filter(p => p.supplier === R.org && ['sent', 'accepted'].includes(p.status)).length], ['On the road', d.pos.filter(p => p.supplier === R.org && p.status === 'dispatched').length], ['Delivered', d.pos.filter(p => p.supplier === R.org && p.status === 'delivered').length], ['Agents active', installed().length]],
     patient: [['Upcoming visits', d.appointments.filter(a => a.patient === R.org && a.status !== 'done').length], ['Medicines on the way', d.prescriptions.filter(p => mine(p) && p.status !== 'delivered').length], ['Journal entries', d.journal.length], ['Agents active', installed().length]],
-  }[role];
+  }[role] || [];
   return head(`Good ${new Date().getHours() < 12 ? 'morning' : 'afternoon'}, ${R.org.split(' ')[0] === 'Dr.' ? R.org : R.org.split(' ')[0]}`, 'Everything your agents did, live.') +
     `<div class="grid g4">${k.map(([l, v]) => `<div class="card kpi"><b>${v}</b><span>${l}</span></div>`).join('')}</div>
     <div class="grid g2" style="margin-top:14px">
@@ -197,25 +206,44 @@ function cnSend(text) {
 function cnCall() { act(`called ${role === 'doctor' ? 'the pharmacy' : 'the doctor'} about ${connectRx}`, d => d.messages.push({ rx: connectRx, from: role, text: '📞 Call placed (2 min 14 s)', t: Date.now() })); toast('Calling… (demo)'); }
 
 // ----- Supply Chain AI -----
+const PO_STEPS = ['sent', 'accepted', 'dispatched', 'delivered'];
+const poOpen = p => !['received', 'delivered'].includes(p.status);
+const stockRows = () => Object.entries(Store.db.stock).map(([n, s]) => ({ n, ...s, days: s.perDay ? Math.floor(s.qty / s.perDay) : 99 })).sort((a, b) => a.days - b.days);
+// One-line insight computed from the stock table: the item that runs out first and whether a PO already covers it.
+function supplyInsight(rows) {
+  const r = rows[0]; if (!r || r.days >= 5) return 'Every item has at least 5 days of cover at current daily use.';
+  const po = Store.db.pos.find(p => poOpen(p) && p.items.some(i => i.n === r.n));
+  const when = r.qty === 0 ? 'is out of stock' : `runs out in ${r.days < 1 ? 'under a day' : r.days + (r.days === 1 ? ' day' : ' days')}`;
+  return `<b>${r.n}</b> ${when} (${r.qty} left, ~${r.perDay}/day). ${po ? `${po.id} to ${po.supplier} is ${po.status}.` : `A PO to ${r.supplier} is ready to draft.`}`;
+}
+const poSteps = p => `<div class="steps">${PO_STEPS.map(s => `<span class="${PO_STEPS.indexOf(p.status === 'received' ? 'delivered' : p.status) >= PO_STEPS.indexOf(s) ? 'on' : ''}"></span>`).join('')}</div>`;
 V.supply = () => {
-  const st = Store.db.stock;
-  const rows = Object.entries(st).map(([n, s]) => ({ n, ...s, days: s.perDay ? Math.floor(s.qty / s.perDay) : 99 })).sort((a, b) => a.days - b.days);
-  const need = rows.filter(r => r.qty < r.min || r.days < 5);
-  return head('📦 Supply Chain AI', 'Predicts run-outs from daily usage and drafts purchase orders, grouped by distributor.') +
-    `<div class="grid g3"><div class="card kpi"><b>${rows.length}</b><span>SKUs tracked</span></div><div class="card kpi"><b style="color:var(--bad)">${need.length}</b><span>need reorder</span></div><div class="card kpi"><b>${Store.db.pos.filter(p => p.status !== 'received').length}</b><span>open purchase orders</span></div></div>
-    <div class="card" style="margin-top:14px"><div class="row"><h3>Stock</h3><span class="sp"></span>${need.length ? `<button class="btn sm" onclick="poDraft()">🤖 Draft POs for ${need.length} items</button>` : ''}</div>
+  const rows = stockRows(), need = rows.filter(r => r.qty < r.min || r.days < 5);
+  const toOrder = need.filter(r => !Store.db.pos.some(p => poOpen(p) && p.from === R.org && p.items.some(i => i.n === r.n)));
+  return head('📦 Supply Chain AI', 'Predicts run-outs from daily usage and drafts purchase orders, grouped by distributor. Distributors on Sehat get them live.') +
+    `<div class="ai"><span style="font-size:22px">🤖</span><div><span class="eyebrow">AI insight</span><br>${supplyInsight(rows)}</div></div>
+    <div class="grid g3"><div class="card kpi"><b>${rows.length}</b><span>SKUs tracked</span></div><div class="card kpi"><b style="color:var(--bad)">${need.length}</b><span>need reorder</span></div><div class="card kpi"><b>${Store.db.pos.filter(poOpen).length}</b><span>open purchase orders</span></div></div>
+    <div class="card" style="margin-top:16px"><div class="row"><h3>Stock</h3><span class="sp"></span>${toOrder.length ? `<button class="btn sm" onclick="poDraft()">🤖 Draft POs for ${toOrder.length} items</button>` : need.length ? '<span class="pill ok">All low items on order</span>' : ''}</div>
       <table><tr><th>Medicine</th><th>In stock</th><th>Min</th><th>Use / day</th><th>Runs out in</th><th>Distributor</th></tr>${rows.map(r => `<tr><td>${r.n}</td><td>${r.qty}</td><td>${r.min}</td><td>${r.perDay}</td><td><span class="pill ${r.days < 2 ? 'bad' : r.days < 5 ? 'warn' : 'ok'}">${r.qty === 0 ? 'OUT' : r.days + ' days'}</span></td><td class="muted">${r.supplier}</td></tr>`).join('')}</table></div>
-    <div class="card" style="margin-top:14px"><h3>Purchase orders</h3>${Store.db.pos.map(p => `<div class="row" style="padding:8px 0;border-bottom:1px solid var(--line)"><b>${p.id}</b><span class="muted">${p.supplier}</span><span class="muted">${p.items.map(i => i.n + ' ×' + i.q).join(', ')}</span><span class="sp"></span>${statusPill(p.status)}${p.status !== 'received' ? `<button class="btn sm" onclick="poRecv('${p.id}')">Mark received</button>` : ''}</div>`).join('') || '<p class="muted">No POs yet.</p>'}</div>`;
+    <div class="card" style="margin-top:16px"><div class="row"><h3>Purchase orders</h3><span class="sp"></span>${Store.db.pos.some(p => p.status === 'draft' && p.from === R.org) ? '<button class="btn sm" onclick="poSendAll()">📤 Send all drafts to distributors</button>' : ''}</div>${Store.db.pos.filter(p => p.from === R.org || !p.from).map(p => `<div style="padding:10px 0;border-bottom:1px solid var(--line)"><div class="row"><b>${p.id}</b><span class="muted">→ ${p.supplier}</span><span class="muted">${p.items.map(i => i.n + ' ×' + i.q).join(', ')}</span><span class="sp"></span>${statusPill(p.status)}
+        ${p.status === 'draft' ? `<button class="btn sm" onclick="poSend('${p.id}')">📤 Send to distributor</button>` : ''}${poOpen(p) && p.status !== 'draft' && !SUPPLIERS[p.supplier]?.onSehat ? `<button class="btn sm ghost" onclick="poRecv('${p.id}')">Mark received</button>` : ''}</div>${poSteps(p)}
+        <small class="muted">${p.status === 'dispatched' ? `🚚 ${esc(p.vehicle)} · arriving in ~${Math.max(1, Math.round((p.eta - Date.now()) / 60000))} min` : p.status === 'draft' ? 'AI draft · check quantities, then send' : p.status === 'delivered' ? 'Delivered · stock updated automatically' : SUPPLIERS[p.supplier]?.onSehat ? 'Distributor on Sehat · updates live' : 'Distributor not on Sehat yet · sent by email/WhatsApp'}</small></div>`).join('') || '<p class="muted">No POs yet.</p>'}</div>`;
 };
 function poDraft() {
   act('drafted purchase orders for low stock', d => {
     const by = {};
-    Object.entries(d.stock).forEach(([n, s]) => { if (s.qty < s.min || s.qty / s.perDay < 5) (by[s.supplier] = by[s.supplier] || []).push({ n, q: Math.max(s.min * 2 - s.qty, s.perDay * 14) }); });
-    Object.entries(by).forEach(([sup, items]) => d.pos.unshift({ id: id('PO'), supplier: sup, items, status: 'sent' }));
+    Object.entries(d.stock).forEach(([n, s]) => { if ((s.qty < s.min || s.qty / s.perDay < 5) && !d.pos.some(p => poOpen(p) && p.from === R.org && p.items.some(i => i.n === n)))
+      (by[s.supplier] = by[s.supplier] || []).push({ n, q: Math.max(s.min * 2 - s.qty, s.perDay * 14), cover: s.perDay ? Math.floor(s.qty / s.perDay) : 99 }); });
+    Object.entries(by).forEach(([sup, items]) => d.pos.unshift({ id: id('PO'), supplier: sup, from: R.org, fromRole: role, km: SUPPLIERS[sup]?.km[R.org] ?? null, items, status: 'draft', t: Date.now(), urgency: Math.min(...items.map(i => i.cover)) }));
   });
-  toast('Purchase orders sent to distributors');
+  toast('POs drafted. Review, then send to the distributor');
 }
-function poRecv(pid) { act(`received ${pid}, stock updated`, d => { const p = d.pos.find(x => x.id === pid); p.status = 'received'; p.items.forEach(i => { d.stock[i.n].qty += i.q; }); }); }
+function poSend(pid) {
+  act(`sent ${pid} to ${Store.db.pos.find(p => p.id === pid).supplier}`, d => { const p = d.pos.find(x => x.id === pid); p.status = 'sent'; p.t = Date.now(); });
+  toast(SUPPLIERS[Store.db.pos.find(p => p.id === pid).supplier]?.onSehat ? 'Sent · the distributor sees it now' : 'Sent by email/WhatsApp');
+}
+function poSendAll() { Store.db.pos.filter(p => p.status === 'draft' && p.from === R.org).forEach(p => poSend(p.id)); }
+function poRecv(pid) { act(`received ${pid}, stock updated`, d => { const p = d.pos.find(x => x.id === pid); p.status = 'received'; p.items.forEach(i => { if (d.stock[i.n]) d.stock[i.n].qty += i.q; }); }); }
 
 // ----- Delivery Dispatch -----
 const RIDERS = ['Gurpreet (bike)', 'Ravi (bike)', 'Sahil (scooter)'];

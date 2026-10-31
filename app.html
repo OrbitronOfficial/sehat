@@ -3,21 +3,35 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<script>try{var th=localStorage.getItem("sehat_theme");if(th!=="dark"&&th!=="light")th=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=th}catch(e){document.documentElement.dataset.theme="light"}</script>
+<meta name="theme-color" content="#0774C4">
 <title>Sehat · Workspace</title>
-<link rel="stylesheet" href="style.css">
+<link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Outfit:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="style.css?v=9">
 </head>
-<body class="app">
-<aside id="side">
-  <a class="brand" href="index.html"><span class="dot"></span>Sehat</a>
-  <div class="org" id="org"></div>
-  <nav id="nav"></nav>
-  <button class="link" onclick="logout()">Switch role / log out</button>
-</aside>
-<main id="main"></main>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html" aria-label="Sehat home"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Sehat</span></a>
+  <div class="top-right">
+    <span class="userchip" id="userChip"></span>
+    <button type="button" class="themebtn" onclick="flipTheme()" aria-label="Switch theme">◐</button>
+    <button class="btn sm ghost" onclick="logout()">Switch role</button>
+  </div>
+</header>
+<div class="shell">
+  <aside class="side">
+    <div class="org" id="org"></div>
+    <nav class="nav" id="nav" aria-label="Main"></nav>
+  </aside>
+  <main class="main" id="main"></main>
+</div>
 <div id="toast"></div>
-<script src="data.js"></script>
-<script src="app.js"></script>
-<script src="suites.js"></script>
+<script>function flipTheme(){var t=document.documentElement.dataset.theme==="dark"?"light":"dark";document.documentElement.dataset.theme=t;try{localStorage.setItem("sehat_theme",t)}catch(e){}}</script>
+<script src="data.js?v=8"></script>
+<script src="app.js?v=8"></script>
+<script src="suites.js?v=8"></script>
+<script src="journal.js?v=8"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.0/dist/tesseract.min.js"></script>
 </body>
 </html>

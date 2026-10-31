@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script>try{var th=localStorage.getItem("sehat_theme");if(th!=="dark"&&th!=="light")th=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=th}catch(e){document.documentElement.dataset.theme="light"}</script>
+<link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
+<title>Sehat · Live demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Outfit:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="style.css?v=9">
+<style>
+body{margin:0;height:100vh;display:flex;flex-direction:column}
+.top{display:flex;align-items:center;gap:14px;padding:12px 18px;border-bottom:1px solid var(--line);background:var(--card)}
+.steps-bar{display:flex;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--mut)}.steps-bar b{color:var(--pri)}
+.panes{flex:1;display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:10px;padding:10px;min-height:0}
+.pane{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--card);min-height:0}
+.pane h3{margin:0;padding:10px 14px;font-size:14px;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center}
+.pane iframe{flex:1;border:0;width:100%;background:#fff}
+body.sup .panes{grid-template-columns:1.1fr 1fr 1fr 1fr}.pane.supp{display:none}body.sup .pane.supp{display:flex}
+@media(max-width:1000px){.panes{grid-template-columns:1fr;overflow:auto}.pane{min-height:600px}}
+</style>
+</head>
+<body>
+<div class="top"><a class="brand" href="index.html" aria-label="Sehat home"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Sehat</span></a><span class="pill">● Live demo</span>
+  <div class="steps-bar"><span><b>1</b> Doctor records & approves</span>→<span><b>2</b> Sehat routes to nearest stocked pharmacy</span>→<span><b>3</b> Pharmacist packs & dispatches</span>→<span><b>4</b> Patient tracks it live</span>→<span><b>5</b> Low stock → distributor restocks</span></div>
+  <span class="sp"></span><button class="btn sm ghost" id="supBtn" onclick="document.body.classList.toggle('sup');this.textContent=document.body.classList.contains('sup')?'− Supplier pane':'+ Supplier pane'">+ Supplier pane</button><button class="btn sm ghost" onclick="if(confirm('Reset the network demo data?')){localStorage.removeItem('sehat_db_v2');location.reload()}">Reset</button></div>
+<div class="panes">
+  <div class="pane"><h3>🩺 Sehat Doctor</h3><iframe src="/login?role=doctor&demo=1" title="Doctor"></iframe></div>
+  <div class="pane"><h3>💊 Sehat Pharmacy · Jain Medicos</h3><iframe src="app.html?role=pharmacy&view=sehat_pharmacy" title="Pharmacy"></iframe></div>
+  <div class="pane supp"><h3>🚚 Sehat Supply · Punjab Pharma</h3><iframe src="app.html?role=supplier&view=sehat_supply" title="Supplier" loading="lazy"></iframe></div>
+  <div class="pane"><h3>💚 Sehat Copilot · Patient</h3><iframe src="/login?demo=1" title="Patient"></iframe></div>
+</div>
+</body>
+</html>

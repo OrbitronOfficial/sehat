@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script>try{var th=localStorage.getItem("sehat_theme");if(th!=="dark"&&th!=="light")th=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=th}catch(e){document.documentElement.dataset.theme="light"}</script>
+<link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
+<title>Sehat · Log in</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Outfit:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="style.css?v=9">
+</head>
+<body>
+<div class="login-shell">
+  <div class="login-story">
+    <a class="brand" href="index.html" aria-label="Sehat home"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Sehat</span></a>
+    <h1>Care that connects itself.</h1>
+    <p>Hospitals, doctors, nurses, pharmacies, distributors and patients on one network of AI agents. Log in, or step straight into any role with a demo account.</p>
+    <div class="orb">✚</div>
+  </div>
+  <div class="card login-form">
+    <a href="index.html" class="link" style="font-size:13px">← Back to home</a>
+    <span class="eyebrow" style="display:block;margin-top:18px">Welcome back</span>
+    <h2>Log in</h2>
+    <form id="f" onsubmit="login(event)">
+      <label>Email</label><input id="em" type="email" required autocomplete="username">
+      <label>Password</label><input id="pw" type="password" required autocomplete="current-password">
+      <button class="btn" style="width:100%;justify-content:center;margin-top:16px">Log in</button>
+      <p id="err" style="color:var(--bad);font-size:13px;min-height:18px;margin:8px 0 0"></p>
+    </form>
+    <div id="pick" style="display:none"><p class="muted">Logged in as <b id="who"></b>. Open a workspace:</p><div class="demo-roles" id="pickRoles"></div></div>
+    <div style="border-top:1px solid var(--line);margin-top:14px;padding-top:14px">
+      <span class="eyebrow">Demo accounts · no sign-up</span>
+      <div class="demo-roles" id="demoRoles"></div>
+    </div>
+  </div>
+</div>
+<script src="data.js?v=8"></script>
+<script>
+// Prototype auth: password checked as a SHA-256 hash in the browser. A real build uses server-side auth.
+const OWNER = { email: 'yashjain.vis@gmail.com', h: '1484c13c9fc7ab1a7062679e01ca34f1cc3d9dc1fe271920f6f1d51fd83086b0', name: 'Yash' };
+const sha = async t => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)))].map(b => b.toString(16).padStart(2, '0')).join('');
+const roleBtns = () => Object.entries(ROLES).map(([k, r]) => `<button onclick="enter('${k}')">${r.ic} <b>${r.label}</b><br><span class="muted">${r.org}</span></button>`).join('');
+document.getElementById('demoRoles').innerHTML = roleBtns();
+// Patient, doctor and nurse work in the Sehat Copilot workspaces; hospital, pharmacy and supplier in the network app.
+const WORKSPACE = { patient: '/login?demo=1', doctor: '/login?role=doctor&demo=1', nurse: '/login?role=staff&demo=1' };
+function enter(k) { try { sessionStorage.setItem('sehat_role', k); } catch (e) {} location.href = WORKSPACE[k] || 'app.html'; }
+async function login(e) {
+  e.preventDefault();
+  const em = document.getElementById('em').value.trim().toLowerCase(), ok = em === OWNER.email && await sha(document.getElementById('pw').value) === OWNER.h;
+  if (!ok) { document.getElementById('err').textContent = 'Wrong email or password. You can still use a demo account below.'; return; }
+  try { sessionStorage.setItem('sehat_user', OWNER.name); } catch (e) {}
+  document.getElementById('f').style.display = 'none'; document.getElementById('who').textContent = OWNER.name;
+  document.getElementById('pickRoles').innerHTML = roleBtns(); document.getElementById('pick').style.display = '';
+}
+</script>
+</body>
+</html>

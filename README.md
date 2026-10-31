@@ -43,6 +43,13 @@ python -m http.server 2400 --directory .
 ```
 Open http://localhost:2400 and pick a demo role. Open a second tab as another role (for example Doctor and Pharmacy): the tabs share one store and update live through `BroadcastChannel`.
 
+## Full Sehat Copilot (`copilot/`)
+The complete Sehat Copilot code (patient app, doctor portal, staff/nurse portal, Python backend) lives in `copilot/`. One server runs the whole site: the network pages at `/hub/`, the patient workspace at `/app`, the doctor workspace at `/doctor.html` and the nurse workspace at `/staff.html`, all with a Sehat network bar.
+```bash
+python copilot/server.py 2400   # http://localhost:2400
+```
+Put API keys in `copilot/.env` (git-ignored).
+
 ## Stack
 Plain HTML, CSS and JavaScript, no build step. `data.js` holds the agent catalogue, demo data and the shared store (localStorage + BroadcastChannel). `app.js` holds the workspace and every agent. Light and dark themes follow the system.
 

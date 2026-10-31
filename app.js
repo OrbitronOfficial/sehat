@@ -1,0 +1,288 @@
+// Sehat workspace: role shell, agent marketplace, and the agents themselves.
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const role = (() => { try { return sessionStorage.getItem('sehat_role'); } catch { return null; } })();
+if (!ROLES[role]) location.replace('index.html#start');
+const R = ROLES[role] || ROLES.patient;
+let view = 'dashboard';
+
+function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('on'); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('on'), 2200); }
+function logout() { try { sessionStorage.removeItem('sehat_role'); } catch {} location.href = 'index.html'; }
+const ago = t => { const m = Math.round((Date.now() - t) / 60000); return m < 1 ? 'just now' : m < 60 ? m + ' min ago' : Math.round(m / 60) + ' h ago'; };
+const installed = () => Store.db.installs[role] || [];
+const agent = id => AGENTS.find(a => a.id === id);
+const act = (text, fn = () => {}) => Store.update(fn, R.org, text);
+const id = p => p + Math.random().toString(36).slice(2, 6).toUpperCase();
+
+function go(v) { view = v; render(); scrollTo(0, 0); }
+function render() {
+  $('#org').innerHTML = `${R.ic} ${R.label}<b>${R.org}</b><span class="muted">${R.sub}</span>`;
+  $('#nav').innerHTML = `<a class="${view === 'dashboard' ? 'on' : ''}" onclick="go('dashboard')">🏠 Dashboard</a>
+    <a class="${view === 'market' ? 'on' : ''}" onclick="go('market')">🛒 Agent Marketplace</a>
+    <div class="h">Your agents</div>` +
+    installed().map(i => { const a = agent(i); return `<a class="${view === i ? 'on' : ''}" onclick="go('${i}')">${a.ic} ${a.name}</a>`; }).join('') +
+    (installed().length ? '' : '<span class="muted" style="padding:0 10px">None yet. Add some from the marketplace.</span>');
+  $('#main').innerHTML = (V[view] || V.dashboard)();
+  V[view]?.after?.();
+}
+Store.onChange(render);
+
+const head = (t, p) => `<div class="head"><h1>${t}</h1>${p ? `<p>${p}</p>` : ''}</div>`;
+const statusPill = s => `<span class="pill ${{ delivered: 'ok', ready: 'ok', 'out for delivery': 'warn', sent: 'warn', accepted: '', query: 'bad', 'checked-in': 'ok', booked: '', done: 'ok' }[s] ?? ''}">${s}</span>`;
+const RX_STEPS = ['sent', 'accepted', 'ready', 'out for delivery', 'delivered'];
+
+// ---------- views ----------
+const V = {};
+
+V.dashboard = () => {
+  const d = Store.db, mine = rx => role === 'patient' ? rx.patient === R.org : role === 'pharmacy' ? rx.pharmacy === R.org : true;
+  const low = Object.values(d.stock).filter(s => s.qty < s.min).length;
+  const k = {
+    hospital: [['Appointments today', d.appointments.length], ['Checked in', d.appointments.filter(a => a.status === 'checked-in').length], ['ER queue', d.triage.length], ['Agents active', installed().length]],
+    doctor: [['Patients today', d.appointments.filter(a => a.doctor === R.org).length], ['Prescriptions sent', d.prescriptions.filter(p => p.doctor === R.org).length], ['Pharmacy queries', d.prescriptions.filter(p => p.status === 'query').length], ['Agents active', installed().length]],
+    pharmacy: [['New prescriptions', d.prescriptions.filter(p => mine(p) && p.status === 'sent').length], ['Ready to hand over', d.prescriptions.filter(p => mine(p) && p.status === 'ready').length], ['Low-stock items', low], ['Open POs', d.pos.filter(p => p.status !== 'received').length]],
+    patient: [['Upcoming visits', d.appointments.filter(a => a.patient === R.org && a.status !== 'done').length], ['Medicines on the way', d.prescriptions.filter(p => mine(p) && p.status !== 'delivered').length], ['Journal entries', d.journal.length], ['Agents active', installed().length]],
+  }[role];
+  return head(`Good ${new Date().getHours() < 12 ? 'morning' : 'afternoon'}, ${R.org.split(' ')[0] === 'Dr.' ? R.org : R.org.split(' ')[0]}`, 'Everything your agents did, live.') +
+    `<div class="grid g4">${k.map(([l, v]) => `<div class="card kpi"><b>${v}</b><span>${l}</span></div>`).join('')}</div>
+    <div class="grid g2" style="margin-top:14px">
+      <div class="card"><div class="row"><h3>Your agents</h3><span class="sp"></span><button class="btn sm ghost" onclick="go('market')">+ Add agents</button></div>
+        <div class="grid g2" style="margin-top:12px">${installed().map(i => { const a = agent(i); return `<div class="card agent" style="cursor:pointer;padding:14px" onclick="go('${i}')"><span class="ic">${a.ic}</span><b>${a.name}</b><p>${a.cat}</p></div>`; }).join('') || '<p class="muted">No agents installed.</p>'}</div></div>
+      <div class="card"><div class="row"><h3>Live activity</h3><span class="sp"></span><span class="pill">● live</span></div>
+        <div class="feed">${d.activity.slice(0, 9).map(a => `<div><b>${esc(a.who)}</b> ${esc(a.text)}<br><small>${ago(a.t)}</small></div>`).join('')}</div></div>
+    </div>
+    <p class="muted" style="margin-top:14px">Tip: open another tab as a different role (e.g. Doctor here, Pharmacy there) and watch prescriptions move between them live. <button class="link" style="color:var(--pri)" onclick="if(confirm('Reset all demo data?'))Store.reset()">Reset demo data</button></p>`;
+};
+
+V.market = () => {
+  const mine = AGENTS.filter(a => a.for.includes(role)), other = AGENTS.filter(a => !a.for.includes(role));
+  const card = a => { const on = installed().includes(a.id), ok = a.for.includes(role);
+    return `<div class="card agent"><span class="ic">${a.ic}</span><div class="row"><b>${a.name}</b><span class="sp"></span><span class="pill">${a.cat}</span></div><p>${a.desc}</p>
+      <div class="row"><span class="muted">${a.price} · for ${a.for.map(r => ROLES[r].label).join(', ')}</span><span class="sp"></span>
+      ${ok ? `<button class="btn sm ${on ? 'ghost' : ''}" onclick="toggle('${a.id}')">${on ? 'Remove' : 'Install'}</button>` : ''}</div></div>`; };
+  return head('Agent Marketplace', `Pick only the agents your ${R.label.toLowerCase()} needs. A hospital that only wants appointments installs just that.`) +
+    `<div class="grid g3">${mine.map(card).join('')}</div><h3 style="margin:26px 0 12px">For other healthcare roles</h3><div class="grid g3">${other.map(card).join('')}</div>`;
+};
+function toggle(aid) {
+  const on = installed().includes(aid);
+  act(`${on ? 'removed' : 'installed'} ${agent(aid).name}`, d => { d.installs[role] = on ? d.installs[role].filter(x => x !== aid) : [...d.installs[role], aid]; });
+  toast(on ? 'Agent removed' : 'Agent installed');
+}
+
+// ----- Appointment Desk -----
+function suggestDoctor(text) { const t = text.toLowerCase(); return DOCTORS.find(d => d.tags.test(t)) || DOCTORS[0]; }
+function freeSlot(doc, date) {
+  const taken = Store.db.appointments.filter(a => a.doctor === doc && a.date === date).map(a => a.slot);
+  return ['09:30', '10:00', '10:30', '11:15', '12:00', '14:00', '15:30', '16:15', '17:00'].find(s => !taken.includes(s)) || '18:00';
+}
+V.appointments = () => {
+  const d = Store.db, list = role === 'patient' ? d.appointments.filter(a => a.patient === R.org) : d.appointments;
+  return head('📅 Appointment Desk', role === 'patient' ? 'Tell us what is wrong. The agent picks the right doctor and the earliest slot.' : 'Today\'s queue. Patients book themselves; you check them in.') +
+    `<div class="grid g2"><div class="card"><h3>${role === 'patient' ? 'Book a visit' : 'Book for a walk-in'}</h3>
+      ${role !== 'patient' ? '<label>Patient name</label><input id="ap_name" placeholder="e.g. Priya Sharma">' : ''}
+      <label>What's the problem?</label><textarea id="ap_why" oninput="apSuggest()">Chest tightness and breathlessness when climbing stairs</textarea>
+      <label>Date</label><input id="ap_date" type="date" value="${new Date().toISOString().slice(0, 10)}" onchange="apSuggest()">
+      <div id="ap_sug" class="card" style="margin-top:12px;background:var(--soft);border:0"></div>
+      <button class="btn" style="margin-top:12px" onclick="apBook()">Confirm booking</button></div>
+     <div class="card"><h3>${role === 'patient' ? 'Your appointments' : 'Queue'}</h3><table><tr><th>Time</th><th>Patient</th><th>Doctor</th><th>Status</th><th></th></tr>
+      ${list.map(a => `<tr><td>${a.date.slice(5)} ${a.slot}</td><td>${esc(a.patient)}<br><small class="muted">${esc(a.reason)}</small></td><td>${esc(a.doctor)}<br><small class="muted">${a.spec}</small></td><td>${statusPill(a.status)}</td>
+        <td>${role === 'hospital' && a.status === 'booked' ? `<button class="btn sm" onclick="apCheck('${a.id}')">Check in</button>` : ''}</td></tr>`).join('') || '<tr><td colspan="5" class="muted">No appointments yet.</td></tr>'}</table></div></div>`;
+};
+V.appointments.after = () => apSuggest();
+function apSuggest() {
+  const doc = suggestDoctor($('#ap_why').value), slot = freeSlot(doc.name, $('#ap_date').value);
+  $('#ap_sug').innerHTML = `🤖 <b>Suggested:</b> ${doc.name} (${doc.spec}) at <b>${slot}</b><br><span class="muted">Matched from your symptoms. Earliest free slot that day.</span>`;
+}
+function apBook() {
+  const why = $('#ap_why').value.trim(), date = $('#ap_date').value, doc = suggestDoctor(why), patient = role === 'patient' ? R.org : ($('#ap_name').value.trim() || 'Walk-in patient');
+  const a = { id: id('A'), patient, doctor: doc.name, spec: doc.spec, date, slot: freeSlot(doc.name, date), reason: why || 'General consultation', status: 'booked' };
+  act(`booked ${patient} with ${doc.name} at ${a.slot}`, d => d.appointments.push(a));
+  toast(`Booked ${a.slot} with ${doc.name}`);
+}
+function apCheck(aid) { act('checked in a patient', d => { d.appointments.find(a => a.id === aid).status = 'checked-in'; }); }
+
+// ----- ER Triage -----
+V.triage = () => {
+  const q = [...Store.db.triage].sort((a, b) => b.score - a.score);
+  return head('🚑 ER Triage', 'Score each walk-in. The queue re-orders itself by urgency.') +
+    `<div class="grid g2"><div class="card"><label>Patient</label><input id="tr_n" value="Walk-in #${Store.db.triage.length + 1}">
+      <div class="grid g3"><div><label>Pulse</label><input id="tr_p" type="number" value="118"></div><div><label>SpO₂ %</label><input id="tr_o" type="number" value="91"></div><div><label>Systolic BP</label><input id="tr_b" type="number" value="96"></div></div>
+      <label>Symptoms</label><input id="tr_s" value="chest pain, sweating"><button class="btn" style="margin-top:12px" onclick="trAdd()">Add to queue</button></div>
+     <div class="card"><h3>Queue</h3>${q.map(t => `<div class="row" style="padding:8px 0;border-bottom:1px solid var(--line)"><span class="pill ${t.score >= 6 ? 'bad' : t.score >= 3 ? 'warn' : 'ok'}">${t.score >= 6 ? 'RED' : t.score >= 3 ? 'YELLOW' : 'GREEN'}</span><b>${esc(t.name)}</b><span class="muted">${esc(t.why)}</span><span class="sp"></span><button class="link" onclick="trDone('${t.id}')">Seen ✓</button></div>`).join('') || '<p class="muted">Queue is empty.</p>'}</div></div>`;
+};
+function trAdd() {
+  const p = +$('#tr_p').value, o = +$('#tr_o').value, b = +$('#tr_b').value, s = $('#tr_s').value, why = [];
+  let sc = 0; if (p > 120 || p < 50) { sc += 2; why.push('pulse'); } if (o < 92) { sc += 3; why.push('low SpO₂'); } if (b < 90 || b > 180) { sc += 2; why.push('BP'); }
+  if (/chest|breath|unconscious|bleed|seizure|stroke/i.test(s)) { sc += 3; why.push(s); }
+  const n = $('#tr_n').value;
+  act(`triaged ${n} as ${sc >= 6 ? 'RED' : sc >= 3 ? 'YELLOW' : 'GREEN'}`, d => d.triage.push({ id: id('T'), name: n, score: sc, why: why.join(', ') || 'stable' }));
+}
+function trDone(tid) { act('cleared an ER case', d => { d.triage = d.triage.filter(t => t.id !== tid); }); }
+
+// ----- e-Prescription Writer (doctor) -----
+let draft = [];
+function routePharmacy(meds) {
+  // Nearest pharmacy that can fill everything; our demo pharmacy holds the live stock.
+  const st = Store.db.stock, canFill = meds.every(m => (st[m.name]?.qty || 0) >= m.qty);
+  return canFill ? PHARMACIES[0] : PHARMACIES[1];
+}
+V.rxwriter = () => {
+  const pts = Store.db.appointments.filter(a => a.doctor === R.org || role !== 'doctor');
+  return head('📝 e-Prescription Writer', 'Sign once. The prescription goes straight to the nearest pharmacy with stock, and the patient is told.') +
+    `<div class="grid g2"><div class="card"><label>Patient</label><select id="rx_p">${pts.map(a => `<option>${esc(a.patient)}</option>`).join('')}</select>
+      <label>Diagnosis / notes</label><input id="rx_dx" value="Viral fever">
+      <label>Add medicine</label><div class="row"><input id="rx_m" list="medlist" placeholder="Start typing…" style="flex:2"><input id="rx_d" placeholder="1-0-1 × 5 days" style="flex:1"><input id="rx_q" type="number" value="10" style="width:80px"><button class="btn sm" onclick="rxAdd()">Add</button></div>
+      <datalist id="medlist">${Object.keys(Store.db.stock).map(m => `<option>${m}</option>`).join('')}</datalist>
+      <div id="rx_list" style="margin-top:10px"></div>
+      <button class="btn" style="margin-top:12px" onclick="rxSend()">✍️ Sign & send to pharmacy</button></div>
+     <div class="card"><h3>Sent prescriptions</h3>${Store.db.prescriptions.filter(p => p.doctor === R.org || role !== 'doctor').map(p => `<div style="padding:10px 0;border-bottom:1px solid var(--line)"><div class="row"><b>${p.id}</b> · ${esc(p.patient)}<span class="sp"></span>${statusPill(p.status)}</div><small class="muted">${p.meds.map(m => m.name).join(', ')} → ${p.pharmacy}</small></div>`).join('') || '<p class="muted">Nothing sent yet.</p>'}</div></div>`;
+};
+V.rxwriter.after = () => { if (!draft.length) draft = [{ name: 'Paracetamol 650mg', dose: '1-0-1 × 5 days', qty: 10 }, { name: 'Cetirizine 10mg', dose: '0-0-1 × 5 days', qty: 5 }]; rxDraw(); };
+function rxDraw() {
+  const st = Store.db.stock;
+  $('#rx_list').innerHTML = draft.map((m, i) => `<div class="row" style="padding:6px 0;border-bottom:1px dashed var(--line)"><b>${esc(m.name)}</b><span class="muted">${esc(m.dose)} · qty ${m.qty}</span><span class="sp"></span>
+    <span class="pill ${(st[m.name]?.qty || 0) >= m.qty ? 'ok' : 'bad'}">${(st[m.name]?.qty || 0) >= m.qty ? 'in stock nearby' : 'low nearby'}</span><button class="link" onclick="draft.splice(${i},1);rxDraw()">✕</button></div>`).join('');
+}
+function rxAdd() { const n = $('#rx_m').value.trim(); if (!n) return; draft.push({ name: n, dose: $('#rx_d').value || 'as directed', qty: +$('#rx_q').value || 1 }); $('#rx_m').value = ''; rxDraw(); }
+function rxSend() {
+  if (!draft.length) return toast('Add at least one medicine');
+  const ph = routePharmacy(draft), rx = { id: id('RX'), patient: $('#rx_p').value, doctor: ROLES.doctor.org, dx: $('#rx_dx').value, meds: draft, pharmacy: ph.name, km: ph.km, status: 'sent', t: Date.now(), rider: null };
+  act(`sent ${rx.id} for ${rx.patient} → ${ph.name} (${ph.km} km)`, d => {
+    d.prescriptions.unshift(rx);
+    d.journal.unshift({ date: new Date().toISOString().slice(0, 10), type: 'Prescription', text: `${rx.dx}: ${draft.map(m => m.name).join(', ')} (${rx.doctor})` });
+    const ap = d.appointments.find(a => a.patient === rx.patient && a.status !== 'done'); if (ap) ap.status = 'done';
+  });
+  draft = []; toast(`Sent to ${ph.name}`);
+}
+
+// ----- Prescription Inbox (pharmacy) -----
+V.rxinbox = () => {
+  const st = Store.db.stock, list = Store.db.prescriptions.filter(p => p.pharmacy === R.org || role !== 'pharmacy');
+  return head('📥 Prescription Inbox', 'Prescriptions from hospitals arrive here with a live stock check. Prepare them before the patient even asks.') +
+    (list.map(p => `<div class="card" style="margin-bottom:12px"><div class="row"><h3>${p.id}</h3><span class="muted">${esc(p.patient)} · from ${esc(p.doctor)} · ${ago(p.t)}</span><span class="sp"></span>${statusPill(p.status)}</div>
+      <div class="steps">${RX_STEPS.map(s => `<span class="${RX_STEPS.indexOf(p.status) >= RX_STEPS.indexOf(s) ? 'on' : ''}"></span>`).join('')}</div>
+      <table><tr><th>Medicine</th><th>Dose</th><th>Qty</th><th>Stock</th></tr>${p.meds.map(m => { const q = st[m.name]?.qty || 0; return `<tr><td>${esc(m.name)}</td><td>${esc(m.dose)}</td><td>${m.qty}</td><td><span class="pill ${q >= m.qty ? 'ok' : 'bad'}">${q >= m.qty ? q + ' in stock' : 'short (' + q + ')'}</span></td></tr>`; }).join('')}</table>
+      <div class="row" style="margin-top:10px">
+        ${p.status === 'sent' || p.status === 'query' ? `<button class="btn sm" onclick="rxAccept('${p.id}')">Accept</button>` : ''}
+        ${p.status === 'accepted' ? `<button class="btn sm" onclick="rxReady('${p.id}')">Packed · mark ready</button>` : ''}
+        ${p.status === 'ready' ? `<button class="btn sm" onclick="go('delivery')">Send for delivery →</button>` : ''}
+        <button class="btn sm ghost" onclick="askDoctor('${p.id}')">📞 Ask doctor</button></div></div>`).join('') || `<div class="card"><p class="muted">No prescriptions yet. Log in as Doctor in another tab and send one.</p></div>`);
+};
+function rxAccept(pid) { act(`accepted ${pid}`, d => { d.prescriptions.find(p => p.id === pid).status = 'accepted'; }); }
+function rxReady(pid) {
+  act(`packed ${pid}, ready for pickup/delivery`, d => { const p = d.prescriptions.find(x => x.id === pid); p.status = 'ready'; p.meds.forEach(m => { if (d.stock[m.name]) d.stock[m.name].qty = Math.max(0, d.stock[m.name].qty - m.qty); }); });
+}
+function askDoctor(pid) { connectRx = pid; go('connect'); }
+
+// ----- Doctor ↔ Pharmacy Connect -----
+let connectRx = null;
+V.connect = () => {
+  const rxs = Store.db.prescriptions; connectRx = connectRx || rxs[0]?.id;
+  const msgs = Store.db.messages.filter(m => m.rx === connectRx), me = role;
+  const other = role === 'doctor' ? ROLES.pharmacy.org : ROLES.doctor.org;
+  return head('📞 Doctor ↔ Pharmacy Connect', 'Clarify a prescription without a single phone tag. Every message is tied to the prescription.') +
+    (rxs.length ? `<div class="grid g2"><div class="card"><label>Prescription</label><select onchange="connectRx=this.value;render()">${rxs.map(p => `<option ${p.id === connectRx ? 'selected' : ''} value="${p.id}">${p.id} · ${esc(p.patient)}</option>`).join('')}</select>
+      <div style="margin-top:12px;max-height:340px;overflow:auto">${msgs.map(m => `<div class="msg ${m.from === me ? 'me' : 'them'}">${esc(m.text)}<br><small style="opacity:.7">${m.from === me ? 'You' : esc(ROLES[m.from].org)} · ${ago(m.t)}</small></div>`).join('') || '<p class="muted">No messages yet.</p>'}</div>
+      <div class="row" style="margin-top:10px"><input id="cn_t" placeholder="Type a message…" style="flex:1" onkeydown="if(event.key==='Enter')cnSend()"><button class="btn sm" onclick="cnSend()">Send</button></div>
+      <div class="row" style="margin-top:8px">${(role === 'pharmacy' ? ['Is a generic substitute OK?', 'Out of stock. Alternative?', 'Please confirm the dose.'] : ['Generic is fine.', 'Use the alternative brand.', 'Dose is correct as written.']).map(q => `<button class="btn sm ghost" onclick="cnSend(this.textContent)">${q}</button>`).join('')}</div></div>
+     <div class="card"><h3>Call ${esc(other)}</h3><p class="muted">One tap. The call is logged against ${connectRx}.</p><button class="btn" onclick="cnCall()">📞 Call now</button>
+      <h3 style="margin-top:20px">Prescription</h3>${(() => { const p = rxs.find(x => x.id === connectRx); return p ? `<p><b>${esc(p.patient)}</b> · ${esc(p.dx)}</p><ul>${p.meds.map(m => `<li>${esc(m.name)} — ${esc(m.dose)}</li>`).join('')}</ul>${statusPill(p.status)}` : ''; })()}</div></div>`
+      : '<div class="card"><p class="muted">No prescriptions yet.</p></div>');
+};
+function cnSend(text) {
+  const t = text || $('#cn_t').value.trim(); if (!t || !connectRx) return;
+  act(`messaged about ${connectRx}: "${t}"`, d => { d.messages.push({ rx: connectRx, from: role, text: t, t: Date.now() }); if (role === 'pharmacy') { const p = d.prescriptions.find(x => x.id === connectRx); if (p && p.status === 'sent') p.status = 'query'; } });
+}
+function cnCall() { act(`called ${role === 'doctor' ? 'the pharmacy' : 'the doctor'} about ${connectRx}`, d => d.messages.push({ rx: connectRx, from: role, text: '📞 Call placed (2 min 14 s)', t: Date.now() })); toast('Calling… (demo)'); }
+
+// ----- Supply Chain AI -----
+V.supply = () => {
+  const st = Store.db.stock;
+  const rows = Object.entries(st).map(([n, s]) => ({ n, ...s, days: s.perDay ? Math.floor(s.qty / s.perDay) : 99 })).sort((a, b) => a.days - b.days);
+  const need = rows.filter(r => r.qty < r.min || r.days < 5);
+  return head('📦 Supply Chain AI', 'Predicts run-outs from daily usage and drafts purchase orders, grouped by distributor.') +
+    `<div class="grid g3"><div class="card kpi"><b>${rows.length}</b><span>SKUs tracked</span></div><div class="card kpi"><b style="color:var(--bad)">${need.length}</b><span>need reorder</span></div><div class="card kpi"><b>${Store.db.pos.filter(p => p.status !== 'received').length}</b><span>open purchase orders</span></div></div>
+    <div class="card" style="margin-top:14px"><div class="row"><h3>Stock</h3><span class="sp"></span>${need.length ? `<button class="btn sm" onclick="poDraft()">🤖 Draft POs for ${need.length} items</button>` : ''}</div>
+      <table><tr><th>Medicine</th><th>In stock</th><th>Min</th><th>Use / day</th><th>Runs out in</th><th>Distributor</th></tr>${rows.map(r => `<tr><td>${r.n}</td><td>${r.qty}</td><td>${r.min}</td><td>${r.perDay}</td><td><span class="pill ${r.days < 2 ? 'bad' : r.days < 5 ? 'warn' : 'ok'}">${r.qty === 0 ? 'OUT' : r.days + ' days'}</span></td><td class="muted">${r.supplier}</td></tr>`).join('')}</table></div>
+    <div class="card" style="margin-top:14px"><h3>Purchase orders</h3>${Store.db.pos.map(p => `<div class="row" style="padding:8px 0;border-bottom:1px solid var(--line)"><b>${p.id}</b><span class="muted">${p.supplier}</span><span class="muted">${p.items.map(i => i.n + ' ×' + i.q).join(', ')}</span><span class="sp"></span>${statusPill(p.status)}${p.status !== 'received' ? `<button class="btn sm" onclick="poRecv('${p.id}')">Mark received</button>` : ''}</div>`).join('') || '<p class="muted">No POs yet.</p>'}</div>`;
+};
+function poDraft() {
+  act('drafted purchase orders for low stock', d => {
+    const by = {};
+    Object.entries(d.stock).forEach(([n, s]) => { if (s.qty < s.min || s.qty / s.perDay < 5) (by[s.supplier] = by[s.supplier] || []).push({ n, q: Math.max(s.min * 2 - s.qty, s.perDay * 14) }); });
+    Object.entries(by).forEach(([sup, items]) => d.pos.unshift({ id: id('PO'), supplier: sup, items, status: 'sent' }));
+  });
+  toast('Purchase orders sent to distributors');
+}
+function poRecv(pid) { act(`received ${pid}, stock updated`, d => { const p = d.pos.find(x => x.id === pid); p.status = 'received'; p.items.forEach(i => { d.stock[i.n].qty += i.q; }); }); }
+
+// ----- Delivery Dispatch -----
+const RIDERS = ['Gurpreet (bike)', 'Ravi (bike)', 'Sahil (scooter)'];
+V.delivery = () => {
+  const list = Store.db.prescriptions.filter(p => ['ready', 'out for delivery', 'delivered'].includes(p.status));
+  return head('🛵 Delivery Dispatch', 'Assign a rider, share the ETA with the patient, close on delivery.') +
+    `<div class="card"><table><tr><th>Order</th><th>Patient</th><th>Status</th><th>Rider</th><th></th></tr>${list.map(p => `<tr><td>${p.id}</td><td>${esc(p.patient)}</td><td>${statusPill(p.status)}</td><td>${p.rider || '—'}</td>
+      <td>${p.status === 'ready' ? `<button class="btn sm" onclick="dlSend('${p.id}')">Assign rider</button>` : p.status === 'out for delivery' ? `<button class="btn sm" onclick="dlDone('${p.id}')">Delivered ✓</button>` : ''}</td></tr>`).join('') || '<tr><td colspan="5" class="muted">Nothing ready yet.</td></tr>'}</table></div>`;
+};
+function dlSend(pid) { const r = RIDERS[Math.floor(Math.random() * RIDERS.length)]; act(`assigned ${r} to ${pid} · ETA 25 min`, d => { const p = d.prescriptions.find(x => x.id === pid); p.status = 'out for delivery'; p.rider = r; p.eta = Date.now() + 25 * 60000; }); }
+function dlDone(pid) { act(`delivered ${pid}`, d => { d.prescriptions.find(x => x.id === pid).status = 'delivered'; }); }
+
+// ----- My Medicines (patient) -----
+V.orders = () => {
+  const list = Store.db.prescriptions.filter(p => p.patient === R.org);
+  const label = { sent: 'Sent to pharmacy', accepted: 'Pharmacist accepted', ready: 'Packed & ready', 'out for delivery': 'On the way', delivered: 'Delivered' };
+  return head('🧾 My Medicines', 'From your doctor to your door. No queue at the counter.') +
+    (list.map(p => `<div class="card" style="margin-bottom:12px"><div class="row"><h3>${p.id}</h3><span class="muted">${esc(p.doctor)} → ${esc(p.pharmacy)} (${p.km} km)</span><span class="sp"></span>${statusPill(p.status)}</div>
+      <div class="steps">${RX_STEPS.map(s => `<span class="${RX_STEPS.indexOf(p.status === 'query' ? 'sent' : p.status) >= RX_STEPS.indexOf(s) ? 'on' : ''}"></span>`).join('')}</div>
+      <div class="row muted">${RX_STEPS.map(s => `<span style="flex:1;font-size:12px">${label[s]}</span>`).join('')}</div>
+      ${p.status === 'query' ? '<p class="pill warn">Pharmacist is confirming something with your doctor</p>' : ''}
+      ${p.rider && p.status === 'out for delivery' ? `<p>🛵 ${p.rider} · arriving in ~${Math.max(1, Math.round((p.eta - Date.now()) / 60000))} min</p>` : ''}
+      <ul>${p.meds.map(m => `<li>${esc(m.name)} — ${esc(m.dose)}</li>`).join('')}</ul></div>`).join('') || '<div class="card"><p class="muted">No prescriptions yet. After your visit, the doctor\'s prescription appears here automatically.</p></div>');
+};
+
+// ----- Health Journal (patient) -----
+const READ = { 'Blood sugar (fasting)': ['mg/dL', 70, 100], 'Systolic BP': ['mmHg', 90, 130], 'Pulse': ['bpm', 60, 100], 'Weight': ['kg', 0, 999], 'SpO₂': ['%', 95, 100] };
+V.journal = () => head('📔 Health Journal', 'Your visits, prescriptions, lab results and readings in one place, shared with your doctor when you choose.') +
+  `<div class="grid g2"><div class="card"><h3>Add a reading</h3><div class="row"><select id="jr_k" style="flex:2">${Object.keys(READ).map(k => `<option>${k}</option>`).join('')}</select><input id="jr_v" type="number" placeholder="value" style="flex:1"><button class="btn sm" onclick="jrAdd()">Add</button></div>
+    <label>Or write a note</label><textarea id="jr_n" placeholder="Felt dizzy after lunch…"></textarea><button class="btn sm ghost" style="margin-top:8px" onclick="jrNote()">Save note</button></div>
+   <div class="card"><h3>Timeline</h3>${Store.db.journal.map(j => `<div style="padding:8px 0;border-bottom:1px solid var(--line)"><span class="pill">${j.type}</span> <small class="muted">${j.date}</small><br>${esc(j.text)}</div>`).join('')}</div></div>`;
+function jrAdd() {
+  const k = $('#jr_k').value, v = +$('#jr_v').value; if (!v) return;
+  const [u, lo, hi] = READ[k], flag = v < lo ? ' (low)' : v > hi ? ' (high)' : ' (normal)';
+  act(`logged ${k} ${v} ${u}${flag}`, d => d.journal.unshift({ date: new Date().toISOString().slice(0, 10), type: 'Reading', text: `${k} ${v} ${u}${flag}` }));
+}
+function jrNote() { const t = $('#jr_n').value.trim(); if (t) act('added a journal note', d => d.journal.unshift({ date: new Date().toISOString().slice(0, 10), type: 'Note', text: t })); }
+
+// ----- Lab Report Explainer -----
+const LABS = [['Hemoglobin', 'g/dL', 12, 17, 7, 20, /(^|[^a-z])(hb|haemoglobin|hemoglobin)([^a-z1]|$)/], ['Fasting Blood Sugar', 'mg/dL', 70, 100, 54, 400, /fbs|fasting/], ['HbA1c', '%', 4, 5.6, null, 14, /hba1c/],
+  ['Platelet Count', '/cumm', 150000, 410000, 50000, 1e6, /platelet/], ['TSH', 'uIU/mL', 0.4, 4.5, 0.01, 100, /tsh/], ['Serum Creatinine', 'mg/dL', 0.6, 1.3, null, 4, /creatinine/],
+  ['Total Cholesterol', 'mg/dL', 0, 200, null, null, /cholesterol/], ['Vitamin D', 'ng/mL', 30, 100, null, 150, /vitamin d/], ['Vitamin B12', 'pg/mL', 200, 900, null, null, /b12/], ['Potassium', 'mEq/L', 3.5, 5.1, 2.5, 6.5, /potassium/]];
+const HI = { low: 'कम', high: 'ज़्यादा', normal: 'सामान्य', critical: 'गंभीर – आज डॉक्टर को दिखाएं' };
+V.labs = () => head('🧪 Lab Report Explainer', 'Paste a report. Every value is checked against its normal range. Explains, never diagnoses.') +
+  `<div class="grid g2"><div class="card"><textarea id="lb_t" style="min-height:170px">Haemoglobin 10.4 g/dL\nFasting Blood Sugar 118 mg/dL\nHbA1c 6.4 %\nPlatelets 2.1 lakh\nTSH 2.3\nVitamin D 14 ng/mL</textarea>
+    <div class="row" style="margin-top:10px"><select id="lb_l" style="width:auto"><option value="en">English</option><option value="hi">हिन्दी</option></select><button class="btn" onclick="lbRun()">Explain</button>${role === 'patient' ? '<button class="btn ghost" onclick="lbSave()">Save to journal</button>' : ''}</div></div>
+   <div class="card" id="lb_o"><p class="muted">Results appear here.</p></div></div>`;
+function lbParse() {
+  const rows = [];
+  $('#lb_t').value.split('\n').forEach(line => { const l = line.toLowerCase(), r = LABS.find(x => x[6].test(l)), m = l.match(/\d+(\.\d+)?/g); if (!r || !m) return;
+    let v = parseFloat(m[m.length - 1]); if (/lakh/.test(l)) v *= 1e5; else if (r[1] === '/cumm' && v < 1000) v *= 1000;
+    rows.push({ r, v, s: (r[4] != null && v < r[4]) || (r[5] != null && v > r[5]) ? 'critical' : v < r[2] ? 'low' : v > r[3] ? 'high' : 'normal' }); });
+  return rows;
+}
+function lbRun() {
+  const rows = lbParse(), hi = $('#lb_l').value === 'hi', cls = { critical: 'bad', high: 'warn', low: 'warn', normal: 'ok' };
+  $('#lb_o').innerHTML = `<h3>${rows.length} values · ${rows.filter(x => x.s !== 'normal').length} need attention</h3>` + rows.map(({ r, v, s }) => `<div style="padding:8px 0;border-bottom:1px solid var(--line)"><b>${r[0]}</b> ${v.toLocaleString('en-IN')} ${r[1]} <span class="pill ${cls[s]}">${hi ? HI[s] : s}</span><br><small class="muted">Normal ${r[2]}–${r[3]} ${r[1]}</small></div>`).join('') + '<p class="muted">Show these to your doctor. Not a diagnosis.</p>';
+}
+function lbSave() { const rows = lbParse(); if (rows.length) act('saved a lab report to the journal', d => d.journal.unshift({ date: new Date().toISOString().slice(0, 10), type: 'Lab', text: rows.map(x => `${x.r[0]} ${x.v} ${x.r[1]} (${x.s})`).join(', ') })); }
+
+// ----- Emergency Check -----
+const EMERG = /chest pain|pain in (my |the )?chest|heart attack|seene? (me|mein) dard|सीने में दर्द|can'?t breathe|breathless|saans|सांस|stroke|face drooping|slurred|unconscious|behosh|बेहोश|fits|seizure|overdose|vomiting blood|bleeding (heavily|a lot)|suicid|poison/i;
+V.sos = () => head('🆘 Emergency Check', 'Describe what is happening, in English, Hindi or Hinglish.') +
+  `<div class="grid g2"><div class="card"><textarea id="sos_t">Papa ko seene mein dard ho raha hai aur paseena aa raha hai</textarea><button class="btn" style="margin-top:10px" onclick="sosRun()">Check</button></div><div class="card" id="sos_o"></div></div>`;
+function sosRun() {
+  const e = EMERG.test($('#sos_t').value);
+  $('#sos_o').innerHTML = e ? `<span class="pill bad">EMERGENCY</span><h3 style="margin:10px 0">Call 112 or 108 now.</h3><p>यह आपातकालीन स्थिति हो सकती है। तुरंत 112 / 108 पर कॉल करें या नज़दीकी अस्पताल जाएं।</p><a class="btn red" href="tel:108">📞 Call 108</a> <button class="btn ghost" onclick="act('raised an SOS alert to City Care ER');toast('City Care ER alerted')">Alert City Care ER</button>`
+    : '<span class="pill ok">No danger signs found</span><p>Book a regular visit if it continues.</p><button class="btn ghost" onclick="go(\'appointments\')">Book a visit</button>';
+}
+
+render();

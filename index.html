@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sehat · Healthcare Agents</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.wrap{max-width:1120px;margin:auto;padding:0 20px}
+.top{display:flex;align-items:center;gap:18px;padding:18px 0}.top .links{margin-left:auto;display:flex;gap:18px;align-items:center}.top .links a{text-decoration:none;color:var(--mut)}
+.hero{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center;padding:50px 0}
+.hero h1{font-size:clamp(34px,5.5vw,56px);line-height:1.08}.hero h1 span{color:var(--pri)}.hero p{color:var(--mut);font-size:18px;margin:16px 0 26px}
+.flow{display:flex;flex-direction:column;gap:10px}.flow .card{display:flex;gap:12px;align-items:center;padding:14px}.flow .n{width:30px;height:30px;border-radius:50%;background:var(--soft);color:var(--pri);display:grid;place-items:center;font-weight:700;flex:none}
+section{padding:46px 0}h2{font-size:32px;margin-bottom:6px}.sub{color:var(--mut);margin:0 0 24px}
+.role{cursor:pointer;transition:.15s;text-align:left}.role:hover{border-color:var(--pri);transform:translateY(-2px)}.role .ic{font-size:34px}.role ul{margin:8px 0 0;padding-left:18px;color:var(--mut);font-size:14px}
+footer{border-top:1px solid var(--line);padding:24px 0;color:var(--mut);font-size:14px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+@media(max-width:860px){.hero{grid-template-columns:1fr}.top .links a:not(.btn){display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="top"><a class="brand" href="index.html"><span class="dot"></span>Sehat</a>
+  <div class="links"><a href="#flow">How it works</a><a href="#agents">Agents</a><a href="#start" class="btn sm">Open workspace</a></div></div>
+
+<div class="hero">
+  <div><span class="pill">Built at GRAVITON 2026</span>
+    <h1>Your whole <span>healthcare</span> network, run by AI agents.</h1>
+    <p>One marketplace for hospitals, doctors, pharmacies and patients. Install only the agents you need: appointments for a hospital, supply chain for a pharmacy, a health journal for a patient. They all talk to each other.</p>
+    <div class="row"><a class="btn" href="#start">Try a demo role →</a><a class="btn ghost" href="#agents">Browse agents</a></div></div>
+  <div class="flow" id="flow">
+    <div class="card"><span class="n">1</span><div><b>Patient books</b><br><span class="muted">Symptoms in → right specialist, earliest slot</span></div></div>
+    <div class="card"><span class="n">2</span><div><b>Doctor signs a prescription</b><br><span class="muted">Routed to the nearest pharmacy with stock</span></div></div>
+    <div class="card"><span class="n">3</span><div><b>Pharmacist prepares it</b><br><span class="muted">Stock checked, doctor one tap away for questions</span></div></div>
+    <div class="card"><span class="n">4</span><div><b>Delivered to the door</b><br><span class="muted">Patient tracks it live; it lands in their journal</span></div></div>
+  </div>
+</div>
+
+<section id="agents"><h2>11 agents, one network</h2><p class="sub">Each agent does one job well. Pick yours like apps.</p><div class="grid g3" id="cat"></div></section>
+
+<section id="start"><h2>Choose your role</h2><p class="sub">Demo accounts, no sign-up. Tip: open two tabs as Doctor and Pharmacy and watch a prescription travel live.</p>
+  <div class="grid g4" id="roles"></div></section>
+
+<footer><span>© 2026 Sehat · Team ANTIJAREX · CGC University</span><span>Explains and organises. Never diagnoses. Emergency: 112</span></footer>
+</div>
+<script src="data.js"></script>
+<script>
+const WHAT={hospital:['Appointment queue','ER triage','Hospital inventory'],doctor:['e-Prescriptions','Pharmacy chat & call','Lab explainer'],pharmacy:['Prescription inbox','Supply chain & POs','Delivery dispatch'],patient:['Book visits','Track medicines','Health journal']};
+document.getElementById('roles').innerHTML=Object.entries(ROLES).map(([k,r])=>`<button class="card role" onclick="enter('${k}')"><span class="ic">${r.ic}</span><h3 style="margin-top:6px">${r.label}</h3><span class="muted">${r.org}</span><ul>${WHAT[k].map(x=>`<li>${x}</li>`).join('')}</ul></button>`).join('');
+document.getElementById('cat').innerHTML=AGENTS.map(a=>`<div class="card agent"><span class="ic">${a.ic}</span><div class="row"><b>${a.name}</b><span class="sp"></span><span class="pill">${a.cat}</span></div><p>${a.desc}</p><span class="muted">For ${a.for.map(r=>ROLES[r].label).join(', ')}</span></div>`).join('');
+function enter(k){try{sessionStorage.setItem('sehat_role',k)}catch(e){}location.href='app.html'}
+</script>
+</body>
+</html>

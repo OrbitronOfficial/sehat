@@ -30,8 +30,20 @@ body.split .panes{grid-template-columns:repeat(4,1fr)}body.split .pane{display:f
 <div class="top topbar"><a class="brand" href="/" aria-label="Sehat home"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Sehat</span></a><span class="pill">● Live demo</span>
   <div class="roles" id="roles"></div>
   <span class="sp"></span>
+  <button class="btn sm" id="autoBtn" onclick="autoPlay()">▶ Auto-play</button>
   <button class="btn sm ghost" id="splitBtn" onclick="toggleSplit()">⇆ Side by side</button>
   <button class="btn sm ghost" onclick="if(confirm('Reset the network demo data?')){localStorage.removeItem('sehat_db_v2');location.reload()}">Reset</button></div>
+<style>
+/* live stats: each number flips like a departure board when the network changes */
+.stats{display:flex;gap:10px;padding:0 18px 10px;flex-wrap:wrap}
+.stat2{flex:1;min-width:130px;display:flex;align-items:center;gap:10px;border-radius:16px;padding:8px 12px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow)}
+.stat2 .ic{font-size:20px}.stat2 small{display:block;color:var(--muted);font-size:.74rem;font-weight:600}
+.num{display:inline-block;font-family:var(--display);font-weight:800;font-size:1.35rem;color:var(--teal-dark);perspective:300px}
+.num.flipping{animation:flipn .6s cubic-bezier(.2,.8,.2,1)}@keyframes flipn{0%{transform:rotateX(0)}45%{transform:rotateX(90deg);opacity:.2}55%{transform:rotateX(-90deg);opacity:.2}100%{transform:rotateX(0)}}
+.stat2.pulse{border-color:#8EBEF9;box-shadow:0 0 0 3px rgba(142,190,249,.4),var(--shadow)}
+#autoBtn.on{background:linear-gradient(180deg,#EF4444,#DC2626)}
+</style>
+<div class="stats" id="stats"></div>
 <p class="hint" id="hint"></p>
 <div class="panes" id="panes"></div>
 <script src="data.js?v=8"></script>
@@ -111,6 +123,50 @@ function dgShow(i) {
 Store.onChange(() => { const s = TOUR[dgI]; if (s.done && s.done()) { const b = document.querySelector('#dgBub .wait'); if (b) { b.className = 'ok'; b.textContent = '✓ Done! Moving on…'; setTimeout(() => { if (TOUR[dgI] === s) dgShow(dgI + 1); }, 1600); } } });
 // clicking a role tab yourself is fine; the guide stays on its step
 dgShow(0);
+
+// ---- live stats strip ----
+const STATS = [
+  ['📝', 'Prescriptions', d => d.prescriptions.length],
+  ['🛵', 'Out / delivered', d => d.prescriptions.filter(p => ['out for delivery', 'delivered'].includes(p.status)).length],
+  ['📦', 'Low-stock items', d => Object.values(d.stock).filter(s => s.qty < s.min).length],
+  ['🚚', 'Purchase orders', d => d.pos.filter(p => p.status !== 'draft').length],
+  ['📈', 'Units restocked', d => d.pos.filter(p => ['delivered', 'received'].includes(p.status)).flatMap(p => p.items).reduce((s, i) => s + i.q, 0)],
+];
+document.getElementById('stats').innerHTML = STATS.map(([ic, l], i) => `<div class="stat2" id="st${i}"><span class="ic">${ic}</span><div><span class="num">0</span><small>${l}</small></div></div>`).join('');
+function drawStats() {
+  STATS.forEach(([, , f], i) => { const box = document.getElementById('st' + i), n = box.querySelector('.num'), v = f(Store.db);
+    if (String(v) === n.textContent) return;
+    n.classList.remove('flipping'); void n.offsetWidth; n.classList.add('flipping'); box.classList.add('pulse');
+    setTimeout(() => { n.textContent = v; }, 280); setTimeout(() => box.classList.remove('pulse'), 900); });
+}
+Store.onChange(drawStats); drawStats();
+
+// ---- auto-play: Dr. Saathi runs the whole loop by itself, adding real data to the shared store step by step ----
+let autoOn = false;
+const nap = ms => new Promise(r => setTimeout(r, ms));
+const inPane = (k, code) => { try { return frame(k).eval(code); } catch (e) { return null; } };
+async function autoPlay() {
+  if (autoOn) { autoOn = false; return; }
+  autoOn = true; const btn = document.getElementById('autoBtn'); btn.classList.add('on'); btn.textContent = '■ Stop';
+  const PATIENTS = ['Rahul Mehra', 'Sunita Mehra', 'Aman Verma'], pt = PATIENTS[Store.db.prescriptions.length % 3], rid = 'RX' + Math.random().toString(36).slice(2, 6).toUpperCase();
+  const step = async (i, fn, wait = 2600) => { if (!autoOn) throw 0; dgShow(i); await nap(900); if (!autoOn) throw 0; fn(); await nap(wait); };
+  try {
+    await step(0, () => Store.update(d => {   // the doctor signs; the store routes it like SehatNet.routeRx does
+      d.prescriptions.unshift({ id: rid, patient: pt, doctor: 'Dr. R. K. Bansal', dx: 'Viral fever', meds: [{ name: 'Paracetamol 650mg', dose: '1-0-1 × 5 days', qty: 10 }, { name: 'Cetirizine 10mg', dose: '0-0-1 × 5 days', qty: 5 }], pharmacy: 'Jain Medicos', km: 1.2, status: 'sent', t: Date.now(), rider: null });
+      d.journal.unshift({ date: new Date().toISOString().slice(0, 10), type: 'Prescription', text: `Viral fever: Paracetamol 650mg, Cetirizine 10mg (Dr. R. K. Bansal)` });
+    }, 'Dr. R. K. Bansal', `approved ${rid} for ${pt} → Jain Medicos (1.2 km)`));
+    await step(1, () => { inPane('pharmacy', `rxAccept('${rid}')`); setTimeout(() => inPane('pharmacy', `rxReady('${rid}')`), 1200); }, 3200);
+    await step(2, () => inPane('pharmacy', `dlSend('${rid}')`));
+    await step(3, () => {}, 3200);
+    await step(4, () => { inPane('pharmacy', 'poDraft()'); setTimeout(() => inPane('pharmacy', 'poSendAll()'), 1400); }, 3400);
+    const pid = () => Store.db.pos.find(p => p.supplier === ROLES.supplier.org && !['delivered', 'received', 'draft'].includes(p.status))?.id;
+    await step(5, () => { const p = pid(); if (!p) return; inPane('supplier', `spAccept('${p}')`);
+      setTimeout(() => { inPane('supplier', `render()`); const v = inPane('supplier', `document.getElementById('veh_${p}')`); if (v) inPane('supplier', `spDispatch('${p}')`); }, 1300);
+      setTimeout(() => inPane('supplier', `spDeliver('${p}')`), 2800); }, 4200);
+    await step(6, () => {}, 1500);
+  } catch (e) { /* stopped */ }
+  autoOn = false; btn.classList.remove('on'); btn.textContent = '▶ Auto-play';
+}
 </script>
 <script src="assistant.js?v=3"></script>
 </body>

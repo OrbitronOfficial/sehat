@@ -28,13 +28,17 @@ function logout() { try { sessionStorage.removeItem('sehat_role'); } catch {} lo
 const ago = t => { const m = Math.round((Date.now() - t) / 60000); return m < 1 ? 'just now' : m < 60 ? m + ' min ago' : Math.round(m / 60) + ' h ago'; };
 const installed = () => (Store.db.installs[role] || []).filter(i => agent(i));  // skips agents that were retired
 const agent = id => AGENTS.find(a => a.id === id) || SUITES.find(s => s.id === id);
-// Privacy: what a patient does is private by default (journal, records, reminders, family, settings). Only actions
-// another role needs to act on are shared, and only with that role (a booking with the hospital and doctor, a bill
-// approval with the pharmacy, an SOS with the hospital).
-const act = (text, fn = () => {}, scope = role === 'patient' ? ['patient'] : null) => Store.update(fn, R.org, text, scope);
-// older lines saved before scopes existed: anything personal stays with the patient
-const PERSONAL = /check-in|journal|summary|reminder|senior mode|family|took |preferred|to the journal|journal note|lab report|took the/i;
-const seeAct = a => role === 'patient' ? a.who === R.org : a.scope ? a.scope.includes(role) : !PERSONAL.test(a.text);
+// Privacy: every activity line carries the roles that may see it (scope) and, where it concerns particular
+// organisations, which ones (to). A patient's own actions stay with them; staff lines go only to the roles that
+// share that patient's care; lines saved before scopes existed are not shown to anyone else.
+const DEF_SCOPE = { patient: ['patient'], doctor: ['doctor', 'nurse', 'hospital'], nurse: ['nurse', 'doctor', 'hospital'], hospital: ['hospital', 'doctor', 'nurse'], pharmacy: ['pharmacy'], supplier: ['supplier', 'pharmacy'] };
+// by default a doctor's lines go to their own hospital, and a hospital's to itself and its doctors
+const myCircle = () => { const d = Store.db;
+  if (role === 'doctor') return [R.org, (allDoctors(d).find(x => x.name === R.org) || {}).hospital || 'City Care Hospital'];
+  if (role === 'hospital') return [R.org, ...(((d.hospitals || []).find(h => h.name === R.org) || {}).doctors || []).map(x => x.name)];
+  return null; };
+const act = (text, fn = () => {}, scope = DEF_SCOPE[role] || null, to = myCircle()) => Store.update(fn, R.org, text, scope, to);
+const seeAct = a => a.who === R.org || (role !== 'patient' && !!a.scope && a.scope.includes(role) && (!a.to || a.to.includes(R.org) || role === 'nurse'));
 const id = p => p + Math.random().toString(36).slice(2, 6).toUpperCase();
 
 function go(v) { view = v; render(); scrollTo(0, 0); const m = $('#main'); m.classList.add('rise'); clearTimeout(m._r); m._r = setTimeout(() => m.classList.remove('rise'), 600); }
@@ -149,7 +153,7 @@ function apBook(docName, hospName) {
   const x = docName ? allDoctors(Store.db).find(y => y.name === docName && (!hospName || y.hospital === hospName)) : recommend(why, apHosp())[0];
   if (!x) return toast('Pick a doctor');
   const a = { id: id('A'), patient, doctor: x.name, spec: x.spec, hospital: x.hospital, date, slot: freeSlot(x.name, date), reason: why || 'General consultation', status: 'booked' };
-  act(`booked ${patient} with ${x.name} at ${x.hospital}, ${a.slot}`, d => { d.appointments.push(a); if (role === 'patient') { d.prefs = d.prefs || {}; d.prefs[patient] = { ...(d.prefs[patient] || {}), hospital: x.hospital }; } }, role === 'patient' ? ['patient', 'hospital', 'doctor'] : null);
+  act(`booked ${patient} with ${x.name} at ${x.hospital}, ${a.slot}`, d => { d.appointments.push(a); if (role === 'patient') { d.prefs = d.prefs || {}; d.prefs[patient] = { ...(d.prefs[patient] || {}), hospital: x.hospital }; } }, role === 'patient' ? ['patient', 'hospital', 'doctor'] : DEF_SCOPE[role], [x.hospital, x.name, R.org]);
   toast(`Booked ${a.slot} with ${x.name} at ${x.hospital}`);
 }
 function apCheck(aid) { act('checked in a patient', d => { d.appointments.find(a => a.id === aid).status = 'checked-in'; }); }
@@ -195,7 +199,7 @@ function rxSend() {
     d.prescriptions.unshift(rx);
     d.journal.unshift({ date: new Date().toISOString().slice(0, 10), type: 'Prescription', text: `${rx.dx}: ${draft.map(m => m.name).join(', ')} (${rx.doctor})` });
     const ap = d.appointments.find(a => a.patient === rx.patient && a.status !== 'done'); if (ap) ap.status = 'done';
-  });
+  }, ['doctor', 'pharmacy', 'nurse'], [ph.name, R.org]);
   draft = []; toast(`Sent to ${ph.name}`);
 }
 
@@ -215,7 +219,7 @@ V.rxinbox = () => {
 };
 // The pharmacist accepts and sends the bill; the patient approves it; only then is it packed.
 function rxAccept(pid) { act(`accepted ${pid} and sent the bill to the patient`, d => { const p = d.prescriptions.find(x => x.id === pid); p.status = 'quoted'; p.bill = billOf(p); }); }
-function rxApprove(pid) { act(`approved the bill for ${pid}`, d => { const p = d.prescriptions.find(x => x.id === pid); if (p.status === 'quoted') { p.status = 'accepted'; p.approvedAt = Date.now(); } }, ['patient', 'pharmacy']); toast('Approved. The pharmacy will pack it now.'); }
+function rxApprove(pid) { act(`approved the bill for ${pid}`, d => { const p = d.prescriptions.find(x => x.id === pid); if (p.status === 'quoted') { p.status = 'accepted'; p.approvedAt = Date.now(); } }, ['patient', 'pharmacy'], [Store.db.prescriptions.find(x => x.id === pid)?.pharmacy, R.org]); toast('Approved. The pharmacy will pack it now.'); }
 function rxReady(pid) {
   act(`packed ${pid}, ready for pickup/delivery`, d => { const p = d.prescriptions.find(x => x.id === pid); p.status = 'ready'; p.meds.forEach(m => { if (d.stock[m.name]) d.stock[m.name].qty = Math.max(0, d.stock[m.name].qty - m.qty); }); });
 }
@@ -238,9 +242,9 @@ V.connect = () => {
 };
 function cnSend(text) {
   const t = text || $('#cn_t').value.trim(); if (!t || !connectRx) return;
-  act(`messaged about ${connectRx}: "${t}"`, d => { d.messages.push({ rx: connectRx, from: role, text: t, t: Date.now() }); if (role === 'pharmacy') { const p = d.prescriptions.find(x => x.id === connectRx); if (p && p.status === 'sent') p.status = 'query'; } });
+  act(`messaged about ${connectRx}: "${t}"`, d => { d.messages.push({ rx: connectRx, from: role, text: t, t: Date.now() }); if (role === 'pharmacy') { const p = d.prescriptions.find(x => x.id === connectRx); if (p && p.status === 'sent') p.status = 'query'; } }, ['pharmacy', 'doctor']);
 }
-function cnCall() { act(`called ${role === 'doctor' ? 'the pharmacy' : 'the doctor'} about ${connectRx}`, d => d.messages.push({ rx: connectRx, from: role, text: '📞 Call placed (2 min 14 s)', t: Date.now() })); toast('Calling… (demo)'); }
+function cnCall() { act(`called ${role === 'doctor' ? 'the pharmacy' : 'the doctor'} about ${connectRx}`, d => d.messages.push({ rx: connectRx, from: role, text: '📞 Call placed (2 min 14 s)', t: Date.now() }), ['pharmacy', 'doctor']); toast('Calling… (demo)'); }
 
 // ----- Supply Chain AI -----
 const PO_STEPS = ['sent', 'accepted', 'dispatched', 'delivered'];
@@ -276,7 +280,7 @@ function poDraft() {
   toast('POs drafted. Review, then send to the distributor');
 }
 function poSend(pid) {
-  act(`sent ${pid} to ${Store.db.pos.find(p => p.id === pid).supplier}`, d => { const p = d.pos.find(x => x.id === pid); p.status = 'sent'; p.t = Date.now(); });
+  act(`sent ${pid} to ${Store.db.pos.find(p => p.id === pid).supplier}`, d => { const p = d.pos.find(x => x.id === pid); p.status = 'sent'; p.t = Date.now(); }, ['pharmacy', 'supplier'], [Store.db.pos.find(p => p.id === pid).supplier, R.org]);
   toast(SUPPLIERS[Store.db.pos.find(p => p.id === pid).supplier]?.onSehat ? 'Sent · the distributor sees it now' : 'Sent by email/WhatsApp');
 }
 function poSendAll() { Store.db.pos.filter(p => p.status === 'draft' && p.from === R.org).forEach(p => poSend(p.id)); }

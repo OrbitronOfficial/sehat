@@ -36,10 +36,11 @@
   const css = document.createElement('style');
   css.textContent = `
   body{top:0!important}.goog-te-banner-frame,.skiptranslate iframe,#goog-gt-tt{display:none!important}font{background:none!important;box-shadow:none!important}
-  .sx-fab{position:fixed;right:20px;bottom:20px;z-index:90;display:flex;align-items:center;gap:8px;border:0;border-radius:999px;padding:12px 18px 12px 14px;cursor:pointer;color:#fff;font:700 .95rem "Outfit",system-ui,sans-serif;background:linear-gradient(180deg,#1A86D6,#0774C4);box-shadow:0 16px 36px -12px rgba(7,116,196,.8)}
-  .sx-fab i{font-style:normal;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.2)}
-  .sx-lang{position:fixed;left:20px;bottom:20px;z-index:90;border:1px solid var(--line,#DCE7F5);border-radius:999px;padding:9px 14px;font:600 .88rem system-ui,sans-serif;background:var(--card-solid,#fff);color:var(--ink,#0A1B2E);box-shadow:0 10px 30px -14px rgba(7,40,80,.3);width:auto}
-  .sx{position:fixed;right:20px;bottom:84px;z-index:91;width:min(380px,calc(100vw - 32px));height:min(540px,calc(100vh - 120px));display:none;flex-direction:column;border-radius:24px;overflow:hidden;
+  .sx-dock{position:fixed;right:20px;bottom:20px;z-index:90;display:flex;align-items:center;gap:10px}
+  .sx-fab{display:flex;align-items:center;gap:10px;border:0;border-radius:999px;padding:6px 18px 6px 6px;cursor:pointer;color:#fff;font:700 .95rem "Outfit",system-ui,sans-serif;background:linear-gradient(180deg,#1A86D6,#0774C4);box-shadow:0 16px 36px -12px rgba(7,116,196,.8)}
+  .sx-fab img,.sx-h img{width:40px;height:40px;border-radius:50%;background:#EAF3FE;border:2px solid #fff;flex:none}.sx-fab:hover img{transform:scale(1.06)}.sx-fab img{transition:transform .25s}
+  .sx-lang{border:1px solid var(--line,#DCE7F5);border-radius:999px;padding:9px 14px;font:600 .88rem system-ui,sans-serif;background:var(--card-solid,#fff);color:var(--ink,#0A1B2E);box-shadow:0 10px 30px -14px rgba(7,40,80,.3);width:auto}
+  .sx{position:fixed;right:20px;bottom:86px;z-index:91;width:min(380px,calc(100vw - 32px));height:min(540px,calc(100vh - 120px));display:none;flex-direction:column;border-radius:24px;overflow:hidden;
     background:var(--card-solid,#fff);border:1px solid var(--line,#DCE7F5);box-shadow:0 40px 90px -30px rgba(7,40,80,.5);font-family:"Plus Jakarta Sans",system-ui,sans-serif;color:var(--ink,#0A1B2E)}
   .sx.on{display:flex}
   .sx-h{display:flex;align-items:center;gap:10px;padding:14px 16px;color:#fff;background:linear-gradient(135deg,#0774C4,#04437A)}.sx-h b{font-family:"Outfit",sans-serif;font-size:1.05rem}.sx-h small{display:block;opacity:.8;font-size:.76rem}
@@ -52,20 +53,21 @@
   .sx-f button{border:0;border-radius:50%;width:42px;height:42px;cursor:pointer;font-size:1.05rem;background:var(--teal-tint,#EAF3FE);color:#0774C4}.sx-f button.go{background:#0774C4;color:#fff}
   .sx-f button.rec{background:#DC2626;color:#fff;animation:sxp 1s infinite alternate}@keyframes sxp{to{box-shadow:0 0 0 8px rgba(220,38,38,.15)}}
   .sx-n{font-size:.72rem;color:var(--muted,#5B6B80);padding:0 14px 10px}
-  @media(max-width:560px){.sx-fab span{display:none}.sx-fab{padding:12px}}`;
+  @media(max-width:560px){.sx-fab span{display:none}.sx-fab{padding:5px}.sx-lang{max-width:120px}}`;
   document.head.appendChild(css);
 
   // ---- widgets ----
   const sel = document.createElement('select'); sel.className = 'sx-lang notranslate'; sel.setAttribute('aria-label', 'Language');
   sel.innerHTML = LANGS.map(([k, n]) => `<option value="${k}" ${k === lang ? 'selected' : ''}>🌐 ${n}</option>`).join('');
   sel.onchange = () => setLang(sel.value);
-  const fab = document.createElement('button'); fab.className = 'sx-fab'; fab.innerHTML = '<i>🎙</i><span>Ask Saathi</span>';
+  const fab = document.createElement('button'); fab.className = 'sx-fab'; fab.innerHTML = '<img src="/saathi.svg" alt=""><span>Ask Dr. Saathi</span>'; fab.setAttribute('aria-label', 'Ask Dr. Saathi');
   const box = document.createElement('div'); box.className = 'sx'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-label', 'Sehat Saathi assistant');
-  box.innerHTML = `<div class="sx-h"><span style="font-size:24px">🤖</span><div><b>Sehat Saathi</b><small>Type or speak in any Indian language</small></div><button aria-label="Close">✕</button></div>
+  box.innerHTML = `<div class="sx-h"><img src="/saathi.svg" alt=""><div><b>Dr. Saathi</b><small>Type or speak in any Indian language</small></div><button aria-label="Close">✕</button></div>
     <div class="sx-m" id="sxM"></div><div class="sx-q" id="sxQ"></div>
     <div class="sx-f notranslate"><button id="sxMic" aria-label="Speak">🎙</button><input id="sxIn" placeholder="Ask anything…" autocomplete="off"><button class="go" id="sxGo" aria-label="Send">➤</button></div>
     <div class="sx-n">Explains and guides. Not a diagnosis. Emergency: call 112 / 108.</div>`;
-  document.body.append(sel, fab, box);
+  const dock = document.createElement('div'); dock.className = 'sx-dock'; dock.append(sel, fab);
+  document.body.append(dock, box);
   const M = box.querySelector('#sxM'), IN = box.querySelector('#sxIn');
   fab.onclick = () => { box.classList.toggle('on'); if (box.classList.contains('on')) IN.focus(); };
   box.querySelector('.sx-h button').onclick = () => box.classList.remove('on');
@@ -128,7 +130,7 @@
   box.querySelector('#sxQ').innerHTML = [['📅 Book a doctor', 'How do I book a doctor?'], ['🧾 Explain my report', 'Explain my lab report'], ['💊 Track medicines', 'Where is my medicine order?'], ['🚚 Restock', 'How does a pharmacy restock from a distributor?']]
     .map(([l, q]) => `<button data-q="${esc(q)}">${l}</button>`).join('');
   box.querySelectorAll('#sxQ button').forEach(b => b.onclick = () => ask(b.dataset.q));
-  bubble('Namaste! I am Sehat Saathi. Type or tap 🎙 and speak in your language. The language menu at the bottom left changes the whole page.', 'a');
+  bubble('Namaste! I am Dr. Saathi. Type, or tap 🎙 and speak in your language. The 🌐 menu next to my button changes the whole page.', 'a');
 
   // ---- voice input ----
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition, mic = box.querySelector('#sxMic');

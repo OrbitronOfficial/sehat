@@ -118,8 +118,6 @@ class Handler(BaseHTTPRequestHandler):
     def _static(self, path):
         if path in ("", "/") or path.rstrip("/") == "/v2":  # Sehat's front door is the v2 glass landing; v1 stays at /hub/
             path = "/hub/v2.html"
-        if path.rstrip("/") == "/v3":  # Tailwind glassmorphism landing (local preview)
-            path = "/hub/v3.html"
         base, rel = PUBLIC, PAGES.get(path.rstrip("/") or "/") or path.lstrip("/")
         if path.startswith("/hub/"):
             base, rel = HUB, (path[5:] or "index.html")

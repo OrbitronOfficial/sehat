@@ -253,9 +253,10 @@ const Store = (() => {
   return {
     get db() { return db; },
     get cloud() { return { status: cloud.status, room: ROOM }; },
-    update(fn, who, text) {
+    // scope: roles allowed to see this activity line (missing = everyone in the network); a patient's own lines stay theirs
+    update(fn, who, text, scope) {
       fn(db);
-      if (text) db.activity.unshift({ t: Date.now(), who, text });
+      if (text) db.activity.unshift({ t: Date.now(), who, text, ...(scope ? { scope } : {}) });
       db.activity = db.activity.slice(0, 60);
       save(); listeners.forEach(f => f());
     },

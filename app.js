@@ -28,7 +28,13 @@ function logout() { try { sessionStorage.removeItem('sehat_role'); } catch {} lo
 const ago = t => { const m = Math.round((Date.now() - t) / 60000); return m < 1 ? 'just now' : m < 60 ? m + ' min ago' : Math.round(m / 60) + ' h ago'; };
 const installed = () => (Store.db.installs[role] || []).filter(i => agent(i));  // skips agents that were retired
 const agent = id => AGENTS.find(a => a.id === id) || SUITES.find(s => s.id === id);
-const act = (text, fn = () => {}) => Store.update(fn, R.org, text);
+// Privacy: what a patient does is private by default (journal, records, reminders, family, settings). Only actions
+// another role needs to act on are shared, and only with that role (a booking with the hospital and doctor, a bill
+// approval with the pharmacy, an SOS with the hospital).
+const act = (text, fn = () => {}, scope = role === 'patient' ? ['patient'] : null) => Store.update(fn, R.org, text, scope);
+// older lines saved before scopes existed: anything personal stays with the patient
+const PERSONAL = /check-in|journal|summary|reminder|senior mode|family|took |preferred|to the journal|journal note|lab report|took the/i;
+const seeAct = a => role === 'patient' ? a.who === R.org : a.scope ? a.scope.includes(role) : !PERSONAL.test(a.text);
 const id = p => p + Math.random().toString(36).slice(2, 6).toUpperCase();
 
 function go(v) { view = v; render(); scrollTo(0, 0); const m = $('#main'); m.classList.add('rise'); clearTimeout(m._r); m._r = setTimeout(() => m.classList.remove('rise'), 600); }
@@ -82,7 +88,7 @@ V.dashboard = () => {
       <div class="card"><div class="row"><h3>Your agents</h3><span class="sp"></span><button class="btn sm ghost" onclick="go('market')">+ Add agents</button></div>
         <div class="grid g2" style="margin-top:12px">${installed().map(i => { const a = agent(i); return `<button class="card agent click" style="padding:14px" onclick="go('${i}')"><span class="ic">${a.ic}</span><b>${a.name}</b><p>${a.cat || (a.tabs ? a.tabs.length + ' tools · open →' : 'Open →')}</p></button>`; }).join('') || '<p class="muted">No agents installed.</p>'}</div></div>
       <div class="card"><div class="row"><h3>Live activity</h3><span class="sp"></span><span class="pill">● live</span></div>
-        <div class="feed">${d.activity.slice(0, 9).map(a => { const to = feedGo(a.text); return `<div class="${to ? 'click' : ''}" ${to ? `onclick="openTab('${SUITE}','${to}')" role="button" tabindex="0"` : ''}><b>${esc(a.who)}</b> ${esc(a.text)}${to ? ' <span class="go">→</span>' : ''}<br><small>${ago(a.t)}</small></div>`; }).join('')}</div></div>
+        <div class="feed">${d.activity.filter(seeAct).slice(0, 9).map(a => { const to = feedGo(a.text); return `<div class="${to ? 'click' : ''}" ${to ? `onclick="openTab('${SUITE}','${to}')" role="button" tabindex="0"` : ''}><b>${esc(a.who)}</b> ${esc(a.text)}${to ? ' <span class="go">→</span>' : ''}<br><small>${ago(a.t)}</small></div>`; }).join('')}</div></div>
     </div>
     <p class="muted" style="margin-top:14px">Tip: open another tab as a different role (e.g. Doctor here, Pharmacy there) and watch prescriptions move between them live. <button class="link" style="color:var(--pri)" onclick="if(confirm('Reset all demo data?'))Store.reset()">Reset demo data</button></p>`;
 };
@@ -143,7 +149,7 @@ function apBook(docName, hospName) {
   const x = docName ? allDoctors(Store.db).find(y => y.name === docName && (!hospName || y.hospital === hospName)) : recommend(why, apHosp())[0];
   if (!x) return toast('Pick a doctor');
   const a = { id: id('A'), patient, doctor: x.name, spec: x.spec, hospital: x.hospital, date, slot: freeSlot(x.name, date), reason: why || 'General consultation', status: 'booked' };
-  act(`booked ${patient} with ${x.name} at ${x.hospital}, ${a.slot}`, d => { d.appointments.push(a); if (role === 'patient') { d.prefs = d.prefs || {}; d.prefs[patient] = { ...(d.prefs[patient] || {}), hospital: x.hospital }; } });
+  act(`booked ${patient} with ${x.name} at ${x.hospital}, ${a.slot}`, d => { d.appointments.push(a); if (role === 'patient') { d.prefs = d.prefs || {}; d.prefs[patient] = { ...(d.prefs[patient] || {}), hospital: x.hospital }; } }, role === 'patient' ? ['patient', 'hospital', 'doctor'] : null);
   toast(`Booked ${a.slot} with ${x.name} at ${x.hospital}`);
 }
 function apCheck(aid) { act('checked in a patient', d => { d.appointments.find(a => a.id === aid).status = 'checked-in'; }); }
@@ -209,7 +215,7 @@ V.rxinbox = () => {
 };
 // The pharmacist accepts and sends the bill; the patient approves it; only then is it packed.
 function rxAccept(pid) { act(`accepted ${pid} and sent the bill to the patient`, d => { const p = d.prescriptions.find(x => x.id === pid); p.status = 'quoted'; p.bill = billOf(p); }); }
-function rxApprove(pid) { act(`approved the bill for ${pid}`, d => { const p = d.prescriptions.find(x => x.id === pid); if (p.status === 'quoted') { p.status = 'accepted'; p.approvedAt = Date.now(); } }); toast('Approved. The pharmacy will pack it now.'); }
+function rxApprove(pid) { act(`approved the bill for ${pid}`, d => { const p = d.prescriptions.find(x => x.id === pid); if (p.status === 'quoted') { p.status = 'accepted'; p.approvedAt = Date.now(); } }, ['patient', 'pharmacy']); toast('Approved. The pharmacy will pack it now.'); }
 function rxReady(pid) {
   act(`packed ${pid}, ready for pickup/delivery`, d => { const p = d.prescriptions.find(x => x.id === pid); p.status = 'ready'; p.meds.forEach(m => { if (d.stock[m.name]) d.stock[m.name].qty = Math.max(0, d.stock[m.name].qty - m.qty); }); });
 }

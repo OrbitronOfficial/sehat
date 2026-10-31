@@ -76,7 +76,7 @@ function srSOS() {
 function srCancel() { clearInterval(sosT); document.querySelector('.sosx')?.remove(); toast('Cancelled'); }
 function srSend(n) {
   const p = pOf(n), cg = p.cgName || Store.db.family[0].name.split(' ')[0], m = Store.db.family.find(f => f.name === n) || {};
-  act(`🆘 SOS from ${n} · City Care ER alerted`, d => { d.sos = d.sos || []; d.sos.unshift({ who: n, t: Date.now(), age: m.age, cond: m.cond, meds: [...new Set(d.reminders.filter(r => r.who === n).map(r => r.med))], to: 'City Care Hospital', ack: false }); });
+  act(`🆘 SOS from ${n} · City Care ER alerted`, d => { d.sos = d.sos || []; d.sos.unshift({ who: n, t: Date.now(), age: m.age, cond: m.cond, meds: [...new Set(d.reminders.filter(r => r.who === n).map(r => r.med))], to: 'City Care Hospital', ack: false }); }, ['patient', 'hospital']);
   const o = document.createElement('div'); o.className = 'sosx';
   o.innerHTML = `<div>✅ City Care ER को सूचना भेज दी गई<br><br><a href="tel:112" style="color:#fff;font-size:2rem;font-weight:800">📞 112 पर कॉल करें</a><br><br>${p.cgPhone ? `<a href="tel:${esc(p.cgPhone)}" style="color:#fff;font-size:1.6rem">📞 ${esc(cg)} को कॉल करें</a>` : `<span style="font-size:1rem">${esc(cg)} का नंबर Settings में जोड़ें</span>`}<br><button onclick="this.closest('.sosx').remove()">ठीक है</button></div>`;
   document.body.appendChild(o); say('मदद आ रही है। घबराइए मत।', n);

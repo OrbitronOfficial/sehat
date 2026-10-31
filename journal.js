@@ -74,8 +74,8 @@ function jSummary() {
   jModal(`<div class="jd-top"><div><div class="eyebrow">Your care, connected</div><h3>Pre-visit summary · ${esc(profile())}</h3></div><button class="jd-x" onclick="jClose()" aria-label="Close">×</button></div>
     <div class="jd-banner"><span>🩺</span><div><b>A clearer picture for your doctor</b><p>Your daily mood, symptoms, sleep, energy and medicine notes, organised with your records.</p></div></div>
     <div class="jd-grid"><div class="jd-card"><h4>Last ${L.length} day(s)</h4><ul><li>Average sleep ${avg('sleep')}/5, energy ${avg('energy')}/5, mood ${avg('mood')}/5</li><li>${top.length ? 'Most common: ' + top.map(([x, c]) => `${x} (${c})`).join(', ') : 'No symptoms logged'}</li><li>${missed ? `Medicines missed or unsure on ${missed} day(s)` : 'Medicines taken every logged day'}</li>${side.length ? `<li>Side effects noted: ${esc(side.slice(0, 2).join('; '))}</li>` : ''}</ul></div>
-      <div class="jd-card"><h4>What happens next?</h4><p>Share it and ${esc(ROLES.doctor.org)} sees it before your visit. Sehat organises what you log; it does not diagnose or change medicines.</p></div></div>
-    <div class="row" style="margin-top:12px"><small class="muted">${L.length ? '' : 'Save a few check-ins for a fuller summary.'}</small><span class="sp"></span><button class="btn" onclick="shareSummary();jClose()">Share with doctor</button></div>`);
+      <div class="jd-card"><h4>What happens next?</h4><p>🔒 Private until you share. Your pharmacy, hospital staff and others never see your journal. Share and your doctor sees your check-ins and the reports you uploaded; stop sharing at any time.</p></div></div>
+    <div class="row" style="margin-top:12px"><small class="muted">${L.length ? '' : 'Save a few check-ins for a fuller summary.'}</small><span class="sp"></span>${(Store.db.prefs || {})[profile()]?.shareDj ? '<span class="pill ok">✓ Shared with your doctor</span><button class="btn sm ghost" onclick="stopSharing();jClose()">Stop sharing</button>' : '<button class="btn" onclick="shareSummary();jClose()">Share with doctor</button>'}</div>`);
 }
 
 const JCSS = `<style>
@@ -129,7 +129,7 @@ V.journal = () => {
     <label>Did you take your medicines today?</label><div class="chips">${MEDS.map(([k, l]) => `<button class="${jdraft.meds === k ? 'on' : ''}" onclick="jSet('meds','${k}')">${l}</button>`).join('')}</div>
     <label>Anything noticed after medicines? <span style="font-weight:400">· optional</span></label><input value="${esc(jdraft.side)}" oninput="jdraft.side=this.value" placeholder="e.g. felt sleepy after the evening tablet">
     <label>Note for your care team <span style="font-weight:400">· optional</span></label><textarea oninput="jdraft.note=this.value" placeholder="Anything else you would like your doctor to know…">${esc(jdraft.note)}</textarea>
-    <div class="row" style="margin-top:14px"><span class="muted" style="font-size:.8rem">🔒 ${all.some(x => x.date === today()) ? 'Saved today · saving again updates it' : 'Shared only with your care network'}</span><span class="sp"></span><button class="btn" onclick="jSave()">Save today's check-in →</button></div></div>
+    <div class="row" style="margin-top:14px"><span class="muted" style="font-size:.8rem">🔒 ${all.some(x => x.date === today()) ? 'Saved today · private to you' : 'Private to you'}${(Store.db.prefs || {})[profile()]?.shareDj ? ' · shared with your doctor' : ''}</span><span class="sp"></span><button class="btn" onclick="jSave()">Save today's check-in →</button></div></div>
    <div class="grid" style="align-content:start;gap:14px">
     <div class="card sumcard"><div class="txt"><span class="eyebrow">Your care, connected</span><h3 style="margin:6px 0">Pre-visit summary</h3><p class="muted" style="margin:0 0 10px">Bring your journal and health records together for a clearer doctor visit.</p><button class="btn sm ghost" onclick="jSummary()">See your summary →</button></div><div class="orbw" aria-hidden="true"><div class="ring"></div><div class="ring b"></div><div class="orb"></div></div></div>
     <div class="card"><div class="row"><h3>Daily guidance · small steps</h3><span class="sp"></span><small class="muted">Tap a card to explore</small></div>
@@ -146,5 +146,7 @@ function jSave() {
   act(`saved a daily check-in for ${n}`, d => { d.dj = d.dj || {}; d.dj[n] = (d.dj[n] || []).filter(x => x.date !== e.date).concat([e]); });
   jdraft = null; toast('Saved. Your doctor\'s summary is updated.');
 }
-function shareSummary() { act(`shared ${profile()}'s pre-visit summary with ${ROLES.doctor.org}`); toast('Shared with your doctor'); }
+// Consent: the doctor sees check-ins and self-uploaded reports only after the patient shares them, until they stop.
+function shareSummary() { const n = profile(); act(`shared ${n}'s check-ins with their doctor`, d => { d.prefs = d.prefs || {}; d.prefs[n] = { ...(d.prefs[n] || {}), shareDj: true }; }, ['patient', 'doctor']); toast('Shared with your doctor'); }
+function stopSharing() { const n = profile(); act(`stopped sharing ${n}'s check-ins`, d => { d.prefs = d.prefs || {}; d.prefs[n] = { ...(d.prefs[n] || {}), shareDj: false }; }, ['patient', 'doctor']); toast('Your doctor can no longer see your check-ins'); }
 render();

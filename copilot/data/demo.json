@@ -1,0 +1,1170 @@
+{
+ "patient": {
+  "name": "Jay Tawri",
+  "age": "46",
+  "sex": "M",
+  "abha": null
+ },
+ "records": [
+  {
+   "id": "rec_demo_labmar",
+   "doc_type": "lab_report",
+   "title": "Lab Report - CityCare Diagnostics",
+   "date": "2026-03-12",
+   "facility": "CityCare Diagnostics",
+   "doctor": "Dr. Anita Mehta",
+   "patient": {
+    "name": "Mr. Jay Tawri",
+    "age": "46 Years",
+    "sex": "M"
+   },
+   "language_detected": "en",
+   "handwritten": false,
+   "tests": [
+    {
+     "name": "HbA1c (Glycated Hemoglobin)",
+     "value": 8.4,
+     "unit": "%",
+     "ref_low": 4.0,
+     "ref_high": 5.6,
+     "ref_text": "4.0 - 5.6",
+     "ref_source": "report",
+     "flag": "high",
+     "source_text": "HbA1c (Glycated Hemoglobin) 8.4 % 4.0 - 5.6",
+     "page": 1,
+     "confidence": 0.99,
+     "loinc": "4548-4",
+     "standard_name": "HbA1c"
+    },
+    {
+     "name": "Fasting Blood Sugar",
+     "value": 168.0,
+     "unit": "mg/dL",
+     "ref_low": 70.0,
+     "ref_high": 100.0,
+     "ref_text": "70 - 100",
+     "ref_source": "report",
+     "flag": "high",
+     "source_text": "Fasting Blood Sugar 168 mg/dL 70 - 100",
+     "page": 1,
+     "confidence": 0.99,
+     "loinc": "1558-6",
+     "standard_name": "Fasting Blood Sugar"
+    },
+    {
+     "name": "Total Cholesterol",
+     "value": 236.0,
+     "unit": "mg/dL",
+     "ref_low": null,
+     "ref_high": 200.0,
+     "ref_text": "< 200",
+     "ref_source": "report",
+     "flag": "high",
+     "source_text": "Total Cholesterol 236 mg/dL < 200",
+     "page": 1,
+     "confidence": 0.99,
+     "loinc": "2093-3",
+     "standard_name": "Total Cholesterol"
+    },
+    {
+     "name": "LDL Cholesterol",
+     "value": 152.0,
+     "unit": "mg/dL",
+     "ref_low": null,
+     "ref_high": 100.0,
+     "ref_text": "< 100",
+     "ref_source": "report",
+     "flag": "high",
+     "source_text": "LDL Cholesterol 152 mg/dL < 100",
+     "page": 1,
+     "confidence": 0.99,
+     "loinc": "13457-7",
+     "standard_name": "LDL Cholesterol"
+    },
+    {
+     "name": "HDL Cholesterol",
+     "value": 38.0,
+     "unit": "mg/dL",
+     "ref_low": 40.0,
+     "ref_high": null,
+     "ref_text": "> 40",
+     "ref_source": "report",
+     "flag": "low",
+     "source_text": "HDL Cholesterol 38 mg/dL > 40",
+     "page": 1,
+     "confidence": 0.99,
+     "loinc": "2085-9",
+     "standard_name": "HDL Cholesterol"
+    },
+    {
+     "name": "Triglycerides",
+     "value": 214.0,
+     "unit": "mg/dL",
+     "ref_low": null,
+     "ref_high": 150.0,
+     "ref_text": "< 150",
+     "ref_source": "report",
+     "flag": "high",
+     "source_text": "Triglycerides 214 mg/dL < 150",
+     "page": 1,
+     "confidence": 0.99,
+     "loinc": "2571-8",
+     "standard_name": "Triglycerides"
+    },
+    {
+     "name": "Hemoglobin",
+     "value": 13.8,
+     "unit": "g/dL",
+     "ref_low": 13.0,
+     "ref_high": 17.0,
+     "ref_text": "13.0 - 17.0",
+     "ref_source": "report",
+     "flag": "normal",
+     "source_text": "Hemoglobin 13.8 g/dL 13.0 - 17.0",
+     "page": 1,
+     "confidence": 0.99,
+     "loinc": "718-7",
+     "standard_name": "Hemoglobin"
+    },
+    {
+     "name": "Serum Creatinine",
+     "value": 0.9,
+     "unit": "mg/dL",
+     "ref_low": 0.6,
+     "ref_high": 1.3,
+     "ref_text": "0.6 - 1.3",
+     "ref_source": "report",
+     "flag": "normal",
+     "source_text": "Serum Creatinine 0.9 mg/dL 0.6 - 1.3",
+     "page": 1,
+     "confidence": 0.99,
+     "loinc": "2160-0",
+     "standard_name": "Serum Creatinine"
+    },
+    {
+     "name": "TSH",
+     "value": 2.1,
+     "unit": "uIU/mL",
+     "ref_low": 0.4,
+     "ref_high": 4.5,
+     "ref_text": "0.4 - 4.5",
+     "ref_source": "report",
+     "flag": "normal",
+     "source_text": "TSH 2.1 uIU/mL 0.4 - 4.5",
+     "page": 1,
+     "confidence": 0.99,
+     "loinc": "3016-3",
+     "standard_name": "TSH"
+    },
+    {
+     "name": "Vitamin D (25-OH)",
+     "value": 14.0,
+     "unit": "ng/mL",
+     "ref_low": 30.0,
+     "ref_high": 100.0,
+     "ref_text": "30 - 100",
+     "ref_source": "report",
+     "flag": "low",
+     "source_text": "Vitamin D (25-OH) 14 ng/mL 30 - 100",
+     "page": 1,
+     "confidence": 0.99,
+     "loinc": "1989-3",
+     "standard_name": "Vitamin D (25-OH)"
+    }
+   ],
+   "medicines": [],
+   "diagnoses": [],
+   "advice": [],
+   "follow_up": null,
+   "overall_confidence": 0.99,
+   "warnings": [],
+   "unread": [],
+   "explanation": {
+    "en": {
+     "summary": "This is a lab report from CityCare Diagnostics dated March 12, 2026. It shows several blood tests that are outside the normal range, including blood sugar and cholesterol levels. Some tests, like kidney function and thyroid health, are within the normal range.",
+     "findings": [
+      {
+       "name": "HbA1c (Glycated Hemoglobin)",
+       "flag": "high",
+       "meaning": "This test measures your average blood sugar over the last few months. Your result is higher than the normal range, which is often checked to see how well blood sugar is being managed."
+      },
+      {
+       "name": "Fasting Blood Sugar",
+       "flag": "high",
+       "meaning": "This measures the sugar in your blood after not eating for a while. Your level is above the normal range, which doctors often check for blood sugar control."
+      },
+      {
+       "name": "Total Cholesterol",
+       "flag": "high",
+       "meaning": "This is the total amount of cholesterol in your blood. Your result is higher than the normal limit, which is often monitored for heart health."
+      },
+      {
+       "name": "LDL Cholesterol",
+       "flag": "high",
+       "meaning": "This is often called 'bad' cholesterol because it can build up in blood vessels. Your level is higher than the normal range."
+      },
+      {
+       "name": "HDL Cholesterol",
+       "flag": "low",
+       "meaning": "This is often called 'good' cholesterol because it helps clean out other cholesterol. Your level is lower than the normal range."
+      },
+      {
+       "name": "Triglycerides",
+       "flag": "high",
+       "meaning": "These are a type of fat in your blood. Your level is higher than the normal range, which is often checked along with cholesterol."
+      },
+      {
+       "name": "Vitamin D (25-OH)",
+       "flag": "low",
+       "meaning": "This test checks your vitamin D levels, which help your body use calcium. Your result is lower than the normal range."
+      }
+     ],
+     "medicines": [],
+     "questions": [
+      "What does my high HbA1c and fasting blood sugar mean for my daily habits?",
+      "How can I help lower my cholesterol and triglyceride levels?",
+      "Do I need to take a vitamin D supplement, or should I get more sun?",
+      "When should I come back for another blood test to see if these numbers change?"
+     ],
+     "disclaimer": "This explanation is for understanding your records only. It is not a diagnosis or medical advice. Do not start, stop or change any medicine without your doctor.",
+     "guard_replaced": 0
+    },
+    "hi": {
+     "summary": "यह दस्तावेज़ एक लैब रिपोर्ट है जो आपके रक्त परीक्षण के परिणाम दिखाता है। मुख्य बात यह है कि आपकी रक्त शर्करा और कोलेस्ट्रॉल के स्तर ऊँचे हैं, और विटामिन D तथा HDL कोलेस्ट्रॉल कम हैं।",
+     "findings": [
+      {
+       "name": "HbA1c (Glycated Hemoglobin)",
+       "flag": "high",
+       "meaning": "यह टेस्ट पिछले तीन महीनों में आपकी औसत रक्त शर्करा दिखाता है। यह मान ऊँचा है, जिसका मतलब है कि आपकी रक्त शर्करा अक्सर ऊँची रहती है।"
+      },
+      {
+       "name": "Fasting Blood Sugar",
+       "flag": "high",
+       "meaning": "यह टेस्ट रात भर के उपवास के बाद आपकी रक्त शर्करा मापता है। यह मान ऊँचा है, जो बताता है कि आपकी रक्त शर्करा सामान्य से अधिक है।"
+      },
+      {
+       "name": "Total Cholesterol",
+       "flag": "high",
+       "meaning": "यह टेस्ट आपके रक्त में कुल कोलेस्ट्रॉल की मात्रा दिखाता है। यह मान ऊँचा है, जिससे दिल की बीमारी का खतरा बढ़ सकता है।"
+      },
+      {
+       "name": "LDL Cholesterol",
+       "flag": "high",
+       "meaning": "यह ‘बुरा’ कोलेस्ट्रॉल है। यह मान ऊँचा है, जिससे धमनियों में प्लाक बन सकता है।"
+      },
+      {
+       "name": "HDL Cholesterol",
+       "flag": "low",
+       "meaning": "यह ‘अच्छा’ कोलेस्ट्रॉल है। यह मान कम है, जिससे दिल की सुरक्षा कम हो जाती है।"
+      },
+      {
+       "name": "Triglycerides",
+       "flag": "high",
+       "meaning": "यह रक्त में फैट की एक प्रकार की मात्रा है। यह मान ऊँचा है, जो दिल और अन्य अंगों पर असर डाल सकता है।"
+      },
+      {
+       "name": "Vitamin D (25-OH)",
+       "flag": "low",
+       "meaning": "यह विटामिन D का स्तर दिखाता है। यह मान कम है, जिससे हड्डियों और प्रतिरक्षा पर असर पड़ सकता है।"
+      }
+     ],
+     "medicines": [],
+     "questions": [
+      "मेरी रक्त शर्करा और कोलेस्ट्रॉल के स्तर को सुधारने के लिए क्या बदलाव करने चाहिए?",
+      "विटामिन D कम होने के कारण क्या हो सकता है और इसे कैसे बढ़ाया जा सकता है?",
+      "क्या इन परिणामों के आधार पर मुझे किसी विशेष दवा या उपचार की ज़रूरत है?",
+      "इन परीक्षणों को कितनी बार दोहराना चाहिए?"
+     ],
+     "disclaimer": "यह जानकारी केवल आपके रिकॉर्ड को समझने के लिए है। यह कोई निदान या चिकित्सा सलाह नहीं है। अपने डॉक्टर से पूछे बिना कोई दवा शुरू, बंद या बदलें नहीं।",
+     "guard_replaced": 0
+    }
+   },
+   "source": "sample",
+   "filename": "lab-2026-03.png",
+   "extracted_by": "gemini-3-flash-preview",
+   "file_url": "/samples/lab-2026-03.png"
+  },
+  {
+   "id": "rec_demo_rxmar",
+   "doc_type": "prescription",
+   "title": "Prescription - Dr. Anita Mehta",
+   "date": "2026-03-14",
+   "facility": "Mehta Diabetes & Heart Clinic",
+   "doctor": "Dr. Anita Mehta",
+   "patient": {
+    "name": "Jay Tawri",
+    "age": "46",
+    "sex": "M"
+   },
+   "language_detected": "en",
+   "handwritten": false,
+   "tests": [],
+   "medicines": [
+    {
+     "name": "Tab. Glycomet",
+     "generic": "Metformin",
+     "strength": "500 mg",
+     "dose": null,
+     "frequency": "morning and night",
+     "timing": "after food",
+     "duration": "3 months",
+     "instructions": null,
+     "source_text": "1. Tab. Glycomet 500 mg (Metformin) 1-0-1 after food x 3 months",
+     "page": 1,
+     "confidence": 0.99,
+     "known": true
+    },
+    {
+     "name": "Tab. Atorva",
+     "generic": "Atorvastatin",
+     "strength": "10 mg",
+     "dose": null,
+     "frequency": "night only",
+     "timing": "at bedtime",
+     "duration": "3 months",
+     "instructions": null,
+     "source_text": "2. Tab. Atorva 10 mg (Atorvastatin) 0-0-1 at bedtime x 3 months",
+     "page": 1,
+     "confidence": 0.99,
+     "known": true
+    },
+    {
+     "name": "Cap. Uprise-D3 60K",
+     "generic": "Cholecalciferol",
+     "strength": "60,000 IU",
+     "dose": null,
+     "frequency": "once a week",
+     "timing": null,
+     "duration": "8 weeks",
+     "instructions": null,
+     "source_text": "3. Cap. Uprise-D3 60K (Cholecalciferol 60,000 IU) once a week x 8 weeks",
+     "page": 1,
+     "confidence": 0.99,
+     "known": true
+    }
+   ],
+   "diagnoses": [
+    {
+     "name": "Type 2 Diabetes Mellitus (newly detected)",
+     "confidence": 0.99
+    },
+    {
+     "name": "Dyslipidemia",
+     "confidence": 0.99
+    },
+    {
+     "name": "Vitamin D deficiency",
+     "confidence": 0.99
+    }
+   ],
+   "advice": [
+    "Brisk walk 30 minutes daily",
+    "Avoid sugar, sweets and fried food",
+    "Check fasting sugar at home twice a week",
+    "Repeat HbA1c and lipid profile after 3 months"
+   ],
+   "follow_up": "after 3 months with reports.",
+   "overall_confidence": 0.99,
+   "warnings": [],
+   "unread": [],
+   "explanation": {
+    "en": {
+     "summary": "This is a prescription from Dr. Anita Mehta for managing newly detected type 2 diabetes, high cholesterol, and low vitamin D. It includes medications, lifestyle advice, and a follow‑up plan in three months. The main takeaways are to take the medicines as directed, keep active, avoid sugary foods, and monitor blood sugar at home.",
+     "findings": [
+      {
+       "name": "All tests",
+       "flag": "normal",
+       "meaning": "All test results are within normal ranges."
+      }
+     ],
+     "medicines": [
+      {
+       "name": "Tab. Glycomet",
+       "purpose": "helps control blood sugar levels."
+      },
+      {
+       "name": "Tab. Atorva",
+       "purpose": "lowers bad cholesterol."
+      },
+      {
+       "name": "Cap. Uprise-D3 60K",
+       "purpose": "boosts vitamin D levels."
+      }
+     ],
+     "questions": [
+      "What should I do if my blood sugar stays high after three months?",
+      "How can I tell if my cholesterol is improving?",
+      "Will I need to change my medication if my vitamin D stays low?",
+      "Can I take other supplements or foods that might affect my blood sugar?"
+     ],
+     "disclaimer": "This explanation is for understanding your records only. It is not a diagnosis or medical advice. Do not start, stop or change any medicine without your doctor.",
+     "guard_replaced": 0
+    },
+    "hi": {
+     "summary": "यह दस्तावेज़ डॉ. Anita Mehta द्वारा 14 मार्च 2026 को जारी की गई दवा सूची और सलाह है। इसमें टाइप 2 डायबिटीज़, डिसलिपिडेमिया और विटामिन D की कमी के लिए दवाइयाँ और जीवनशैली के सुझाव हैं। दवाइयाँ 3 महीने के लिए हैं और आपको 3 महीने बाद फॉलो‑अप करना है।",
+     "findings": [
+      {
+       "name": "All tests",
+       "flag": "normal",
+       "meaning": "सभी परीक्षण सामान्य हैं।"
+      }
+     ],
+     "medicines": [
+      {
+       "name": "Tab. Glycomet",
+       "purpose": "शरीर में इंसुलिन की आवश्यकता को कम करके रक्त शर्करा नियंत्रित करता है।"
+      },
+      {
+       "name": "Tab. Atorva",
+       "purpose": "कोलेस्ट्रॉल कम करके दिल की सुरक्षा करता है।"
+      },
+      {
+       "name": "Cap. Uprise-D3 60K",
+       "purpose": "विटामिन D की कमी को पूरा करता है और हड्डियों को मजबूत बनाता है।"
+      }
+     ],
+     "questions": [
+      "मेरी रक्त शर्करा का लक्ष्य स्तर क्या है?",
+      "क्या मुझे दवाइयाँ खाने के बाद ही लेनी चाहिए?",
+      "क्या मुझे किसी विशेष भोजन से बचना चाहिए?",
+      "क्या मुझे दवाइयों के दुष्प्रभावों के बारे में बताना चाहिए?"
+     ],
+     "disclaimer": "यह जानकारी केवल आपके रिकॉर्ड को समझने के लिए है। यह कोई निदान या चिकित्सा सलाह नहीं है। अपने डॉक्टर से पूछे बिना कोई दवा शुरू, बंद या बदलें नहीं।",
+     "guard_replaced": 0
+    }
+   },
+   "source": "sample",
+   "filename": "prescription-2026-03.png",
+   "extracted_by": "gemini-3-flash-preview",
+   "file_url": "/samples/prescription-2026-03.png"
+  },
+  {
+   "id": "rec_demo_labjun",
+   "doc_type": "lab_report",
+   "title": "Lab Report - CityCare Diagnostics",
+   "date": "2026-06-18",
+   "facility": "CityCare Diagnostics",
+   "doctor": "Dr. Anita Mehta",
+   "patient": {
+    "name": "Mr. Jay Tawri",
+    "age": "46 Years",
+    "sex": "M"
+   },
+   "language_detected": "en",
+   "handwritten": false,
+   "tests": [
+    {
+     "name": "HbA1c (Glycated Hemoglobin)",
+     "value": 7.6,
+     "unit": "%",
+     "ref_low": 4.0,
+     "ref_high": 5.6,
+     "ref_text": "4.0 - 5.6",
+     "ref_source": "report",
+     "flag": "high",
+     "source_text": "HbA1c (Glycated Hemoglobin) 7.6 % 4.0 - 5.6",
+     "page": 1,
+     "confidence": 0.99,
+     "loinc": "4548-4",
+     "standard_name": "HbA1c"
+    },
+    {
+     "name": "Fasting Blood Sugar",
+     "value": 142.0,
+     "unit": "mg/dL",
+     "ref_low": 70.0,
+     "ref_high": 100.0,
+     "ref_text": "70 - 100",
+     "ref_source": "report",
+     "flag": "high",
+     "source_text": "Fasting Blood Sugar 142 mg/dL 70 - 100",
+     "page": 1,
+     "confidence": 0.99,
+     "loinc": "1558-6",
+     "standard_name": "Fasting Blood Sugar"
+    },
+    {
+     "name": "Total Cholesterol",
+     "value": 198.0,
+     "unit": "mg/dL",
+     "ref_low": null,
+     "ref_high": 200.0,
+     "ref_text": "< 200",
+     "ref_source": "report",
+     "flag": "normal",
+     "source_text": "Total Cholesterol 198 mg/dL < 200",
+     "page": 1,
+     "confidence": 0.99,
+     "loinc": "2093-3",
+     "standard_name": "Total Cholesterol"
+    },
+    {
+     "name": "LDL Cholesterol",
+     "value": 118.0,
+     "unit": "mg/dL",
+     "ref_low": null,
+     "ref_high": 100.0,
+     "ref_text": "< 100",
+     "ref_source": "report",
+     "flag": "high",
+     "source_text": "LDL Cholesterol 118 mg/dL < 100",
+     "page": 1,
+     "confidence": 0.99,
+     "loinc": "13457-7",
+     "standard_name": "LDL Cholesterol"
+    },
+    {
+     "name": "HDL Cholesterol",
+     "value": 41.0,
+     "unit": "mg/dL",
+     "ref_low": 40.0,
+     "ref_high": null,
+     "ref_text": "> 40",
+     "ref_source": "report",
+     "flag": "normal",
+     "source_text": "HDL Cholesterol 41 mg/dL > 40",
+     "page": 1,
+     "confidence": 0.99,
+     "loinc": "2085-9",
+     "standard_name": "HDL Cholesterol"
+    },
+    {
+     "name": "Triglycerides",
+     "value": 176.0,
+     "unit": "mg/dL",
+     "ref_low": null,
+     "ref_high": 150.0,
+     "ref_text": "< 150",
+     "ref_source": "report",
+     "flag": "high",
+     "source_text": "Triglycerides 176 mg/dL < 150",
+     "page": 1,
+     "confidence": 0.99,
+     "loinc": "2571-8",
+     "standard_name": "Triglycerides"
+    },
+    {
+     "name": "Serum Creatinine",
+     "value": 0.9,
+     "unit": "mg/dL",
+     "ref_low": 0.6,
+     "ref_high": 1.3,
+     "ref_text": "0.6 - 1.3",
+     "ref_source": "report",
+     "flag": "normal",
+     "source_text": "Serum Creatinine 0.9 mg/dL 0.6 - 1.3",
+     "page": 1,
+     "confidence": 0.99,
+     "loinc": "2160-0",
+     "standard_name": "Serum Creatinine"
+    },
+    {
+     "name": "Vitamin D (25-OH)",
+     "value": 26.0,
+     "unit": "ng/mL",
+     "ref_low": 30.0,
+     "ref_high": 100.0,
+     "ref_text": "30 - 100",
+     "ref_source": "report",
+     "flag": "low",
+     "source_text": "Vitamin D (25-OH) 26 ng/mL 30 - 100",
+     "page": 1,
+     "confidence": 0.99,
+     "loinc": "1989-3",
+     "standard_name": "Vitamin D (25-OH)"
+    }
+   ],
+   "medicines": [],
+   "diagnoses": [],
+   "advice": [],
+   "follow_up": null,
+   "overall_confidence": 0.99,
+   "warnings": [],
+   "unread": [],
+   "explanation": {
+    "en": {
+     "summary": "This document is a lab report from CityCare Diagnostics that shows results for your blood sugar, cholesterol, and vitamin levels. The main takeaways are that your blood sugar and some blood fats are higher than the normal range. Additionally, your Vitamin D level is lower than expected.",
+     "findings": [
+      {
+       "name": "HbA1c (Glycated Hemoglobin)",
+       "flag": "high",
+       "meaning": "This test measures your average blood sugar over the past few months. Your result of 7.6 is high and is often used to check how the body manages sugar over time."
+      },
+      {
+       "name": "Fasting Blood Sugar",
+       "flag": "high",
+       "meaning": "This measures the sugar in your blood after you have not eaten for a while. Your level of 142.0 is above the normal range and can be linked to how the body processes energy."
+      },
+      {
+       "name": "LDL Cholesterol",
+       "flag": "high",
+       "meaning": "This is often called bad cholesterol because it can build up in your blood vessels. Your result of 118.0 is higher than the target range."
+      },
+      {
+       "name": "Triglycerides",
+       "flag": "high",
+       "meaning": "These are a type of fat found in your blood. Your level of 176.0 is above the normal range and is often checked to see how the body stores extra energy."
+      },
+      {
+       "name": "Vitamin D (25-OH)",
+       "flag": "low",
+       "meaning": "This vitamin helps keep your bones strong and supports your immune system. Your level of 26.0 is below the normal range."
+      }
+     ],
+     "medicines": [],
+     "questions": [
+      "What are the best ways to help bring my blood sugar levels back into the normal range?",
+      "How do these cholesterol and triglyceride results affect my long-term health?",
+      "Should I change my diet or take a supplement to improve my Vitamin D level?",
+      "When should we repeat these tests to see if my levels have improved?"
+     ],
+     "disclaimer": "This explanation is for understanding your records only. It is not a diagnosis or medical advice. Do not start, stop or change any medicine without your doctor.",
+     "guard_replaced": 0
+    },
+    "hi": {
+     "summary": "यह CityCare Diagnostics का 18 जून 2026 की लैब रिपोर्ट है। इसमें खून में चीनी और कुछ कोलेस्ट्रॉल के स्तर सामान्य से ऊपर मिले हैं। साथ ही, विटामिन D का स्तर थोड़ा कम है।",
+     "findings": [
+      {
+       "name": "HbA1c (Glycated Hemoglobin)",
+       "flag": "high",
+       "meaning": "यह टेस्ट पिछले कुछ महीनों के औसत खून की चीनी को मापता है। यह मान सामान्य सीमा से ऊपर है, जो अक्सर डायबिटीज की जाँच के लिए देखा जाता है।"
+      },
+      {
+       "name": "Fasting Blood Sugar",
+       "flag": "high",
+       "meaning": "यह खाली पेट खून में चीनी की मात्रा है। यह मान सामान्य सीमा से ऊपर है, जिसका मतलब है कि शरीर चीनी को संभालने में थोड़ी कठिनाई हो सकती है।"
+      },
+      {
+       "name": "LDL Cholesterol",
+       "flag": "high",
+       "meaning": "इसे 'बुरा कोलेस्ट्रॉल' कहा जाता है क्योंकि यह धमनियों में जमा हो सकता है। यह मान सामान्य सीमा से ऊपर है।"
+      },
+      {
+       "name": "Triglycerides",
+       "flag": "high",
+       "meaning": "यह खून में एक प्रकार का वसा (fat) है। यह मान सामान्य सीमा से ऊपर है, जो अक्सर आहार या मेटाबॉलिज्म से जुड़ा होता है।"
+      },
+      {
+       "name": "Vitamin D (25-OH)",
+       "flag": "low",
+       "meaning": "यह हड्डियों और इम्युनिटी के लिए जरूरी विटामिन है। यह मान सामान्य सीमा से नीचे है, जिसका मतलब है कि शरीर में इसकी कमी है।"
+      }
+     ],
+     "medicines": [],
+     "questions": [
+      "मेरी खून की चीनी के स्तर को सामान्य करने के लिए मुझे क्या करना चाहिए?",
+      "क्या मुझे विटामिन D की सप्लीमेंट लेने की जरूरत है?",
+      "मेरे कोलेस्ट्रॉल के स्तर को कम करने के लिए आहार में क्या बदलाव करने चाहिए?",
+      "क्या मुझे इन टेस्ट्स को दोबारा करवाना होगा, और कब?"
+     ],
+     "disclaimer": "यह जानकारी केवल आपके रिकॉर्ड को समझने के लिए है। यह कोई निदान या चिकित्सा सलाह नहीं है। अपने डॉक्टर से पूछे बिना कोई दवा शुरू, बंद या बदलें नहीं।",
+     "guard_replaced": 0
+    }
+   },
+   "source": "sample",
+   "filename": "lab-2026-06.png",
+   "extracted_by": "gemini-3-flash-preview",
+   "file_url": "/samples/lab-2026-06.png"
+  },
+  {
+   "id": "rec_demo_disaug",
+   "doc_type": "discharge_summary",
+   "title": "Discharge Summary - Fortune Multispeciality Hospital",
+   "date": "2026-08-08",
+   "facility": "Fortune Multispeciality Hospital",
+   "doctor": "Dr. Vikram Sood",
+   "patient": {
+    "name": "Mr. Jay Tawri",
+    "age": "46 Y",
+    "sex": "M"
+   },
+   "language_detected": "en",
+   "handwritten": false,
+   "tests": [
+    {
+     "name": "Platelet Count (05/08, lowest)",
+     "value": 68000.0,
+     "unit": "/cumm",
+     "ref_low": 150000.0,
+     "ref_high": 410000.0,
+     "ref_text": "150000 - 410000",
+     "ref_source": "report",
+     "flag": "low",
+     "source_text": "Platelet Count (05/08, lowest) 68000 /cumm 150000 - 410000",
+     "page": 1,
+     "confidence": 0.98,
+     "loinc": "777-3",
+     "standard_name": "Platelet Count"
+    },
+    {
+     "name": "Platelet Count (at discharge)",
+     "value": 142000.0,
+     "unit": "/cumm",
+     "ref_low": 150000.0,
+     "ref_high": 410000.0,
+     "ref_text": "150000 - 410000",
+     "ref_source": "report",
+     "flag": "low",
+     "source_text": "Platelet Count (at discharge) 142000 /cumm 150000 - 410000",
+     "page": 1,
+     "confidence": 0.98,
+     "loinc": "777-3",
+     "standard_name": "Platelet Count"
+    },
+    {
+     "name": "Hemoglobin",
+     "value": 14.6,
+     "unit": "g/dL",
+     "ref_low": 13.0,
+     "ref_high": 17.0,
+     "ref_text": "13.0 - 17.0",
+     "ref_source": "report",
+     "flag": "normal",
+     "source_text": "Hemoglobin 14.6 g/dL 13.0 - 17.0",
+     "page": 1,
+     "confidence": 0.98,
+     "loinc": "718-7",
+     "standard_name": "Hemoglobin"
+    },
+    {
+     "name": "Total WBC Count",
+     "value": 3400.0,
+     "unit": "/cumm",
+     "ref_low": 4000.0,
+     "ref_high": 11000.0,
+     "ref_text": "4000 - 11000",
+     "ref_source": "report",
+     "flag": "low",
+     "source_text": "Total WBC Count 3400 /cumm 4000 - 11000",
+     "page": 1,
+     "confidence": 0.98,
+     "loinc": "6690-2",
+     "standard_name": "Total WBC Count"
+    },
+    {
+     "name": "SGPT (ALT)",
+     "value": 88.0,
+     "unit": "U/L",
+     "ref_low": null,
+     "ref_high": 45.0,
+     "ref_text": "< 45",
+     "ref_source": "report",
+     "flag": "high",
+     "source_text": "SGPT (ALT) 88 U/L < 45",
+     "page": 1,
+     "confidence": 0.98,
+     "loinc": "1742-6",
+     "standard_name": "SGPT (ALT)"
+    },
+    {
+     "name": "Dengue NS1 Antigen",
+     "value": "Positive",
+     "unit": "",
+     "ref_low": null,
+     "ref_high": null,
+     "ref_text": "Negative",
+     "ref_source": null,
+     "flag": "unknown",
+     "source_text": "Dengue NS1 Antigen Positive Negative",
+     "page": 1,
+     "confidence": 0.98
+    }
+   ],
+   "medicines": [
+    {
+     "name": "Tab. Dolo",
+     "generic": "Paracetamol",
+     "strength": "650 mg",
+     "dose": null,
+     "frequency": "only when needed",
+     "timing": null,
+     "duration": "5 days",
+     "instructions": "for fever, maximum 3 tablets a day",
+     "source_text": "1. Tab. Dolo 650 mg (Paracetamol) SOS for fever, maximum 3 tablets a day x 5 days",
+     "page": 1,
+     "confidence": 0.98,
+     "known": true
+    },
+    {
+     "name": "Tab. Pan",
+     "generic": "Pantoprazole",
+     "strength": "40 mg",
+     "dose": null,
+     "frequency": "once a day (morning)",
+     "timing": "before breakfast",
+     "duration": "5 days",
+     "instructions": null,
+     "source_text": "2. Tab. Pan 40 mg (Pantoprazole) 1-0-0 before breakfast x 5 days",
+     "page": 1,
+     "confidence": 0.98,
+     "known": true
+    },
+    {
+     "name": "Tab. Glycomet",
+     "generic": null,
+     "strength": "500 mg",
+     "dose": null,
+     "frequency": "twice a day (morning and night)",
+     "timing": "after food",
+     "duration": null,
+     "instructions": "Continue",
+     "source_text": "3. Continue Tab. Glycomet 500 mg 1-0-1 after food",
+     "page": 1,
+     "confidence": 0.98,
+     "known": true
+    }
+   ],
+   "diagnoses": [
+    {
+     "name": "Dengue fever (NS1 antigen positive) with thrombocytopenia",
+     "confidence": 0.98
+    },
+    {
+     "name": "Type 2 Diabetes Mellitus (known case)",
+     "confidence": 0.98
+    }
+   ],
+   "advice": [
+    "Drink plenty of fluids (3 litres a day)",
+    "Rest for one week",
+    "Do NOT take ibuprofen, aspirin or other painkillers",
+    "Come to emergency at once if bleeding, black stools, severe abdominal pain or drowsiness"
+   ],
+   "follow_up": "OPD after 3 days with repeat platelet count.",
+   "overall_confidence": 0.98,
+   "warnings": [],
+   "unread": [],
+   "explanation": {
+    "en": {
+     "summary": "Discharge Summary - Fortune Multispeciality Hospital: 6 test value(s), 4 outside the reference range, 3 medicine(s).",
+     "findings": [
+      {
+       "name": "Platelet Count (05/08, lowest)",
+       "flag": "low",
+       "meaning": "Platelet Count (05/08, lowest) is 68000.0 /cumm, below the reference range (150000 - 410000)."
+      },
+      {
+       "name": "Platelet Count (at discharge)",
+       "flag": "low",
+       "meaning": "Platelet Count (at discharge) is 142000.0 /cumm, below the reference range (150000 - 410000)."
+      },
+      {
+       "name": "Total WBC Count",
+       "flag": "low",
+       "meaning": "Total WBC Count is 3400.0 /cumm, below the reference range (4000 - 11000)."
+      },
+      {
+       "name": "SGPT (ALT)",
+       "flag": "high",
+       "meaning": "SGPT (ALT) is 88.0 U/L, above the reference range (< 45)."
+      }
+     ],
+     "medicines": [
+      {
+       "name": "Tab. Dolo",
+       "purpose": "Analgesic / antipyretic"
+      },
+      {
+       "name": "Tab. Pan",
+       "purpose": "Proton pump inhibitor"
+      },
+      {
+       "name": "Tab. Glycomet",
+       "purpose": "Ask your doctor or pharmacist."
+      }
+     ],
+     "questions": [
+      "What do the values outside the range mean for me?",
+      "Do I need any follow-up tests?"
+     ],
+     "disclaimer": "This explanation is for understanding your records only. It is not a diagnosis or medical advice. Do not start, stop or change any medicine without your doctor.",
+     "fallback": true
+    },
+    "hi": {
+     "summary": "यह दस्तावेज़ आपके अस्पताल से छुट्टी के बाद के परीक्षण परिणाम और दवाइयों का सारांश है। मुख्य बात यह है कि प्लेटलेट और श्वेत रक्त कोशिकाएँ कम हैं, लिवर एंजाइम बढ़ा हुआ है, और डेंगू एंटीजन पॉज़िटिव है। दवाइयाँ बुखार, पेट की समस्या और रक्त शर्करा नियंत्रण के लिए हैं।",
+     "findings": [
+      {
+       "name": "Platelet Count (05/08, lowest)",
+       "flag": "low",
+       "meaning": "प्लेटलेट काउंट रक्त में प्लेटलेट्स की संख्या मापता है। यह मान सामान्य से कम है, जो प्लेटलेट्स की कमी को दर्शाता है।"
+      },
+      {
+       "name": "Platelet Count (at discharge)",
+       "flag": "low",
+       "meaning": "प्लेटलेट काउंट रक्त में प्लेटलेट्स की संख्या मापता है। यह मान सामान्य से कम है, जो प्लेटलेट्स की कमी को दर्शाता है।"
+      },
+      {
+       "name": "Total WBC Count",
+       "flag": "low",
+       "meaning": "श्वेत रक्त कोशिकाओं की संख्या मापता है। यह मान सामान्य से कम है, जो संक्रमण या बोन मैरो की समस्या का संकेत हो सकता है।"
+      },
+      {
+       "name": "SGPT (ALT)",
+       "flag": "high",
+       "meaning": "लिवर का एंजाइम मापता है। यह मान सामान्य से अधिक है, जो लिवर पर तनाव या क्षति का संकेत देता है।"
+      },
+      {
+       "name": "Dengue NS1 Antigen",
+       "flag": "unknown",
+       "meaning": "यह परीक्षण डेंगू वायरस के एंटीजन की उपस्थिति जाँचता है। परिणाम पॉज़िटिव है, जो डेंगू संक्रमण की पुष्टि करता है।"
+      }
+     ],
+     "medicines": [
+      {
+       "name": "Tab. Dolo",
+       "purpose": "बुखार और दर्द को कम करने के लिए।"
+      },
+      {
+       "name": "Tab. Pan",
+       "purpose": "पेट के एसिड को कम करने और पेट की सुरक्षा के लिए।"
+      },
+      {
+       "name": "Tab. Glycomet",
+       "purpose": "रक्त शर्करा को नियंत्रित करने के लिए।"
+      }
+     ],
+     "questions": [
+      "क्या मेरी प्लेटलेट और श्वेत रक्त कोशिकाओं की संख्या सामान्य होने में कितना समय लगेगा?",
+      "क्या SGPT के बढ़े हुए स्तर के लिए कोई विशेष उपचार या निगरानी की आवश्यकता है?",
+      "डेंगू के लक्षणों में क्या बदलाव पर तुरंत डॉक्टर से संपर्क करना चाहिए?",
+      "ग्लाइकोमेट लेने के बाद मुझे कौन से भोजन या दवाइयों से बचना चाहिए?"
+     ],
+     "disclaimer": "यह जानकारी केवल आपके रिकॉर्ड को समझने के लिए है। यह कोई निदान या चिकित्सा सलाह नहीं है। अपने डॉक्टर से पूछे बिना कोई दवा शुरू, बंद या बदलें नहीं।",
+     "guard_replaced": 0
+    }
+   },
+   "source": "sample",
+   "filename": "discharge-2026-08.png",
+   "extracted_by": "gemini-3-flash-preview",
+   "file_url": "/samples/discharge-2026-08.png"
+  },
+  {
+   "id": "rec_demo_labsep",
+   "doc_type": "lab_report",
+   "title": "CityCare Diagnostics",
+   "date": "2026-09-22",
+   "facility": "CityCare Diagnostics",
+   "doctor": "Dr. Anita Mehta",
+   "patient": {
+    "name": "Mr. Jay Tawri",
+    "age": "46 Years",
+    "sex": "M"
+   },
+   "language_detected": "en",
+   "handwritten": false,
+   "tests": [
+    {
+     "name": "HbA1c (Glycated Hemoglobin)",
+     "value": 6.9,
+     "unit": "%",
+     "ref_low": 4.0,
+     "ref_high": 5.6,
+     "ref_text": "4.0 - 5.6",
+     "ref_source": "report",
+     "flag": "high",
+     "source_text": "HbA1c (Glycated Hemoglobin) 6.9 % 4.0 - 5.6",
+     "page": 1,
+     "confidence": 0.99,
+     "loinc": "4548-4",
+     "standard_name": "HbA1c"
+    },
+    {
+     "name": "Fasting Blood Sugar",
+     "value": 118.0,
+     "unit": "mg/dL",
+     "ref_low": 70.0,
+     "ref_high": 100.0,
+     "ref_text": "70 - 100",
+     "ref_source": "report",
+     "flag": "high",
+     "source_text": "Fasting Blood Sugar 118 mg/dL 70 - 100",
+     "page": 1,
+     "confidence": 0.99,
+     "loinc": "1558-6",
+     "standard_name": "Fasting Blood Sugar"
+    },
+    {
+     "name": "Total Cholesterol",
+     "value": 172.0,
+     "unit": "mg/dL",
+     "ref_low": null,
+     "ref_high": 200.0,
+     "ref_text": "< 200",
+     "ref_source": "report",
+     "flag": "normal",
+     "source_text": "Total Cholesterol 172 mg/dL < 200",
+     "page": 1,
+     "confidence": 0.99,
+     "loinc": "2093-3",
+     "standard_name": "Total Cholesterol"
+    },
+    {
+     "name": "LDL Cholesterol",
+     "value": 96.0,
+     "unit": "mg/dL",
+     "ref_low": null,
+     "ref_high": 100.0,
+     "ref_text": "< 100",
+     "ref_source": "report",
+     "flag": "normal",
+     "source_text": "LDL Cholesterol 96 mg/dL < 100",
+     "page": 1,
+     "confidence": 0.99,
+     "loinc": "13457-7",
+     "standard_name": "LDL Cholesterol"
+    },
+    {
+     "name": "HDL Cholesterol",
+     "value": 44.0,
+     "unit": "mg/dL",
+     "ref_low": 40.0,
+     "ref_high": null,
+     "ref_text": "> 40",
+     "ref_source": "report",
+     "flag": "normal",
+     "source_text": "HDL Cholesterol 44 mg/dL > 40",
+     "page": 1,
+     "confidence": 0.99,
+     "loinc": "2085-9",
+     "standard_name": "HDL Cholesterol"
+    },
+    {
+     "name": "Triglycerides",
+     "value": 148.0,
+     "unit": "mg/dL",
+     "ref_low": null,
+     "ref_high": 150.0,
+     "ref_text": "< 150",
+     "ref_source": "report",
+     "flag": "normal",
+     "source_text": "Triglycerides 148 mg/dL < 150",
+     "page": 1,
+     "confidence": 0.99,
+     "loinc": "2571-8",
+     "standard_name": "Triglycerides"
+    },
+    {
+     "name": "Hemoglobin",
+     "value": 14.1,
+     "unit": "g/dL",
+     "ref_low": 13.0,
+     "ref_high": 17.0,
+     "ref_text": "13.0 - 17.0",
+     "ref_source": "report",
+     "flag": "normal",
+     "source_text": "Hemoglobin 14.1 g/dL 13.0 - 17.0",
+     "page": 1,
+     "confidence": 0.99,
+     "loinc": "718-7",
+     "standard_name": "Hemoglobin"
+    },
+    {
+     "name": "Platelet Count",
+     "value": 2.4,
+     "unit": "lakh/cumm",
+     "ref_low": 1.5,
+     "ref_high": 4.1,
+     "ref_text": "1.5 - 4.1",
+     "ref_source": "report",
+     "flag": "normal",
+     "source_text": "Platelet Count 2.4 lakh/cumm 1.5 - 4.1",
+     "page": 1,
+     "confidence": 0.99,
+     "loinc": "777-3",
+     "standard_name": "Platelet Count"
+    },
+    {
+     "name": "Serum Creatinine",
+     "value": 1.0,
+     "unit": "mg/dL",
+     "ref_low": 0.6,
+     "ref_high": 1.3,
+     "ref_text": "0.6 - 1.3",
+     "ref_source": "report",
+     "flag": "normal",
+     "source_text": "Serum Creatinine 1.0 mg/dL 0.6 - 1.3",
+     "page": 1,
+     "confidence": 0.99,
+     "loinc": "2160-0",
+     "standard_name": "Serum Creatinine"
+    },
+    {
+     "name": "Vitamin D (25-OH)",
+     "value": 34.0,
+     "unit": "ng/mL",
+     "ref_low": 30.0,
+     "ref_high": 100.0,
+     "ref_text": "30 - 100",
+     "ref_source": "report",
+     "flag": "normal",
+     "source_text": "Vitamin D (25-OH) 34 ng/mL 30 - 100",
+     "page": 1,
+     "confidence": 0.99,
+     "loinc": "1989-3",
+     "standard_name": "Vitamin D (25-OH)"
+    }
+   ],
+   "medicines": [],
+   "diagnoses": [],
+   "advice": [],
+   "follow_up": null,
+   "overall_confidence": 0.99,
+   "warnings": [],
+   "unread": [],
+   "explanation": {
+    "en": {
+     "summary": "This is a lab report from CityCare Diagnostics dated September 22, 2026. Most of your results are within the normal range. However, two tests related to blood sugar are higher than the expected range.",
+     "findings": [
+      {
+       "name": "HbA1c (Glycated Hemoglobin)",
+       "flag": "high",
+       "meaning": "This test measures your average blood sugar levels over the last few months. Your result is above the normal range, which can be linked to how your body handles sugar."
+      },
+      {
+       "name": "Fasting Blood Sugar",
+       "flag": "high",
+       "meaning": "This test checks the amount of sugar in your blood after you have not eaten for a while. Your level is higher than the normal range, which is often checked to see if blood sugar is running high."
+      }
+     ],
+     "medicines": [],
+     "questions": [
+      "What do these high blood sugar results mean for my health?",
+      "Do I need to repeat these tests to confirm the results?",
+      "Are there any lifestyle changes I should make to help with these levels?",
+      "Should I see a specialist for further evaluation?"
+     ],
+     "disclaimer": "This explanation is for understanding your records only. It is not a diagnosis or medical advice. Do not start, stop or change any medicine without your doctor.",
+     "guard_replaced": 0
+    },
+    "hi": {
+     "summary": "यह CityCare Diagnostics का एक लैब रिपोर्ट है जिसमें खून की जाँच के नतीजे दिए गए हैं। इसमें दो टेस्ट, यानी HbA1c और Fasting Blood Sugar, सामान्य सीमा से ऊपर पाए गए हैं। बाकी सभी टेस्ट, जैसे कोलेस्ट्रॉल और हीमोग्लोबिन, सामान्य सीमा में हैं।",
+     "findings": [
+      {
+       "name": "HbA1c (Glycated Hemoglobin)",
+       "flag": "high",
+       "meaning": "यह टेस्ट पिछले कुछ महीनों में खून में औसतन चीनी (शुगर) के स्तर को दिखाता है। यह मान सामान्य सीमा से ऊपर है, जो अक्सर शुगर के स्तर पर नज़र रखने के लिए जाँच की जाती है।"
+      },
+      {
+       "name": "Fasting Blood Sugar",
+       "flag": "high",
+       "meaning": "यह टेस्ट खाली पेट खून में चीनी (शुगर) की मात्रा मापता है। यह मान सामान्य सीमा से ऊपर है, जो अक्सर मीटबॉलिज्म या शुगर के संबंध में जाँच की जाती है।"
+      }
+     ],
+     "medicines": [],
+     "questions": [
+      "डॉक्टर साहब, क्या मेरा HbA1c और Fasting Blood Sugar का स्तर बढ़ना चिंता का विषय है?",
+      "क्या मुझे इन नतीजों के लिए कोई और टेस्ट करवाना होगा?",
+      "क्या मेरी डाइट या लाइफस्टाइल में कुछ बदलाव करने चाहिए ताकि ये मान सामान्य हों?",
+      "क्या मुझे किसी विशेषज्ञ डॉक्टर से मिलना चाहिए या नियमित जाँच जारी रखनी चाहिए?"
+     ],
+     "disclaimer": "यह जानकारी केवल आपके रिकॉर्ड को समझने के लिए है। यह कोई निदान या चिकित्सा सलाह नहीं है। अपने डॉक्टर से पूछे बिना कोई दवा शुरू, बंद या बदलें नहीं।",
+     "guard_replaced": 0
+    }
+   },
+   "source": "sample",
+   "filename": "lab-2026-09.png",
+   "extracted_by": "gemini-3-flash-preview",
+   "file_url": "/samples/lab-2026-09.png"
+  }
+ ]
+}

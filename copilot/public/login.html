@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="color-scheme" content="light dark">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in · Sehat Copilot</title>
+  <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
+  <script>(function(){var d=document.documentElement,t=null;try{t=localStorage.getItem("sehat_theme")}catch(e){}if(t!=="dark"&&t!=="light"){t=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}d.dataset.theme=t;d.classList.add("js");setTimeout(function(){if(!window.SehatSite)d.classList.remove("js")},3000)})();</script>
+  <link rel="stylesheet" href="/site.css?v=3g">
+  <link rel="prefetch" href="/app">
+  <link rel="prefetch" href="/app.js" as="script">
+  <link rel="prefetch" href="/styles.css?v=3f" as="style">
+  <link rel="prefetch" href="/faq.js" as="script">
+  <script src="/faq.js"></script>
+  <script src="/site.js" defer></script>
+  <script src="/sync.js" defer></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+</head>
+<body class="login" data-page="login">
+  <header class="site-nav" id="nav"><div class="nav-row">
+    <a class="brand" href="/" data-noi18n><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="currentColor"/><path d="M16 25s-8-5.2-8-11a4.6 4.6 0 0 1 8-3 4.6 4.6 0 0 1 8 3c0 5.800-8 11-8 11z" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/><path d="M11.500 16h2.500l1.500-3 2 6 1.500-3h1.500" fill="none" stroke="#fff" stroke-width="1.800" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Sehat Copilot</span></a>
+    <div class="tools" data-tools></div>
+  </div></header>
+  <main class="login-main">
+    <div class="formbox">
+      <h1>Welcome</h1>
+      <div class="tabs roles" role="tablist" id="roleTabs" style="margin-bottom:14px">
+        <button type="button" role="tab" id="r-pat" aria-selected="true">Patient</button>
+        <button type="button" role="tab" id="r-doc" aria-selected="false">Doctor</button>
+        <button type="button" role="tab" id="r-staff" aria-selected="false">Nurse / staff</button>
+      </div>
+      <p class="sub" id="roleSub">Sign in to see your health records explained in plain words.</p>
+      <div id="emailBox">
+        <div class="tabs" role="tablist">
+          <button type="button" role="tab" id="t-in" aria-selected="true">Sign in</button>
+          <button type="button" role="tab" id="t-up" aria-selected="false">Create account</button>
+        </div>
+        <form id="f" novalidate autocomplete="on">
+          <div id="nameRow" hidden><label for="name">Name</label><input id="name" autocomplete="name"><div class="msg" id="e-name"></div></div>
+          <label for="email">Email</label>
+          <input id="email" type="email" autocomplete="username" placeholder="you@example.com" data-noi18n><div class="msg" id="e-email"></div>
+          <label for="pw">Password</label>
+          <input id="pw" type="password" autocomplete="current-password" placeholder="At least 6 characters"><div class="msg" id="e-pw"></div>
+          <div class="msg" id="e-form" role="alert"></div>
+          <button class="btn block" type="submit" id="submit">Sign in</button>
+        </form>
+        <div class="or">or try it first</div>
+        <button class="btn secondary lg block demo-btn" type="button" id="demo"><span id="demoT">Continue with demo account</span><span class="s" id="demoS">One click. Opens a sample record, no typing.</span></button>
+      </div>
+      <div id="staffBox" hidden>
+        <form id="sf" novalidate>
+          <label for="code">Access code from your doctor</label>
+          <input id="code" placeholder="e.g. 4F9A2C" maxlength="12" autocomplete="off" style="text-transform:uppercase;letter-spacing:.25em" data-noi18n>
+          <div class="msg" id="e-code" role="alert"></div>
+          <button class="btn block" type="submit" id="sJoin">Open the to-do list</button>
+        </form>
+        <div class="or">or try it first</div>
+        <button class="btn secondary lg block demo-btn" type="button" id="staffDemo"><span>Continue with nurse demo</span><span class="s">Joins Dr. R. K. Bansal's sample to-do list as a demo nurse.</span></button>
+        <p class="sub" style="margin-top:12px">Your doctor creates the code in their To-do page. It works once. You will only see the to-do list: no patients, prescriptions or recordings.</p>
+      </div>
+      <a class="guest" href="/app" id="guest">Continue as guest</a>
+      <div class="info" role="note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+        <div><b>Your account stays on this device</b><p>Nothing you type here is sent to a server. Because it lives in this browser, it will not follow you to another device.</p></div>
+      </div>
+      <a class="back" href="/">&larr; Back to Sehat Copilot</a>
+    </div>
+  </main>
+  <script>
+    (function () {
+      var $ = function (id) { return document.getElementById(id); };
+      var signup = false;
+      function tr() { if (window.SehatSite) SehatSite.translate(); }
+      function setMode(up) {
+        signup = up;
+        $("nameRow").hidden = !up;
+        $("t-in").setAttribute("aria-selected", String(!up));
+        $("t-up").setAttribute("aria-selected", String(up));
+        $("submit").textContent = up ? "Create account" : "Sign in";
+        $("pw").autocomplete = up ? "new-password" : "current-password";
+        clearErrors();
+        tr();
+      }
+      function clearErrors() {
+        ["e-name", "e-email", "e-pw", "e-form"].forEach(function (i) { $(i).textContent = ""; });
+        ["name", "email", "pw"].forEach(function (i) { $(i).removeAttribute("aria-invalid"); });
+      }
+      function bad(field, errId, text) { $(errId).textContent = text; $(field).setAttribute("aria-invalid", "true"); return false; }
+      $("t-in").addEventListener("click", function () { setMode(false); });
+      $("t-up").addEventListener("click", function () { setMode(true); });
+
+      $("f").addEventListener("submit", async function (e) {
+        e.preventDefault();
+        clearErrors();
+        var name = $("name").value.trim(), email = $("email").value.trim(), pw = $("pw").value;
+        var ok = true;
+        if (signup && !name) ok = bad("name", "e-name", "Please enter your name.");
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) ok = bad("email", "e-email", "Enter a valid email address.");
+        if (pw.length < 6) ok = bad("pw", "e-pw", "Password must be at least 6 characters.");
+        if (!ok) { tr(); return; }
+        $("submit").disabled = true;
+        var label = $("submit").textContent;
+        $("submit").textContent = "Opening your records…";
+        try {
+          if (role === "doc") {  // doctor accounts: kept on this device, like patient accounts
+            var docs = JSON.parse(localStorage.getItem("sehat_doctors") || "{}"), key = email.toLowerCase();
+            var hash = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode("sehat-doc:" + key + ":" + pw))), function (x) { return x.toString(16).padStart(2, "0"); }).join("");
+            if (signup) { if (docs[key]) throw new Error("A doctor account with this email already exists. Sign in instead."); docs[key] = { name: name, hash: hash }; localStorage.setItem("sehat_doctors", JSON.stringify(docs)); }
+            else if (!docs[key] || docs[key].hash !== hash) throw new Error(docs[key] ? "Wrong password." : "No doctor account with this email on this device. Create one first.");
+            localStorage.setItem("sehat_doctor", JSON.stringify({ name: docs[key].name, email: key }));
+            location.assign("/doctor.html");
+            return;
+          }
+          if (signup) await SehatAuth.signUp(name, email, pw); else await SehatAuth.signIn(email, pw);
+          location.assign("/app");
+        } catch (err) {
+          $("e-form").textContent = err.message || "Something went wrong.";
+          $("submit").disabled = false;
+          $("submit").textContent = label;
+          tr();
+        }
+      });
+      var role = "pat";
+      var SUB = { pat: "Sign in to see your health records explained in plain words.",
+                  doc: "Record or type a consultation, check the AI draft, approve it, and it reaches your patient's app.",
+                  staff: "For a doctor's PA, nurse or receptionist." };
+      function setRole(r) {
+        role = r;
+        ["pat", "doc", "staff"].forEach(function (k) { $("r-" + k).setAttribute("aria-selected", String(k === r)); });
+        $("roleSub").textContent = SUB[r];
+        $("emailBox").hidden = r === "staff"; $("staffBox").hidden = r !== "staff";
+        $("demoT").textContent = r === "doc" ? "Continue with doctor demo" : "Continue with demo account";
+        $("demoS").textContent = r === "doc" ? "Opens Dr. R. K. Bansal's sample clinic, no sign-in." : "One click. Opens a sample record, no typing.";
+        $("guest").hidden = r !== "pat";
+        tr();
+      }
+      ["pat", "doc", "staff"].forEach(function (k) { $("r-" + k).addEventListener("click", function () { setRole(k); }); });
+      if (/[?&]role=doctor/.test(location.search)) setRole("doc");
+      if (/[?&]role=staff/.test(location.search)) setRole("staff");
+      // nurse demo: a demo doctor list on this device (the same one the doctor demo opens), a demo nurse joins it
+      $("staffDemo").addEventListener("click", async function () {
+        var btn = this; btn.disabled = true; $("e-code").textContent = "";
+        async function team(b) {
+          var r = await fetch("/api/team", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b) });
+          var j = await r.json().catch(function () { return {}; });
+          if (!r.ok) throw new Error(j.error || "The demo could not start.");
+          return j;
+        }
+        try {
+          var key = localStorage.getItem("sehat_doc_key");
+          if (!key) { key = Array.from(crypto.getRandomValues(new Uint8Array(24)), function (x) { return x.toString(16).padStart(2, "0"); }).join(""); localStorage.setItem("sehat_doc_key", key); }
+          var doc = "Dr. R. K. Bansal, MD (Medicine)";
+          var st = await team({ action: "state", key: key, doctor: doc });
+          if (!(st.todos || []).length) {
+            var tasks = ["Call Rahul Mehra about vitamin D result", "Review Sunita Mehra HbA1c report", "Book Harpreet Singh ECG for today", "Send Aanya Mehra referral note to Dr. Khanna"];
+            for (var i = 0; i < tasks.length; i++) await team({ action: "add", key: key, doctor: doc, text: tasks[i] });
+          }
+          var inv = await team({ action: "invite", key: key, doctor: doc, name: "Priya (demo nurse)", role: "nurse" });
+          var j = await team({ action: "join", code: inv.code });
+          localStorage.setItem("sehat_staff_token", j.token);
+          location.assign("/staff.html");
+        } catch (err) { $("e-code").textContent = err.message; btn.disabled = false; }
+      });
+      $("sf").addEventListener("submit", async function (e) {
+        e.preventDefault();
+        $("e-code").textContent = "";
+        var code = $("code").value.trim();
+        if (!code) { $("e-code").textContent = "Enter the code your doctor gave you."; return; }
+        $("sJoin").disabled = true;
+        try {
+          var r = await fetch("/api/team", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "join", code: code }) });
+          var j = await r.json().catch(function () { return {}; });
+          if (!r.ok) throw new Error(j.error || "That code did not work.");
+          localStorage.setItem("sehat_staff_token", j.token);
+          location.assign("/staff.html");
+        } catch (err) { $("e-code").textContent = err.message; $("sJoin").disabled = false; }
+      });
+      $("demo").addEventListener("click", function () {
+        this.disabled = true;
+        if (role === "doc") { localStorage.removeItem("sehat_doctor"); location.assign("/doctor.html?demo=1"); return; }
+        SehatAuth.demo(); location.assign("/app?demo=1");
+      });
+      try { fetch("/api/health"); } catch (e) { /* only a warm-up */ }
+      $("guest").addEventListener("click", function () { SehatAuth.guest(); });
+    })();
+  </script>
+<script>if(/[?&]demo=1/.test(location.search))addEventListener("load",()=>setTimeout(()=>{const b=document.getElementById(/[?&]role=staff/.test(location.search)?"staffDemo":"demo");b&&b.click()},300));</script>
+</body>
+</html>

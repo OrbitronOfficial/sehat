@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<script>try{var th=localStorage.getItem("sehat_theme");if(th!=="dark"&&th!=="light")th=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=th}catch(e){document.documentElement.dataset.theme="light"}</script>
+<meta name="theme-color" content="#0774C4">
+<title>Sehat Copilot</title>
+<link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;600&family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css?v=3j">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="/" aria-label="Sehat Copilot home">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <span class="brand-name" id="brandName">Sehat Copilot</span>
+  </a>
+  <div class="demo-switch-bar" id="demoModeBar" role="tablist" aria-label="Demo perspective selector">
+    <a href="/app?demo=1" class="demo-pill active" data-demo="1" id="demoPill1"><span class="dp-dot p-dot"></span><span>3D Patient (Demo 1)</span></a>
+    <a href="/app?demo=2" class="demo-pill" data-demo="2" id="demoPill2"><span class="dp-dot av-dot"></span><span>Avanade Copilot (Demo 2)</span></a>
+    <a href="/app?demo=3" class="demo-pill" data-demo="3" id="demoPill3"><span class="dp-dot ai-dot"></span><span>Conversational AI (Demo 3)</span></a>
+  </div>
+  <div class="top-right">
+    <span class="local-note" id="localNote">Stored on this device</span>
+    <span class="famchip" id="famChip"></span>
+    <span class="userchip" id="userChip"></span>
+    <button type="button" class="themebtn" id="themeBtn" aria-label="Switch between dark and light theme"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="moon" d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/><g class="sun"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></g></svg></button>
+    <div class="lang" role="group" aria-label="Language">
+      <select id="langSel" aria-label="Language">
+        <option value="en">English</option>
+        <option value="hi">हिंदी</option>
+        <option value="bn">বাংলা</option>
+        <option value="te">తెలుగు</option>
+        <option value="mr">मराठी</option>
+        <option value="ta">தமிழ்</option>
+        <option value="gu">ગુજરાતી</option>
+        <option value="kn">ಕನ್ನಡ</option>
+        <option value="ml">മലയാളം</option>
+        <option value="pa">ਪੰਜਾਬੀ</option>
+      </select>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="nav" id="nav" aria-label="Main"></nav>
+  <main class="main">
+    <div id="err" aria-live="assertive"></div>
+    <div id="view"></div>
+  </main>
+</div>
+
+<div id="pet"></div>
+<footer class="disclaimer" id="disclaimer" role="note">Sehat Copilot explains your records. It is not a diagnosis. Always confirm with your doctor.</footer>
+
+<input type="file" id="fileInput" accept="image/*,application/pdf,text/plain,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" multiple hidden>
+<input type="file" id="camInput" accept="image/*" capture="environment" hidden>
+<script src="/faq.js"></script>
+<script src="/family.js"></script>
+<script src="/app.js"></script>
+<script src="/voice.js"></script>
+<script src="/reminders.js"></script>
+<script src="/journal.js"></script>
+<script src="/sync.js"></script>
+<script src="/wellness.js"></script>
+<script src="/bulk.js"></script>
+<script src="inbox.js" defer></script>
+<script src="fx.js" defer></script>
+<script>var sdDemo=false;try{sdDemo=/[?&]demo=1/.test(location.search)&&Number(localStorage.getItem("sehat_seed_year")||0)<4}catch(e){}if((/[?&]seed=/.test(location.search)&&/^(localhost|127\.0\.0\.1)$/.test(location.hostname))||sdDemo){window.addEventListener("load",function(){var s=document.createElement("script");s.src="/seed-year.js";document.body.appendChild(s)})}</script>
+<script src="/sehat-bar.js"></script>
+</body>
+</html>

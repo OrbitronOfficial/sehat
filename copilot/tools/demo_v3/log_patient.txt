@@ -1,0 +1,1 @@
+patient [('login', 1.9), ('dash', 9.83), ('timeline', 38.97), ('health', 47.69), ('meds', 58.79), ('visits', 67.43), ('journal', 74.66), ('wellness', 82.58), ('family', 90.36), ('ask', 96.53), ('ask_wait', 102.42), ('ask_done', 103.15), ('abha', 108.59), ('end', 111.46)]

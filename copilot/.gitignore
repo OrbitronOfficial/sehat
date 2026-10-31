@@ -1,0 +1,30 @@
+﻿.env
+__pycache__/
+*.pyc
+.vercel/
+
+
+# raw stock clips (see docs/footage/CREDITS.md)
+docs/footage/*.mp4
+
+# raw screen recording for the intro video (re-create with tools/make_clips.py)
+docs/clips/
+
+# local stand-in for cloud sync vaults (encrypted)
+data/sync/
+
+# local runtime data (doctor inbox, clinic database, logs, test scratch)
+data/doctor_inbox.json
+data/*.sqlite3*
+*.log
+.test-tmp/
+.pytest_cache/
+
+# demo video renders and intermediates (re-create with tools/demo_v3, tools/demo_v4)
+demo/
+tools/demo_v3/clips/
+tools/demo_v3/seg/
+tools/demo_v3/audio/
+tools/demo_v3/cards/
+tools/demo_v4/
+data/team.json

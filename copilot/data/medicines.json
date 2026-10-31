@@ -1,0 +1,4132 @@
+[
+{
+"id": "paracetamol",
+"generic": "Paracetamol (Acetaminophen)",
+"brands": [
+"Crocin",
+"Dolo 650",
+"Calpol"
+],
+"class": "Analgesic / antipyretic",
+"class_tags": [],
+"uses": [
+"Fever",
+"Mild to moderate pain"
+],
+"interactions": [
+{
+"with": "warfarin",
+"severity": "moderate",
+"note": "Regular high doses can raise INR"
+},
+{
+"with": "alcohol",
+"severity": "major",
+"note": "Higher liver toxicity risk"
+}
+]
+},
+{
+"id": "ibuprofen",
+"generic": "Ibuprofen",
+"brands": [
+"Brufen",
+"Combiflam (with paracetamol)"
+],
+"class": "NSAID",
+"class_tags": [
+"nsaids"
+],
+"uses": [
+"Pain",
+"Fever",
+"Inflammation",
+"Period pain"
+],
+"interactions": [
+{
+"with": "anticoagulants",
+"severity": "major",
+"note": "Higher risk of serious bleeding; avoid the combination"
+},
+{
+"with": "antiplatelets",
+"severity": "moderate",
+"note": "Higher risk of stomach and other bleeding; ibuprofen can also blunt aspirin's heart protection"
+},
+{
+"with": "enalapril",
+"severity": "moderate",
+"note": "Risk of kidney injury and weaker blood-pressure control (worse if dehydrated)"
+},
+{
+"with": "ramipril",
+"severity": "moderate",
+"note": "Risk of kidney injury and weaker blood-pressure control (worse if dehydrated)"
+},
+{
+"with": "losartan",
+"severity": "moderate",
+"note": "Risk of kidney injury and weaker blood-pressure control (worse if dehydrated)"
+},
+{
+"with": "telmisartan",
+"severity": "moderate",
+"note": "Risk of kidney injury and weaker blood-pressure control (worse if dehydrated)"
+},
+{
+"with": "furosemide",
+"severity": "moderate",
+"note": "Reduced diuretic effect and risk of kidney injury"
+},
+{
+"with": "hydrochlorothiazide",
+"severity": "moderate",
+"note": "Reduced diuretic effect and risk of kidney injury"
+},
+{
+"with": "potassium_sparing",
+"severity": "moderate",
+"note": "Risk of high potassium and kidney injury"
+},
+{
+"with": "ssris",
+"severity": "moderate",
+"note": "Higher risk of GI bleeding"
+},
+{
+"with": "prednisolone",
+"severity": "moderate",
+"note": "Higher risk of stomach ulcer and bleeding"
+},
+{
+"with": "dexamethasone",
+"severity": "moderate",
+"note": "Higher risk of stomach ulcer and bleeding"
+},
+{
+"with": "alcohol",
+"severity": "moderate",
+"note": "Higher risk of stomach irritation and bleeding"
+},
+{
+"with": "aspirin",
+"severity": "moderate",
+"note": "Ibuprofen can reduce the heart-protective effect of low-dose aspirin; take aspirin at least 30 minutes before or 8 hours after ibuprofen"
+}
+]
+},
+{
+"id": "diclofenac",
+"generic": "Diclofenac",
+"brands": [
+"Voveran",
+"Voltaren"
+],
+"class": "NSAID",
+"class_tags": [
+"nsaids"
+],
+"uses": [
+"Joint and muscle pain",
+"Back pain",
+"Post-injury pain"
+],
+"interactions": [
+{
+"with": "anticoagulants",
+"severity": "major",
+"note": "Higher risk of serious bleeding; avoid the combination"
+},
+{
+"with": "antiplatelets",
+"severity": "moderate",
+"note": "Higher risk of stomach and other bleeding; ibuprofen can also blunt aspirin's heart protection"
+},
+{
+"with": "enalapril",
+"severity": "moderate",
+"note": "Risk of kidney injury and weaker blood-pressure control (worse if dehydrated)"
+},
+{
+"with": "ramipril",
+"severity": "moderate",
+"note": "Risk of kidney injury and weaker blood-pressure control (worse if dehydrated)"
+},
+{
+"with": "losartan",
+"severity": "moderate",
+"note": "Risk of kidney injury and weaker blood-pressure control (worse if dehydrated)"
+},
+{
+"with": "telmisartan",
+"severity": "moderate",
+"note": "Risk of kidney injury and weaker blood-pressure control (worse if dehydrated)"
+},
+{
+"with": "furosemide",
+"severity": "moderate",
+"note": "Reduced diuretic effect and risk of kidney injury"
+},
+{
+"with": "hydrochlorothiazide",
+"severity": "moderate",
+"note": "Reduced diuretic effect and risk of kidney injury"
+},
+{
+"with": "potassium_sparing",
+"severity": "moderate",
+"note": "Risk of high potassium and kidney injury"
+},
+{
+"with": "ssris",
+"severity": "moderate",
+"note": "Higher risk of GI bleeding"
+},
+{
+"with": "prednisolone",
+"severity": "moderate",
+"note": "Higher risk of stomach ulcer and bleeding"
+},
+{
+"with": "dexamethasone",
+"severity": "moderate",
+"note": "Higher risk of stomach ulcer and bleeding"
+},
+{
+"with": "alcohol",
+"severity": "moderate",
+"note": "Higher risk of stomach irritation and bleeding"
+}
+]
+},
+{
+"id": "aspirin",
+"generic": "Aspirin (Acetylsalicylic acid)",
+"brands": [
+"Disprin",
+"Ecosprin"
+],
+"class": "Antiplatelet / NSAID",
+"class_tags": [
+"antiplatelets",
+"nsaids"
+],
+"uses": [
+"Pain and fever (adults)",
+"Prevention of heart attack and stroke (low dose)",
+"Suspected heart attack (chewed 300 mg)"
+],
+"interactions": [
+{
+"with": "anticoagulants",
+"severity": "major",
+"note": "Higher risk of serious bleeding; avoid the combination"
+},
+{
+"with": "antiplatelets",
+"severity": "moderate",
+"note": "Higher risk of stomach and other bleeding; ibuprofen can also blunt aspirin's heart protection"
+},
+{
+"with": "enalapril",
+"severity": "moderate",
+"note": "Risk of kidney injury and weaker blood-pressure control (worse if dehydrated)"
+},
+{
+"with": "ramipril",
+"severity": "moderate",
+"note": "Risk of kidney injury and weaker blood-pressure control (worse if dehydrated)"
+},
+{
+"with": "losartan",
+"severity": "moderate",
+"note": "Risk of kidney injury and weaker blood-pressure control (worse if dehydrated)"
+},
+{
+"with": "telmisartan",
+"severity": "moderate",
+"note": "Risk of kidney injury and weaker blood-pressure control (worse if dehydrated)"
+},
+{
+"with": "furosemide",
+"severity": "moderate",
+"note": "Reduced diuretic effect and risk of kidney injury"
+},
+{
+"with": "hydrochlorothiazide",
+"severity": "moderate",
+"note": "Reduced diuretic effect and risk of kidney injury"
+},
+{
+"with": "potassium_sparing",
+"severity": "moderate",
+"note": "Risk of high potassium and kidney injury"
+},
+{
+"with": "ssris",
+"severity": "moderate",
+"note": "Higher risk of GI bleeding"
+},
+{
+"with": "prednisolone",
+"severity": "moderate",
+"note": "Higher risk of stomach ulcer and bleeding"
+},
+{
+"with": "dexamethasone",
+"severity": "moderate",
+"note": "Higher risk of stomach ulcer and bleeding"
+},
+{
+"with": "alcohol",
+"severity": "moderate",
+"note": "Higher risk of stomach irritation and bleeding"
+},
+{
+"with": "ibuprofen",
+"severity": "moderate",
+"note": "Ibuprofen can reduce the heart-protective effect of low-dose aspirin; take aspirin at least 30 minutes before or 8 hours after ibuprofen"
+},
+{
+"with": "sodium_valproate",
+"severity": "moderate",
+"note": "Aspirin raises free valproate levels and bleeding risk"
+}
+]
+},
+{
+"id": "naproxen",
+"generic": "Naproxen",
+"brands": [
+"Naprosyn"
+],
+"class": "NSAID",
+"class_tags": [
+"nsaids"
+],
+"uses": [
+"Pain",
+"Arthritis",
+"Period pain",
+"Gout attack"
+],
+"interactions": [
+{
+"with": "anticoagulants",
+"severity": "major",
+"note": "Higher risk of serious bleeding; avoid the combination"
+},
+{
+"with": "antiplatelets",
+"severity": "moderate",
+"note": "Higher risk of stomach and other bleeding; ibuprofen can also blunt aspirin's heart protection"
+},
+{
+"with": "enalapril",
+"severity": "moderate",
+"note": "Risk of kidney injury and weaker blood-pressure control (worse if dehydrated)"
+},
+{
+"with": "ramipril",
+"severity": "moderate",
+"note": "Risk of kidney injury and weaker blood-pressure control (worse if dehydrated)"
+},
+{
+"with": "losartan",
+"severity": "moderate",
+"note": "Risk of kidney injury and weaker blood-pressure control (worse if dehydrated)"
+},
+{
+"with": "telmisartan",
+"severity": "moderate",
+"note": "Risk of kidney injury and weaker blood-pressure control (worse if dehydrated)"
+},
+{
+"with": "furosemide",
+"severity": "moderate",
+"note": "Reduced diuretic effect and risk of kidney injury"
+},
+{
+"with": "hydrochlorothiazide",
+"severity": "moderate",
+"note": "Reduced diuretic effect and risk of kidney injury"
+},
+{
+"with": "potassium_sparing",
+"severity": "moderate",
+"note": "Risk of high potassium and kidney injury"
+},
+{
+"with": "ssris",
+"severity": "moderate",
+"note": "Higher risk of GI bleeding"
+},
+{
+"with": "prednisolone",
+"severity": "moderate",
+"note": "Higher risk of stomach ulcer and bleeding"
+},
+{
+"with": "dexamethasone",
+"severity": "moderate",
+"note": "Higher risk of stomach ulcer and bleeding"
+},
+{
+"with": "alcohol",
+"severity": "moderate",
+"note": "Higher risk of stomach irritation and bleeding"
+}
+]
+},
+{
+"id": "mefenamic_acid",
+"generic": "Mefenamic acid",
+"brands": [
+"Meftal",
+"Ponstan"
+],
+"class": "NSAID",
+"class_tags": [
+"nsaids"
+],
+"uses": [
+"Period pain",
+"Mild to moderate pain",
+"Fever in children (on advice)"
+],
+"interactions": [
+{
+"with": "anticoagulants",
+"severity": "major",
+"note": "Higher risk of serious bleeding; avoid the combination"
+},
+{
+"with": "antiplatelets",
+"severity": "moderate",
+"note": "Higher risk of stomach and other bleeding; ibuprofen can also blunt aspirin's heart protection"
+},
+{
+"with": "enalapril",
+"severity": "moderate",
+"note": "Risk of kidney injury and weaker blood-pressure control (worse if dehydrated)"
+},
+{
+"with": "ramipril",
+"severity": "moderate",
+"note": "Risk of kidney injury and weaker blood-pressure control (worse if dehydrated)"
+},
+{
+"with": "losartan",
+"severity": "moderate",
+"note": "Risk of kidney injury and weaker blood-pressure control (worse if dehydrated)"
+},
+{
+"with": "telmisartan",
+"severity": "moderate",
+"note": "Risk of kidney injury and weaker blood-pressure control (worse if dehydrated)"
+},
+{
+"with": "furosemide",
+"severity": "moderate",
+"note": "Reduced diuretic effect and risk of kidney injury"
+},
+{
+"with": "hydrochlorothiazide",
+"severity": "moderate",
+"note": "Reduced diuretic effect and risk of kidney injury"
+},
+{
+"with": "potassium_sparing",
+"severity": "moderate",
+"note": "Risk of high potassium and kidney injury"
+},
+{
+"with": "ssris",
+"severity": "moderate",
+"note": "Higher risk of GI bleeding"
+},
+{
+"with": "prednisolone",
+"severity": "moderate",
+"note": "Higher risk of stomach ulcer and bleeding"
+},
+{
+"with": "dexamethasone",
+"severity": "moderate",
+"note": "Higher risk of stomach ulcer and bleeding"
+},
+{
+"with": "alcohol",
+"severity": "moderate",
+"note": "Higher risk of stomach irritation and bleeding"
+}
+]
+},
+{
+"id": "aceclofenac",
+"generic": "Aceclofenac",
+"brands": [
+"Hifenac",
+"Zerodol"
+],
+"class": "NSAID",
+"class_tags": [
+"nsaids"
+],
+"uses": [
+"Joint pain",
+"Back pain",
+"Inflammation"
+],
+"interactions": [
+{
+"with": "anticoagulants",
+"severity": "major",
+"note": "Higher risk of serious bleeding; avoid the combination"
+},
+{
+"with": "antiplatelets",
+"severity": "moderate",
+"note": "Higher risk of stomach and other bleeding; ibuprofen can also blunt aspirin's heart protection"
+},
+{
+"with": "enalapril",
+"severity": "moderate",
+"note": "Risk of kidney injury and weaker blood-pressure control (worse if dehydrated)"
+},
+{
+"with": "ramipril",
+"severity": "moderate",
+"note": "Risk of kidney injury and weaker blood-pressure control (worse if dehydrated)"
+},
+{
+"with": "losartan",
+"severity": "moderate",
+"note": "Risk of kidney injury and weaker blood-pressure control (worse if dehydrated)"
+},
+{
+"with": "telmisartan",
+"severity": "moderate",
+"note": "Risk of kidney injury and weaker blood-pressure control (worse if dehydrated)"
+},
+{
+"with": "furosemide",
+"severity": "moderate",
+"note": "Reduced diuretic effect and risk of kidney injury"
+},
+{
+"with": "hydrochlorothiazide",
+"severity": "moderate",
+"note": "Reduced diuretic effect and risk of kidney injury"
+},
+{
+"with": "potassium_sparing",
+"severity": "moderate",
+"note": "Risk of high potassium and kidney injury"
+},
+{
+"with": "ssris",
+"severity": "moderate",
+"note": "Higher risk of GI bleeding"
+},
+{
+"with": "prednisolone",
+"severity": "moderate",
+"note": "Higher risk of stomach ulcer and bleeding"
+},
+{
+"with": "dexamethasone",
+"severity": "moderate",
+"note": "Higher risk of stomach ulcer and bleeding"
+},
+{
+"with": "alcohol",
+"severity": "moderate",
+"note": "Higher risk of stomach irritation and bleeding"
+}
+]
+},
+{
+"id": "tramadol",
+"generic": "Tramadol",
+"brands": [
+"Contramal"
+],
+"class": "Opioid analgesic",
+"class_tags": [
+"opioids"
+],
+"uses": [
+"Moderate to severe pain"
+],
+"interactions": [
+{
+"with": "ssris",
+"severity": "major",
+"note": "Risk of serotonin syndrome and seizures"
+},
+{
+"with": "maois",
+"severity": "major",
+"note": "Contraindicated: risk of serotonin syndrome"
+},
+{
+"with": "benzodiazepines",
+"severity": "major",
+"note": "Risk of profound sedation, breathing depression and death"
+},
+{
+"with": "alcohol",
+"severity": "major",
+"note": "Dangerous sedation and breathing depression"
+},
+{
+"with": "chlorpheniramine",
+"severity": "moderate",
+"note": "Additive sedation"
+},
+{
+"with": "amitriptyline",
+"severity": "major",
+"note": "Raised risk of seizures and serotonin syndrome"
+}
+]
+},
+{
+"id": "cetirizine",
+"generic": "Cetirizine",
+"brands": [
+"Cetzine",
+"Okacet",
+"Alerid"
+],
+"class": "Antihistamine (second generation)",
+"class_tags": [],
+"uses": [
+"Allergic rhinitis",
+"Urticaria (hives)",
+"Itching"
+],
+"interactions": [
+{
+"with": "alcohol",
+"severity": "minor",
+"note": "Possible increased drowsiness"
+}
+]
+},
+{
+"id": "levocetirizine",
+"generic": "Levocetirizine",
+"brands": [
+"Levocet",
+"Xyzal"
+],
+"class": "Antihistamine (second generation)",
+"class_tags": [],
+"uses": [
+"Allergic rhinitis",
+"Urticaria",
+"Itching"
+],
+"interactions": []
+},
+{
+"id": "fexofenadine",
+"generic": "Fexofenadine",
+"brands": [
+"Allegra"
+],
+"class": "Antihistamine (non-sedating)",
+"class_tags": [],
+"uses": [
+"Allergic rhinitis",
+"Urticaria"
+],
+"interactions": []
+},
+{
+"id": "chlorpheniramine",
+"generic": "Chlorpheniramine (Chlorphenamine)",
+"brands": [],
+"class": "Antihistamine (first generation)",
+"class_tags": [],
+"uses": [
+"Allergy",
+"Runny nose and sneezing",
+"Itching"
+],
+"interactions": [
+{
+"with": "alcohol",
+"severity": "moderate",
+"note": "Increased drowsiness"
+},
+{
+"with": "benzodiazepines",
+"severity": "moderate",
+"note": "Additive sedation"
+},
+{
+"with": "opioids",
+"severity": "moderate",
+"note": "Additive sedation"
+}
+]
+},
+{
+"id": "loratadine",
+"generic": "Loratadine",
+"brands": [
+"Lorfast"
+],
+"class": "Antihistamine (second generation)",
+"class_tags": [],
+"uses": [
+"Allergic rhinitis",
+"Urticaria"
+],
+"interactions": []
+},
+{
+"id": "omeprazole",
+"generic": "Omeprazole",
+"brands": [
+"Omez"
+],
+"class": "Proton pump inhibitor",
+"class_tags": [],
+"uses": [
+"Acidity and GERD",
+"Peptic ulcer",
+"H. pylori eradication (part of combination)"
+],
+"interactions": [
+{
+"with": "clopidogrel",
+"severity": "moderate",
+"note": "Omeprazole may reduce clopidogrel's antiplatelet effect; pantoprazole is preferred"
+},
+{
+"with": "iron_folic_acid",
+"severity": "minor",
+"note": "Reduced stomach acid lowers iron absorption"
+}
+]
+},
+{
+"id": "pantoprazole",
+"generic": "Pantoprazole",
+"brands": [
+"Pan 40",
+"Pantocid"
+],
+"class": "Proton pump inhibitor",
+"class_tags": [],
+"uses": [
+"Acidity and GERD",
+"Peptic ulcer",
+"Stomach protection with NSAIDs or steroids"
+],
+"interactions": [
+{
+"with": "iron_folic_acid",
+"severity": "minor",
+"note": "Reduced stomach acid lowers iron absorption"
+}
+]
+},
+{
+"id": "esomeprazole",
+"generic": "Esomeprazole",
+"brands": [
+"Nexpro"
+],
+"class": "Proton pump inhibitor",
+"class_tags": [],
+"uses": [
+"GERD",
+"Peptic ulcer"
+],
+"interactions": [
+{
+"with": "clopidogrel",
+"severity": "moderate",
+"note": "Esomeprazole may reduce clopidogrel's antiplatelet effect; pantoprazole is preferred"
+}
+]
+},
+{
+"id": "rabeprazole",
+"generic": "Rabeprazole",
+"brands": [
+"Razo",
+"Rabium"
+],
+"class": "Proton pump inhibitor",
+"class_tags": [],
+"uses": [
+"GERD",
+"Peptic ulcer"
+],
+"interactions": []
+},
+{
+"id": "famotidine",
+"generic": "Famotidine",
+"brands": [
+"Famocid"
+],
+"class": "H2 receptor blocker",
+"class_tags": [],
+"uses": [
+"Acidity",
+"Peptic ulcer",
+"GERD"
+],
+"interactions": []
+},
+{
+"id": "ranitidine",
+"generic": "Ranitidine (status note)",
+"brands": [],
+"class": "H2 receptor blocker",
+"class_tags": [],
+"uses": [
+"Historically used for acidity"
+],
+"interactions": []
+},
+{
+"id": "domperidone",
+"generic": "Domperidone",
+"brands": [
+"Domstal",
+"Vomistop"
+],
+"class": "Prokinetic / anti-emetic",
+"class_tags": [
+"qt_prolonging"
+],
+"uses": [
+"Nausea and vomiting",
+"Bloating and early fullness"
+],
+"interactions": []
+},
+{
+"id": "ondansetron",
+"generic": "Ondansetron",
+"brands": [
+"Emeset",
+"Ondem"
+],
+"class": "Anti-emetic (5-HT3 blocker)",
+"class_tags": [
+"qt_prolonging"
+],
+"uses": [
+"Nausea and vomiting",
+"Gastroenteritis vomiting",
+"Chemotherapy-related nausea"
+],
+"interactions": [
+{
+"with": "ciprofloxacin",
+"severity": "moderate",
+"note": "Additive QT prolongation risk"
+},
+{
+"with": "levofloxacin",
+"severity": "moderate",
+"note": "Additive QT prolongation risk"
+},
+{
+"with": "qt_prolonging",
+"severity": "major",
+"note": "Additive QT prolongation and risk of dangerous heart rhythm; avoid unless monitored"
+},
+{
+"with": "ssris",
+"severity": "moderate",
+"note": "Small risk of serotonin syndrome; QT effects add up"
+}
+]
+},
+{
+"id": "metoclopramide",
+"generic": "Metoclopramide",
+"brands": [
+"Perinorm"
+],
+"class": "Anti-emetic / prokinetic",
+"class_tags": [],
+"uses": [
+"Nausea and vomiting",
+"Gastroparesis"
+],
+"interactions": []
+},
+{
+"id": "ors",
+"generic": "Oral rehydration salts (WHO low-osmolarity ORS)",
+"brands": [
+"Electral"
+],
+"class": "Oral rehydration",
+"class_tags": [],
+"uses": [
+"Diarrhoea",
+"Vomiting",
+"Dehydration",
+"Heat illness"
+],
+"interactions": []
+},
+{
+"id": "zinc",
+"generic": "Zinc (sulphate or acetate)",
+"brands": [
+"Zinconia"
+],
+"class": "Mineral supplement",
+"class_tags": [],
+"uses": [
+"Diarrhoea in children (reduces duration and recurrence)"
+],
+"interactions": []
+},
+{
+"id": "loperamide",
+"generic": "Loperamide",
+"brands": [
+"Eldoper",
+"Imodium"
+],
+"class": "Anti-diarrhoeal (opioid receptor agonist)",
+"class_tags": [],
+"uses": [
+"Acute watery diarrhoea (adults)"
+],
+"interactions": []
+},
+{
+"id": "lactulose",
+"generic": "Lactulose",
+"brands": [
+"Duphalac"
+],
+"class": "Osmotic laxative",
+"class_tags": [],
+"uses": [
+"Constipation",
+"Hepatic encephalopathy (doctor-directed)"
+],
+"interactions": []
+},
+{
+"id": "simethicone",
+"generic": "Simethicone",
+"brands": [],
+"class": "Anti-flatulent",
+"class_tags": [],
+"uses": [
+"Gas and bloating"
+],
+"interactions": []
+},
+{
+"id": "antacid_gel",
+"generic": "Aluminium hydroxide / Magnesium hydroxide antacid gel",
+"brands": [
+"Digene",
+"Gelusil"
+],
+"class": "Antacid",
+"class_tags": [
+"antacids"
+],
+"uses": [
+"Heartburn and acidity",
+"Indigestion"
+],
+"interactions": [
+{
+"with": "ciprofloxacin",
+"severity": "moderate",
+"note": "Binds the antibiotic and reduces absorption; take the antibiotic 2 hours before or 6 hours after (follow the label)"
+},
+{
+"with": "levofloxacin",
+"severity": "moderate",
+"note": "Binds the antibiotic and reduces absorption; take the antibiotic 2 hours before or 6 hours after (follow the label)"
+},
+{
+"with": "doxycycline",
+"severity": "moderate",
+"note": "Binds the antibiotic and reduces absorption; take the antibiotic 2 hours before or 6 hours after (follow the label)"
+},
+{
+"with": "levothyroxine",
+"severity": "moderate",
+"note": "Reduces levothyroxine absorption; separate by at least 4 hours"
+},
+{
+"with": "nitrofurantoin",
+"severity": "minor",
+"note": "Magnesium-containing antacids can reduce absorption"
+},
+{
+"with": "chloroquine",
+"severity": "moderate",
+"note": "Reduces chloroquine absorption; separate by at least 4 hours"
+},
+{
+"with": "azithromycin",
+"severity": "minor",
+"note": "May reduce peak levels; separate by 2 hours"
+},
+{
+"with": "iron_folic_acid",
+"severity": "moderate",
+"note": "Reduces iron absorption; separate by 2 hours"
+}
+]
+},
+{
+"id": "bisacodyl",
+"generic": "Bisacodyl",
+"brands": [
+"Dulcolax"
+],
+"class": "Stimulant laxative",
+"class_tags": [],
+"uses": [
+"Short-term constipation"
+],
+"interactions": []
+},
+{
+"id": "isabgol",
+"generic": "Psyllium husk (Isabgol)",
+"brands": [],
+"class": "Bulk-forming laxative",
+"class_tags": [],
+"uses": [
+"Constipation",
+"Irritable bowel symptoms"
+],
+"interactions": []
+},
+{
+"id": "hyoscine",
+"generic": "Hyoscine butylbromide",
+"brands": [
+"Buscopan"
+],
+"class": "Antispasmodic",
+"class_tags": [],
+"uses": [
+"Abdominal cramps",
+"Colicky pain"
+],
+"interactions": []
+},
+{
+"id": "drotaverine",
+"generic": "Drotaverine",
+"brands": [
+"Drotin"
+],
+"class": "Antispasmodic",
+"class_tags": [],
+"uses": [
+"Abdominal and period cramps",
+"Renal or biliary colic"
+],
+"interactions": []
+},
+{
+"id": "amoxicillin",
+"generic": "Amoxicillin",
+"brands": [
+"Novamox",
+"Mox"
+],
+"class": "Penicillin antibiotic",
+"class_tags": [],
+"uses": [
+"Ear, throat and sinus bacterial infections",
+"Chest infections",
+"Dental infections"
+],
+"interactions": [
+{
+"with": "allopurinol",
+"severity": "minor",
+"note": "Higher rate of skin rash"
+}
+]
+},
+{
+"id": "amoxicillin_clavulanate",
+"generic": "Amoxicillin + Clavulanic acid",
+"brands": [
+"Augmentin",
+"Clavam"
+],
+"class": "Penicillin antibiotic with beta-lactamase inhibitor",
+"class_tags": [],
+"uses": [
+"Sinusitis",
+"Skin infections",
+"Urinary and chest infections",
+"Animal bite wounds"
+],
+"interactions": []
+},
+{
+"id": "azithromycin",
+"generic": "Azithromycin",
+"brands": [
+"Azithral",
+"Azee"
+],
+"class": "Macrolide antibiotic",
+"class_tags": [
+"qt_prolonging"
+],
+"uses": [
+"Throat and chest infections",
+"Typhoid (alternative)",
+"Atypical pneumonia",
+"Traveller's diarrhoea"
+],
+"interactions": [
+{
+"with": "ciprofloxacin",
+"severity": "moderate",
+"note": "Additive QT prolongation risk"
+},
+{
+"with": "levofloxacin",
+"severity": "moderate",
+"note": "Additive QT prolongation risk"
+},
+{
+"with": "qt_prolonging",
+"severity": "major",
+"note": "Additive QT prolongation and risk of dangerous heart rhythm; avoid unless monitored"
+},
+{
+"with": "warfarin",
+"severity": "moderate",
+"note": "May raise INR"
+},
+{
+"with": "antacids",
+"severity": "minor",
+"note": "May reduce peak levels; separate by 2 hours"
+}
+]
+},
+{
+"id": "ciprofloxacin",
+"generic": "Ciprofloxacin",
+"brands": [
+"Ciplox",
+"Cifran"
+],
+"class": "Fluoroquinolone antibiotic",
+"class_tags": [
+"qt_prolonging"
+],
+"uses": [
+"Urinary tract infections",
+"Typhoid",
+"Infectious diarrhoea"
+],
+"interactions": [
+{
+"with": "antacids",
+"severity": "moderate",
+"note": "Binds the antibiotic and reduces absorption; take the antibiotic 2 hours before or 6 hours after (follow the label)"
+},
+{
+"with": "iron_folic_acid",
+"severity": "moderate",
+"note": "Binds the antibiotic and reduces absorption; take the antibiotic 2 hours before or 6 hours after (follow the label)"
+},
+{
+"with": "calcium",
+"severity": "moderate",
+"note": "Binds the antibiotic and reduces absorption; take the antibiotic 2 hours before or 6 hours after (follow the label)"
+},
+{
+"with": "qt_prolonging",
+"severity": "moderate",
+"note": "Additive QT prolongation risk"
+},
+{
+"with": "levofloxacin",
+"severity": "moderate",
+"note": "Additive QT prolongation risk"
+},
+{
+"with": "glimepiride",
+"severity": "moderate",
+"note": "Can cause low or high blood sugar"
+},
+{
+"with": "insulin_regular",
+"severity": "moderate",
+"note": "Can cause low or high blood sugar"
+},
+{
+"with": "warfarin",
+"severity": "moderate",
+"note": "May raise INR"
+},
+{
+"with": "prednisolone",
+"severity": "moderate",
+"note": "Higher risk of tendon rupture"
+},
+{
+"with": "dexamethasone",
+"severity": "moderate",
+"note": "Higher risk of tendon rupture"
+}
+]
+},
+{
+"id": "doxycycline",
+"generic": "Doxycycline",
+"brands": [],
+"class": "Tetracycline antibiotic",
+"class_tags": [],
+"uses": [
+"Scrub typhus",
+"Leptospirosis (prophylaxis and treatment)",
+"Chest infections",
+"Acne",
+"Malaria prophylaxis"
+],
+"interactions": [
+{
+"with": "antacids",
+"severity": "moderate",
+"note": "Binds the antibiotic and reduces absorption; take the antibiotic 2 hours before or 6 hours after (follow the label)"
+},
+{
+"with": "iron_folic_acid",
+"severity": "moderate",
+"note": "Binds the antibiotic and reduces absorption; take the antibiotic 2 hours before or 6 hours after (follow the label)"
+},
+{
+"with": "calcium",
+"severity": "moderate",
+"note": "Binds the antibiotic and reduces absorption; take the antibiotic 2 hours before or 6 hours after (follow the label)"
+},
+{
+"with": "carbamazepine",
+"severity": "moderate",
+"note": "Reduces doxycycline levels"
+}
+]
+},
+{
+"id": "cefixime",
+"generic": "Cefixime",
+"brands": [
+"Taxim-O",
+"Zifi"
+],
+"class": "Cephalosporin antibiotic (3rd gen, oral)",
+"class_tags": [],
+"uses": [
+"Typhoid",
+"Urinary tract infection",
+"Throat and chest infections"
+],
+"interactions": []
+},
+{
+"id": "ceftriaxone",
+"generic": "Ceftriaxone",
+"brands": [
+"Monocef",
+"Intacef"
+],
+"class": "Cephalosporin antibiotic (3rd gen, injectable)",
+"class_tags": [],
+"uses": [
+"Severe bacterial infections in hospital",
+"Meningitis",
+"Pneumonia",
+"Typhoid"
+],
+"interactions": []
+},
+{
+"id": "metronidazole",
+"generic": "Metronidazole",
+"brands": [
+"Flagyl",
+"Metrogyl"
+],
+"class": "Nitroimidazole antibiotic / antiprotozoal",
+"class_tags": [],
+"uses": [
+"Amoebiasis and giardiasis",
+"Anaerobic infections",
+"Dental infections",
+"Bacterial vaginosis"
+],
+"interactions": [
+{
+"with": "alcohol",
+"severity": "major",
+"note": "Disulfiram-like reaction (flushing, vomiting, palpitations); avoid alcohol during and for 48 hours after"
+},
+{
+"with": "warfarin",
+"severity": "major",
+"note": "Raises INR and bleeding risk"
+},
+{
+"with": "phenytoin",
+"severity": "moderate",
+"note": "Raises phenytoin levels"
+}
+]
+},
+{
+"id": "nitrofurantoin",
+"generic": "Nitrofurantoin",
+"brands": [],
+"class": "Urinary antibiotic",
+"class_tags": [],
+"uses": [
+"Uncomplicated cystitis (lower urinary tract infection)"
+],
+"interactions": [
+{
+"with": "antacids",
+"severity": "minor",
+"note": "Magnesium-containing antacids can reduce absorption"
+}
+]
+},
+{
+"id": "cotrimoxazole",
+"generic": "Co-trimoxazole (Sulfamethoxazole + Trimethoprim)",
+"brands": [
+"Septran",
+"Bactrim"
+],
+"class": "Sulfonamide combination antibiotic",
+"class_tags": [],
+"uses": [
+"Urinary tract infection",
+"Pneumocystis prophylaxis",
+"Some diarrhoeal and skin infections"
+],
+"interactions": [
+{
+"with": "potassium_sparing",
+"severity": "major",
+"note": "Risk of dangerously high potassium"
+},
+{
+"with": "enalapril",
+"severity": "moderate",
+"note": "Risk of high potassium"
+},
+{
+"with": "ramipril",
+"severity": "moderate",
+"note": "Risk of high potassium"
+},
+{
+"with": "losartan",
+"severity": "moderate",
+"note": "Risk of high potassium"
+},
+{
+"with": "telmisartan",
+"severity": "moderate",
+"note": "Risk of high potassium"
+},
+{
+"with": "warfarin",
+"severity": "major",
+"note": "Markedly raises INR and bleeding risk"
+},
+{
+"with": "phenytoin",
+"severity": "moderate",
+"note": "Raises phenytoin levels"
+},
+{
+"with": "glimepiride",
+"severity": "moderate",
+"note": "Risk of low blood sugar"
+}
+]
+},
+{
+"id": "cephalexin",
+"generic": "Cephalexin",
+"brands": [
+"Sporidex",
+"Phexin"
+],
+"class": "Cephalosporin antibiotic (1st gen)",
+"class_tags": [],
+"uses": [
+"Skin and soft tissue infections",
+"Cellulitis",
+"Urinary tract infections"
+],
+"interactions": []
+},
+{
+"id": "levofloxacin",
+"generic": "Levofloxacin",
+"brands": [
+"Levoflox",
+"Tavanic"
+],
+"class": "Fluoroquinolone antibiotic",
+"class_tags": [
+"qt_prolonging"
+],
+"uses": [
+"Pneumonia",
+"Urinary tract infections",
+"Typhoid"
+],
+"interactions": [
+{
+"with": "antacids",
+"severity": "moderate",
+"note": "Binds the antibiotic and reduces absorption; take the antibiotic 2 hours before or 6 hours after (follow the label)"
+},
+{
+"with": "iron_folic_acid",
+"severity": "moderate",
+"note": "Binds the antibiotic and reduces absorption; take the antibiotic 2 hours before or 6 hours after (follow the label)"
+},
+{
+"with": "calcium",
+"severity": "moderate",
+"note": "Binds the antibiotic and reduces absorption; take the antibiotic 2 hours before or 6 hours after (follow the label)"
+},
+{
+"with": "ciprofloxacin",
+"severity": "moderate",
+"note": "Additive QT prolongation risk"
+},
+{
+"with": "qt_prolonging",
+"severity": "moderate",
+"note": "Additive QT prolongation risk"
+},
+{
+"with": "glimepiride",
+"severity": "moderate",
+"note": "Can cause low or high blood sugar"
+},
+{
+"with": "insulin_regular",
+"severity": "moderate",
+"note": "Can cause low or high blood sugar"
+},
+{
+"with": "warfarin",
+"severity": "moderate",
+"note": "May raise INR"
+},
+{
+"with": "prednisolone",
+"severity": "moderate",
+"note": "Higher risk of tendon rupture"
+},
+{
+"with": "dexamethasone",
+"severity": "moderate",
+"note": "Higher risk of tendon rupture"
+}
+]
+},
+{
+"id": "chloroquine",
+"generic": "Chloroquine",
+"brands": [],
+"class": "Antimalarial",
+"class_tags": [
+"qt_prolonging"
+],
+"uses": [
+"Plasmodium vivax malaria (non-resistant)",
+"Prophylaxis in limited regions"
+],
+"interactions": [
+{
+"with": "ciprofloxacin",
+"severity": "moderate",
+"note": "Additive QT prolongation risk"
+},
+{
+"with": "levofloxacin",
+"severity": "moderate",
+"note": "Additive QT prolongation risk"
+},
+{
+"with": "qt_prolonging",
+"severity": "major",
+"note": "Additive QT prolongation and risk of dangerous heart rhythm; avoid unless monitored"
+},
+{
+"with": "antacids",
+"severity": "moderate",
+"note": "Reduces chloroquine absorption; separate by at least 4 hours"
+}
+]
+},
+{
+"id": "artemether_lumefantrine",
+"generic": "Artemether + Lumefantrine",
+"brands": [
+"Lumerax",
+"Coartem"
+],
+"class": "Artemisinin-based combination antimalarial (ACT)",
+"class_tags": [
+"qt_prolonging"
+],
+"uses": [
+"Uncomplicated P. falciparum malaria"
+],
+"interactions": [
+{
+"with": "ciprofloxacin",
+"severity": "moderate",
+"note": "Additive QT prolongation risk"
+},
+{
+"with": "levofloxacin",
+"severity": "moderate",
+"note": "Additive QT prolongation risk"
+},
+{
+"with": "qt_prolonging",
+"severity": "major",
+"note": "Additive QT prolongation and risk of dangerous heart rhythm; avoid unless monitored"
+},
+{
+"with": "rifampicin",
+"severity": "major",
+"note": "Markedly reduces antimalarial levels; avoid"
+},
+{
+"with": "grapefruit",
+"severity": "moderate",
+"note": "Grapefruit may raise drug levels"
+}
+]
+},
+{
+"id": "artesunate",
+"generic": "Artesunate (injectable)",
+"brands": [],
+"class": "Antimalarial (artemisinin)",
+"class_tags": [],
+"uses": [
+"Severe or complicated malaria"
+],
+"interactions": []
+},
+{
+"id": "primaquine",
+"generic": "Primaquine",
+"brands": [],
+"class": "Antimalarial (radical cure)",
+"class_tags": [],
+"uses": [
+"Radical cure of P. vivax and P. ovale malaria"
+],
+"interactions": []
+},
+{
+"id": "hydroxychloroquine",
+"generic": "Hydroxychloroquine",
+"brands": [
+"HCQS",
+"Plaquenil"
+],
+"class": "Antimalarial / DMARD",
+"class_tags": [
+"qt_prolonging"
+],
+"uses": [
+"Rheumatoid arthritis",
+"Lupus",
+"Malaria prophylaxis (some regions)"
+],
+"interactions": [
+{
+"with": "ciprofloxacin",
+"severity": "moderate",
+"note": "Additive QT prolongation risk"
+},
+{
+"with": "levofloxacin",
+"severity": "moderate",
+"note": "Additive QT prolongation risk"
+},
+{
+"with": "qt_prolonging",
+"severity": "major",
+"note": "Additive QT prolongation and risk of dangerous heart rhythm; avoid unless monitored"
+}
+]
+},
+{
+"id": "isoniazid",
+"generic": "Isoniazid",
+"brands": [],
+"class": "Anti-tuberculosis",
+"class_tags": [],
+"uses": [
+"Tuberculosis (treatment and prevention)"
+],
+"interactions": [
+{
+"with": "alcohol",
+"severity": "major",
+"note": "Higher risk of serious liver injury"
+},
+{
+"with": "phenytoin",
+"severity": "moderate",
+"note": "Isoniazid raises phenytoin levels"
+},
+{
+"with": "carbamazepine",
+"severity": "moderate",
+"note": "Higher risk of liver toxicity and raised carbamazepine levels"
+}
+]
+},
+{
+"id": "rifampicin",
+"generic": "Rifampicin",
+"brands": [],
+"class": "Anti-tuberculosis",
+"class_tags": [],
+"uses": [
+"Tuberculosis",
+"Leprosy",
+"Some serious bacterial infections"
+],
+"interactions": [
+{
+"with": "oral_contraceptive",
+"severity": "major",
+"note": "Reduces contraceptive effect; use non-hormonal or additional contraception"
+},
+{
+"with": "warfarin",
+"severity": "major",
+"note": "Markedly reduces warfarin effect; needs INR monitoring"
+},
+{
+"with": "phenytoin",
+"severity": "moderate",
+"note": "Alters phenytoin levels; monitor"
+},
+{
+"with": "prednisolone",
+"severity": "moderate",
+"note": "Reduces steroid effect; dose may need increase"
+},
+{
+"with": "dexamethasone",
+"severity": "moderate",
+"note": "Reduces steroid effect; dose may need increase"
+},
+{
+"with": "levothyroxine",
+"severity": "moderate",
+"note": "May increase levothyroxine requirement"
+},
+{
+"with": "glimepiride",
+"severity": "moderate",
+"note": "May reduce blood-sugar control"
+},
+{
+"with": "artemether_lumefantrine",
+"severity": "major",
+"note": "Markedly reduces antimalarial levels; avoid"
+},
+{
+"with": "alcohol",
+"severity": "moderate",
+"note": "Higher risk of liver injury"
+}
+]
+},
+{
+"id": "pyrazinamide",
+"generic": "Pyrazinamide",
+"brands": [],
+"class": "Anti-tuberculosis",
+"class_tags": [],
+"uses": [
+"Tuberculosis (first 2 months, intensive phase)"
+],
+"interactions": [
+{
+"with": "alcohol",
+"severity": "moderate",
+"note": "Higher risk of liver injury"
+}
+]
+},
+{
+"id": "ethambutol",
+"generic": "Ethambutol",
+"brands": [],
+"class": "Anti-tuberculosis",
+"class_tags": [],
+"uses": [
+"Tuberculosis"
+],
+"interactions": []
+},
+{
+"id": "metformin",
+"generic": "Metformin",
+"brands": [
+"Glycomet",
+"Glucophage"
+],
+"class": "Antidiabetic (biguanide)",
+"class_tags": [],
+"uses": [
+"Type 2 diabetes",
+"PCOS (doctor-directed)"
+],
+"interactions": [
+{
+"with": "alcohol",
+"severity": "moderate",
+"note": "Higher risk of lactic acidosis and low blood sugar"
+},
+{
+"with": "prednisolone",
+"severity": "moderate",
+"note": "Steroids raise blood sugar; diabetic dose may need adjusting"
+},
+{
+"with": "dexamethasone",
+"severity": "moderate",
+"note": "Steroids raise blood sugar; diabetic dose may need adjusting"
+}
+]
+},
+{
+"id": "glimepiride",
+"generic": "Glimepiride",
+"brands": [
+"Amaryl",
+"Glimy"
+],
+"class": "Antidiabetic (sulfonylurea)",
+"class_tags": [],
+"uses": [
+"Type 2 diabetes"
+],
+"interactions": [
+{
+"with": "ciprofloxacin",
+"severity": "moderate",
+"note": "Can cause low or high blood sugar"
+},
+{
+"with": "levofloxacin",
+"severity": "moderate",
+"note": "Can cause low or high blood sugar"
+},
+{
+"with": "rifampicin",
+"severity": "moderate",
+"note": "May reduce blood-sugar control"
+},
+{
+"with": "alcohol",
+"severity": "moderate",
+"note": "Alcohol can cause prolonged low blood sugar"
+},
+{
+"with": "prednisolone",
+"severity": "moderate",
+"note": "Steroids raise blood sugar; diabetic dose may need adjusting"
+},
+{
+"with": "dexamethasone",
+"severity": "moderate",
+"note": "Steroids raise blood sugar; diabetic dose may need adjusting"
+},
+{
+"with": "atenolol",
+"severity": "moderate",
+"note": "May mask warning signs of low blood sugar (tremor, palpitations)"
+},
+{
+"with": "metoprolol",
+"severity": "moderate",
+"note": "May mask warning signs of low blood sugar (tremor, palpitations)"
+},
+{
+"with": "propranolol",
+"severity": "moderate",
+"note": "May mask warning signs of low blood sugar (tremor, palpitations)"
+},
+{
+"with": "cotrimoxazole",
+"severity": "moderate",
+"note": "Risk of low blood sugar"
+}
+]
+},
+{
+"id": "gliclazide",
+"generic": "Gliclazide",
+"brands": [
+"Diamicron"
+],
+"class": "Antidiabetic (sulfonylurea)",
+"class_tags": [],
+"uses": [
+"Type 2 diabetes"
+],
+"interactions": [
+{
+"with": "alcohol",
+"severity": "moderate",
+"note": "Alcohol can cause prolonged low blood sugar"
+},
+{
+"with": "prednisolone",
+"severity": "moderate",
+"note": "Steroids raise blood sugar; diabetic dose may need adjusting"
+},
+{
+"with": "dexamethasone",
+"severity": "moderate",
+"note": "Steroids raise blood sugar; diabetic dose may need adjusting"
+},
+{
+"with": "atenolol",
+"severity": "moderate",
+"note": "May mask warning signs of low blood sugar (tremor, palpitations)"
+},
+{
+"with": "metoprolol",
+"severity": "moderate",
+"note": "May mask warning signs of low blood sugar (tremor, palpitations)"
+},
+{
+"with": "propranolol",
+"severity": "moderate",
+"note": "May mask warning signs of low blood sugar (tremor, palpitations)"
+}
+]
+},
+{
+"id": "insulin_regular",
+"generic": "Insulin (regular / soluble human)",
+"brands": [
+"Actrapid",
+"Humulin R"
+],
+"class": "Insulin",
+"class_tags": [],
+"uses": [
+"Type 1 and type 2 diabetes",
+"Diabetic ketoacidosis (IV in hospital)"
+],
+"interactions": [
+{
+"with": "ciprofloxacin",
+"severity": "moderate",
+"note": "Can cause low or high blood sugar"
+},
+{
+"with": "levofloxacin",
+"severity": "moderate",
+"note": "Can cause low or high blood sugar"
+},
+{
+"with": "alcohol",
+"severity": "moderate",
+"note": "Alcohol can cause prolonged low blood sugar"
+},
+{
+"with": "prednisolone",
+"severity": "moderate",
+"note": "Steroids raise blood sugar; diabetic dose may need adjusting"
+},
+{
+"with": "dexamethasone",
+"severity": "moderate",
+"note": "Steroids raise blood sugar; diabetic dose may need adjusting"
+},
+{
+"with": "atenolol",
+"severity": "moderate",
+"note": "May mask warning signs of low blood sugar (tremor, palpitations)"
+},
+{
+"with": "metoprolol",
+"severity": "moderate",
+"note": "May mask warning signs of low blood sugar (tremor, palpitations)"
+},
+{
+"with": "propranolol",
+"severity": "moderate",
+"note": "May mask warning signs of low blood sugar (tremor, palpitations)"
+},
+{
+"with": "empagliflozin",
+"severity": "moderate",
+"note": "Higher risk of low blood sugar; insulin dose may need reducing"
+}
+]
+},
+{
+"id": "sitagliptin",
+"generic": "Sitagliptin",
+"brands": [
+"Januvia"
+],
+"class": "Antidiabetic (DPP-4 inhibitor)",
+"class_tags": [],
+"uses": [
+"Type 2 diabetes"
+],
+"interactions": []
+},
+{
+"id": "empagliflozin",
+"generic": "Empagliflozin",
+"brands": [
+"Jardiance"
+],
+"class": "Antidiabetic (SGLT2 inhibitor)",
+"class_tags": [],
+"uses": [
+"Type 2 diabetes",
+"Heart failure",
+"Chronic kidney disease (doctor-directed)"
+],
+"interactions": [
+{
+"with": "furosemide",
+"severity": "moderate",
+"note": "Risk of dehydration and low blood pressure"
+},
+{
+"with": "insulin_regular",
+"severity": "moderate",
+"note": "Higher risk of low blood sugar; insulin dose may need reducing"
+}
+]
+},
+{
+"id": "glucose",
+"generic": "Oral glucose (dextrose powder)",
+"brands": [
+"Glucon-D"
+],
+"class": "Carbohydrate / hypoglycaemia treatment",
+"class_tags": [],
+"uses": [
+"Low blood sugar (conscious patient)"
+],
+"interactions": []
+},
+{
+"id": "amlodipine",
+"generic": "Amlodipine",
+"brands": [
+"Amlong",
+"Stamlo",
+"Norvasc"
+],
+"class": "Calcium channel blocker",
+"class_tags": [],
+"uses": [
+"Hypertension",
+"Angina"
+],
+"interactions": [
+{
+"with": "grapefruit",
+"severity": "minor",
+"note": "Grapefruit may modestly raise amlodipine levels"
+}
+]
+},
+{
+"id": "telmisartan",
+"generic": "Telmisartan",
+"brands": [
+"Telma"
+],
+"class": "Angiotensin receptor blocker (ARB)",
+"class_tags": [],
+"uses": [
+"Hypertension",
+"Cardiovascular risk reduction"
+],
+"interactions": [
+{
+"with": "nsaids",
+"severity": "moderate",
+"note": "Risk of kidney injury and weaker blood-pressure control (worse if dehydrated)"
+},
+{
+"with": "potassium_sparing",
+"severity": "major",
+"note": "Risk of dangerously high potassium"
+},
+{
+"with": "cotrimoxazole",
+"severity": "moderate",
+"note": "Risk of high potassium"
+}
+]
+},
+{
+"id": "losartan",
+"generic": "Losartan",
+"brands": [
+"Losar",
+"Cozaar"
+],
+"class": "Angiotensin receptor blocker (ARB)",
+"class_tags": [],
+"uses": [
+"Hypertension",
+"Diabetic kidney disease",
+"Heart failure"
+],
+"interactions": [
+{
+"with": "nsaids",
+"severity": "moderate",
+"note": "Risk of kidney injury and weaker blood-pressure control (worse if dehydrated)"
+},
+{
+"with": "potassium_sparing",
+"severity": "major",
+"note": "Risk of dangerously high potassium"
+},
+{
+"with": "cotrimoxazole",
+"severity": "moderate",
+"note": "Risk of high potassium"
+}
+]
+},
+{
+"id": "enalapril",
+"generic": "Enalapril",
+"brands": [
+"Envas"
+],
+"class": "ACE inhibitor",
+"class_tags": [],
+"uses": [
+"Hypertension",
+"Heart failure"
+],
+"interactions": [
+{
+"with": "nsaids",
+"severity": "moderate",
+"note": "Risk of kidney injury and weaker blood-pressure control (worse if dehydrated)"
+},
+{
+"with": "furosemide",
+"severity": "moderate",
+"note": "First-dose low blood pressure and kidney effects"
+},
+{
+"with": "potassium_sparing",
+"severity": "major",
+"note": "Risk of dangerously high potassium"
+},
+{
+"with": "cotrimoxazole",
+"severity": "moderate",
+"note": "Risk of high potassium"
+}
+]
+},
+{
+"id": "ramipril",
+"generic": "Ramipril",
+"brands": [
+"Cardace"
+],
+"class": "ACE inhibitor",
+"class_tags": [],
+"uses": [
+"Hypertension",
+"Heart failure",
+"After heart attack"
+],
+"interactions": [
+{
+"with": "nsaids",
+"severity": "moderate",
+"note": "Risk of kidney injury and weaker blood-pressure control (worse if dehydrated)"
+},
+{
+"with": "furosemide",
+"severity": "moderate",
+"note": "First-dose low blood pressure and kidney effects"
+},
+{
+"with": "potassium_sparing",
+"severity": "major",
+"note": "Risk of dangerously high potassium"
+},
+{
+"with": "cotrimoxazole",
+"severity": "moderate",
+"note": "Risk of high potassium"
+}
+]
+},
+{
+"id": "atenolol",
+"generic": "Atenolol",
+"brands": [
+"Tenormin",
+"Aten"
+],
+"class": "Beta blocker",
+"class_tags": [],
+"uses": [
+"Hypertension",
+"Angina",
+"Rapid heart rate"
+],
+"interactions": [
+{
+"with": "insulin_regular",
+"severity": "moderate",
+"note": "May mask warning signs of low blood sugar (tremor, palpitations)"
+},
+{
+"with": "glimepiride",
+"severity": "moderate",
+"note": "May mask warning signs of low blood sugar (tremor, palpitations)"
+},
+{
+"with": "gliclazide",
+"severity": "moderate",
+"note": "May mask warning signs of low blood sugar (tremor, palpitations)"
+},
+{
+"with": "epinephrine",
+"severity": "moderate",
+"note": "Can blunt adrenaline response in anaphylaxis and cause high blood pressure"
+},
+{
+"with": "salbutamol",
+"severity": "moderate",
+"note": "Beta blockers can oppose the bronchodilator effect; avoid in asthma"
+},
+{
+"with": "timolol_eye",
+"severity": "moderate",
+"note": "Additive beta-blocking effect (slow heart rate, low blood pressure)"
+}
+]
+},
+{
+"id": "metoprolol",
+"generic": "Metoprolol",
+"brands": [
+"Metolar",
+"Lopressor"
+],
+"class": "Beta blocker",
+"class_tags": [],
+"uses": [
+"Hypertension",
+"Angina",
+"After heart attack",
+"Rapid heart rate"
+],
+"interactions": [
+{
+"with": "insulin_regular",
+"severity": "moderate",
+"note": "May mask warning signs of low blood sugar (tremor, palpitations)"
+},
+{
+"with": "glimepiride",
+"severity": "moderate",
+"note": "May mask warning signs of low blood sugar (tremor, palpitations)"
+},
+{
+"with": "gliclazide",
+"severity": "moderate",
+"note": "May mask warning signs of low blood sugar (tremor, palpitations)"
+},
+{
+"with": "epinephrine",
+"severity": "moderate",
+"note": "Can blunt adrenaline response in anaphylaxis and cause high blood pressure"
+},
+{
+"with": "salbutamol",
+"severity": "moderate",
+"note": "Beta blockers can oppose the bronchodilator effect; avoid in asthma"
+},
+{
+"with": "timolol_eye",
+"severity": "moderate",
+"note": "Additive beta-blocking effect (slow heart rate, low blood pressure)"
+}
+]
+},
+{
+"id": "hydrochlorothiazide",
+"generic": "Hydrochlorothiazide",
+"brands": [],
+"class": "Thiazide diuretic",
+"class_tags": [],
+"uses": [
+"Hypertension",
+"Mild fluid retention"
+],
+"interactions": [
+{
+"with": "nsaids",
+"severity": "moderate",
+"note": "Reduced diuretic effect and risk of kidney injury"
+}
+]
+},
+{
+"id": "furosemide",
+"generic": "Furosemide (Frusemide)",
+"brands": [
+"Lasix"
+],
+"class": "Loop diuretic",
+"class_tags": [],
+"uses": [
+"Fluid overload in heart failure",
+"Swelling from kidney or liver disease",
+"Pulmonary oedema (hospital)"
+],
+"interactions": [
+{
+"with": "nsaids",
+"severity": "moderate",
+"note": "Reduced diuretic effect and risk of kidney injury"
+},
+{
+"with": "empagliflozin",
+"severity": "moderate",
+"note": "Risk of dehydration and low blood pressure"
+},
+{
+"with": "enalapril",
+"severity": "moderate",
+"note": "First-dose low blood pressure and kidney effects"
+},
+{
+"with": "ramipril",
+"severity": "moderate",
+"note": "First-dose low blood pressure and kidney effects"
+}
+]
+},
+{
+"id": "atorvastatin",
+"generic": "Atorvastatin",
+"brands": [
+"Atorva",
+"Lipitor"
+],
+"class": "Statin",
+"class_tags": [],
+"uses": [
+"High cholesterol",
+"Cardiovascular prevention"
+],
+"interactions": [
+{
+"with": "grapefruit",
+"severity": "moderate",
+"note": "Large amounts of grapefruit juice raise statin levels and muscle side-effect risk"
+},
+{
+"with": "fluconazole",
+"severity": "moderate",
+"note": "Raises statin levels; risk of muscle injury"
+},
+{
+"with": "colchicine",
+"severity": "moderate",
+"note": "Higher risk of muscle toxicity"
+}
+]
+},
+{
+"id": "rosuvastatin",
+"generic": "Rosuvastatin",
+"brands": [
+"Rosuvas",
+"Crestor"
+],
+"class": "Statin",
+"class_tags": [],
+"uses": [
+"High cholesterol",
+"Cardiovascular prevention"
+],
+"interactions": []
+},
+{
+"id": "clopidogrel",
+"generic": "Clopidogrel",
+"brands": [
+"Plavix",
+"Clopilet"
+],
+"class": "Antiplatelet",
+"class_tags": [
+"antiplatelets"
+],
+"uses": [
+"After heart attack or stent",
+"Stroke prevention",
+"Peripheral artery disease"
+],
+"interactions": [
+{
+"with": "nsaids",
+"severity": "moderate",
+"note": "Higher risk of stomach and other bleeding; ibuprofen can also blunt aspirin's heart protection"
+},
+{
+"with": "ssris",
+"severity": "moderate",
+"note": "Higher risk of bleeding"
+},
+{
+"with": "omeprazole",
+"severity": "moderate",
+"note": "Omeprazole may reduce clopidogrel's antiplatelet effect; pantoprazole is preferred"
+},
+{
+"with": "esomeprazole",
+"severity": "moderate",
+"note": "Esomeprazole may reduce clopidogrel's antiplatelet effect; pantoprazole is preferred"
+},
+{
+"with": "antiplatelets",
+"severity": "moderate",
+"note": "Higher bleeding risk; used together only deliberately by a cardiologist"
+},
+{
+"with": "anticoagulants",
+"severity": "major",
+"note": "Much higher risk of bleeding"
+}
+]
+},
+{
+"id": "nitroglycerin_sl",
+"generic": "Nitroglycerin (glyceryl trinitrate) sublingual",
+"brands": [],
+"class": "Nitrate vasodilator",
+"class_tags": [],
+"uses": [
+"Relief of angina chest pain"
+],
+"interactions": [
+{
+"with": "alcohol",
+"severity": "moderate",
+"note": "Greater drop in blood pressure and fainting"
+},
+{
+"with": "sildenafil",
+"severity": "major",
+"note": "Severe, possibly fatal drop in blood pressure - never take together"
+},
+{
+"with": "tadalafil",
+"severity": "major",
+"note": "Severe, possibly fatal drop in blood pressure - never take together"
+}
+]
+},
+{
+"id": "warfarin",
+"generic": "Warfarin",
+"brands": [
+"Warf",
+"Coumadin"
+],
+"class": "Anticoagulant",
+"class_tags": [
+"anticoagulants"
+],
+"uses": [
+"Atrial fibrillation stroke prevention",
+"Deep vein thrombosis",
+"Mechanical heart valves"
+],
+"interactions": [
+{
+"with": "nsaids",
+"severity": "major",
+"note": "Higher risk of serious bleeding; avoid the combination"
+},
+{
+"with": "ssris",
+"severity": "moderate",
+"note": "Higher risk of bleeding"
+},
+{
+"with": "metronidazole",
+"severity": "major",
+"note": "Raises INR and bleeding risk"
+},
+{
+"with": "ciprofloxacin",
+"severity": "moderate",
+"note": "May raise INR"
+},
+{
+"with": "levofloxacin",
+"severity": "moderate",
+"note": "May raise INR"
+},
+{
+"with": "antiplatelets",
+"severity": "major",
+"note": "Much higher risk of bleeding"
+},
+{
+"with": "levothyroxine",
+"severity": "moderate",
+"note": "Thyroid dose changes alter warfarin effect; monitor INR"
+},
+{
+"with": "rifampicin",
+"severity": "major",
+"note": "Markedly reduces warfarin effect; needs INR monitoring"
+},
+{
+"with": "cotrimoxazole",
+"severity": "major",
+"note": "Markedly raises INR and bleeding risk"
+},
+{
+"with": "azithromycin",
+"severity": "moderate",
+"note": "May raise INR"
+},
+{
+"with": "fluconazole",
+"severity": "major",
+"note": "Markedly raises INR and bleeding risk"
+},
+{
+"with": "paracetamol",
+"severity": "moderate",
+"note": "Regular high doses can raise INR"
+},
+{
+"with": "alcohol",
+"severity": "moderate",
+"note": "Alters INR and raises bleeding risk"
+},
+{
+"with": "phenytoin",
+"severity": "moderate",
+"note": "Unpredictable effect on INR and phenytoin levels"
+},
+{
+"with": "carbamazepine",
+"severity": "moderate",
+"note": "Reduces warfarin effect"
+}
+]
+},
+{
+"id": "spironolactone",
+"generic": "Spironolactone",
+"brands": [
+"Aldactone"
+],
+"class": "Potassium-sparing diuretic / aldosterone antagonist",
+"class_tags": [
+"potassium_sparing"
+],
+"uses": [
+"Heart failure",
+"Resistant hypertension",
+"Fluid retention in liver disease"
+],
+"interactions": [
+{
+"with": "nsaids",
+"severity": "moderate",
+"note": "Risk of high potassium and kidney injury"
+},
+{
+"with": "enalapril",
+"severity": "major",
+"note": "Risk of dangerously high potassium"
+},
+{
+"with": "ramipril",
+"severity": "major",
+"note": "Risk of dangerously high potassium"
+},
+{
+"with": "losartan",
+"severity": "major",
+"note": "Risk of dangerously high potassium"
+},
+{
+"with": "telmisartan",
+"severity": "major",
+"note": "Risk of dangerously high potassium"
+},
+{
+"with": "cotrimoxazole",
+"severity": "major",
+"note": "Risk of dangerously high potassium"
+}
+]
+},
+{
+"id": "salbutamol",
+"generic": "Salbutamol (Albuterol) inhaler",
+"brands": [
+"Asthalin",
+"Ventolin"
+],
+"class": "Short-acting bronchodilator (SABA)",
+"class_tags": [],
+"uses": [
+"Asthma attack relief",
+"Wheezing in COPD"
+],
+"interactions": [
+{
+"with": "atenolol",
+"severity": "moderate",
+"note": "Beta blockers can oppose the bronchodilator effect; avoid in asthma"
+},
+{
+"with": "metoprolol",
+"severity": "moderate",
+"note": "Beta blockers can oppose the bronchodilator effect; avoid in asthma"
+},
+{
+"with": "propranolol",
+"severity": "moderate",
+"note": "Beta blockers can oppose the bronchodilator effect; avoid in asthma"
+}
+]
+},
+{
+"id": "budesonide",
+"generic": "Budesonide inhaler",
+"brands": [
+"Budecort",
+"Pulmicort"
+],
+"class": "Inhaled corticosteroid",
+"class_tags": [],
+"uses": [
+"Asthma maintenance",
+"COPD (with LABA, specialist advice)"
+],
+"interactions": []
+},
+{
+"id": "montelukast",
+"generic": "Montelukast",
+"brands": [
+"Montair",
+"Singulair"
+],
+"class": "Leukotriene receptor antagonist",
+"class_tags": [],
+"uses": [
+"Asthma maintenance",
+"Allergic rhinitis"
+],
+"interactions": []
+},
+{
+"id": "ambroxol",
+"generic": "Ambroxol",
+"brands": [
+"Ambrodil"
+],
+"class": "Mucolytic / expectorant",
+"class_tags": [],
+"uses": [
+"Productive cough with thick phlegm"
+],
+"interactions": []
+},
+{
+"id": "dextromethorphan",
+"generic": "Dextromethorphan",
+"brands": [],
+"class": "Cough suppressant",
+"class_tags": [],
+"uses": [
+"Dry irritating cough"
+],
+"interactions": [
+{
+"with": "ssris",
+"severity": "major",
+"note": "Risk of serotonin syndrome (agitation, fever, shaking)"
+}
+]
+},
+{
+"id": "oxymetazoline",
+"generic": "Oxymetazoline nasal drops",
+"brands": [
+"Nasivion"
+],
+"class": "Nasal decongestant",
+"class_tags": [],
+"uses": [
+"Blocked nose from cold or allergy"
+],
+"interactions": []
+},
+{
+"id": "saline_nasal",
+"generic": "Saline nasal drops or spray",
+"brands": [
+"Nasoclear"
+],
+"class": "Nasal saline",
+"class_tags": [],
+"uses": [
+"Blocked nose",
+"Nasal dryness",
+"Infant congestion"
+],
+"interactions": []
+},
+{
+"id": "levothyroxine",
+"generic": "Levothyroxine",
+"brands": [
+"Thyronorm",
+"Eltroxin"
+],
+"class": "Thyroid hormone",
+"class_tags": [],
+"uses": [
+"Hypothyroidism"
+],
+"interactions": [
+{
+"with": "calcium",
+"severity": "moderate",
+"note": "Reduces levothyroxine absorption; separate by at least 4 hours"
+},
+{
+"with": "iron_folic_acid",
+"severity": "moderate",
+"note": "Reduces levothyroxine absorption; separate by at least 4 hours"
+},
+{
+"with": "antacids",
+"severity": "moderate",
+"note": "Reduces levothyroxine absorption; separate by at least 4 hours"
+},
+{
+"with": "warfarin",
+"severity": "moderate",
+"note": "Thyroid dose changes alter warfarin effect; monitor INR"
+},
+{
+"with": "rifampicin",
+"severity": "moderate",
+"note": "May increase levothyroxine requirement"
+}
+]
+},
+{
+"id": "carbimazole",
+"generic": "Carbimazole",
+"brands": [
+"Neomercazole"
+],
+"class": "Antithyroid drug",
+"class_tags": [],
+"uses": [
+"Hyperthyroidism"
+],
+"interactions": []
+},
+{
+"id": "sumatriptan",
+"generic": "Sumatriptan",
+"brands": [
+"Suminat"
+],
+"class": "Triptan (5-HT1B/1D agonist)",
+"class_tags": [],
+"uses": [
+"Acute migraine attack"
+],
+"interactions": [
+{
+"with": "ssris",
+"severity": "moderate",
+"note": "Small risk of serotonin syndrome"
+},
+{
+"with": "maois",
+"severity": "major",
+"note": "Contraindicated: risk of serotonin syndrome and sustained high blood pressure"
+}
+]
+},
+{
+"id": "phenytoin",
+"generic": "Phenytoin",
+"brands": [
+"Eptoin"
+],
+"class": "Antiepileptic",
+"class_tags": [],
+"uses": [
+"Epilepsy (tonic-clonic and focal seizures)"
+],
+"interactions": [
+{
+"with": "rifampicin",
+"severity": "moderate",
+"note": "Alters phenytoin levels; monitor"
+},
+{
+"with": "isoniazid",
+"severity": "moderate",
+"note": "Isoniazid raises phenytoin levels"
+},
+{
+"with": "cotrimoxazole",
+"severity": "moderate",
+"note": "Raises phenytoin levels"
+},
+{
+"with": "warfarin",
+"severity": "moderate",
+"note": "Unpredictable effect on INR and phenytoin levels"
+},
+{
+"with": "oral_contraceptive",
+"severity": "major",
+"note": "Reduces contraceptive effect; use other contraception"
+},
+{
+"with": "sodium_valproate",
+"severity": "moderate",
+"note": "Mutual changes in drug levels; monitor"
+},
+{
+"with": "carbamazepine",
+"severity": "moderate",
+"note": "Mutual changes in drug levels; monitor"
+},
+{
+"with": "fluconazole",
+"severity": "major",
+"note": "Raises phenytoin levels to toxic range"
+},
+{
+"with": "metronidazole",
+"severity": "moderate",
+"note": "Raises phenytoin levels"
+},
+{
+"with": "alcohol",
+"severity": "moderate",
+"note": "Alters phenytoin levels and increases sedation"
+}
+]
+},
+{
+"id": "levetiracetam",
+"generic": "Levetiracetam",
+"brands": [
+"Levipil",
+"Keppra"
+],
+"class": "Antiepileptic",
+"class_tags": [],
+"uses": [
+"Epilepsy (focal and generalised seizures)"
+],
+"interactions": []
+},
+{
+"id": "sodium_valproate",
+"generic": "Sodium valproate",
+"brands": [
+"Valparin",
+"Encorate"
+],
+"class": "Antiepileptic / mood stabiliser",
+"class_tags": [],
+"uses": [
+"Epilepsy",
+"Bipolar disorder",
+"Migraine prevention (specialist)"
+],
+"interactions": [
+{
+"with": "phenytoin",
+"severity": "moderate",
+"note": "Mutual changes in drug levels; monitor"
+},
+{
+"with": "carbamazepine",
+"severity": "moderate",
+"note": "Mutual changes in drug levels; monitor"
+},
+{
+"with": "alcohol",
+"severity": "moderate",
+"note": "More drowsiness; higher liver risk"
+},
+{
+"with": "aspirin",
+"severity": "moderate",
+"note": "Aspirin raises free valproate levels and bleeding risk"
+}
+]
+},
+{
+"id": "carbamazepine",
+"generic": "Carbamazepine",
+"brands": [
+"Tegretol"
+],
+"class": "Antiepileptic",
+"class_tags": [],
+"uses": [
+"Epilepsy",
+"Trigeminal neuralgia",
+"Bipolar disorder (specialist)"
+],
+"interactions": [
+{
+"with": "isoniazid",
+"severity": "moderate",
+"note": "Higher risk of liver toxicity and raised carbamazepine levels"
+},
+{
+"with": "warfarin",
+"severity": "moderate",
+"note": "Reduces warfarin effect"
+},
+{
+"with": "grapefruit",
+"severity": "moderate",
+"note": "Grapefruit raises carbamazepine levels"
+},
+{
+"with": "oral_contraceptive",
+"severity": "major",
+"note": "Reduces contraceptive effect; use other contraception"
+},
+{
+"with": "phenytoin",
+"severity": "moderate",
+"note": "Mutual changes in drug levels; monitor"
+},
+{
+"with": "sodium_valproate",
+"severity": "moderate",
+"note": "Mutual changes in drug levels; monitor"
+},
+{
+"with": "alcohol",
+"severity": "moderate",
+"note": "More drowsiness and impaired coordination"
+},
+{
+"with": "doxycycline",
+"severity": "moderate",
+"note": "Reduces doxycycline levels"
+}
+]
+},
+{
+"id": "sertraline",
+"generic": "Sertraline",
+"brands": [
+"Daxid",
+"Zoloft"
+],
+"class": "SSRI antidepressant",
+"class_tags": [
+"ssris"
+],
+"uses": [
+"Depression",
+"Anxiety and panic disorder",
+"OCD"
+],
+"interactions": [
+{
+"with": "nsaids",
+"severity": "moderate",
+"note": "Higher risk of GI bleeding"
+},
+{
+"with": "maois",
+"severity": "major",
+"note": "Risk of serotonin syndrome; never combine and leave a washout gap"
+},
+{
+"with": "sumatriptan",
+"severity": "moderate",
+"note": "Small risk of serotonin syndrome"
+},
+{
+"with": "tramadol",
+"severity": "major",
+"note": "Risk of serotonin syndrome and seizures"
+},
+{
+"with": "anticoagulants",
+"severity": "moderate",
+"note": "Higher risk of bleeding"
+},
+{
+"with": "antiplatelets",
+"severity": "moderate",
+"note": "Higher risk of bleeding"
+},
+{
+"with": "alcohol",
+"severity": "moderate",
+"note": "More drowsiness and worsening of mood symptoms"
+},
+{
+"with": "amitriptyline",
+"severity": "major",
+"note": "Risk of serotonin syndrome and higher tricyclic levels"
+}
+]
+},
+{
+"id": "escitalopram",
+"generic": "Escitalopram",
+"brands": [
+"Nexito",
+"Lexapro"
+],
+"class": "SSRI antidepressant",
+"class_tags": [
+"ssris",
+"qt_prolonging"
+],
+"uses": [
+"Depression",
+"Anxiety disorders",
+"Panic disorder"
+],
+"interactions": [
+{
+"with": "nsaids",
+"severity": "moderate",
+"note": "Higher risk of GI bleeding"
+},
+{
+"with": "maois",
+"severity": "major",
+"note": "Risk of serotonin syndrome; never combine and leave a washout gap"
+},
+{
+"with": "sumatriptan",
+"severity": "moderate",
+"note": "Small risk of serotonin syndrome"
+},
+{
+"with": "tramadol",
+"severity": "major",
+"note": "Risk of serotonin syndrome and seizures"
+},
+{
+"with": "anticoagulants",
+"severity": "moderate",
+"note": "Higher risk of bleeding"
+},
+{
+"with": "antiplatelets",
+"severity": "moderate",
+"note": "Higher risk of bleeding"
+},
+{
+"with": "alcohol",
+"severity": "moderate",
+"note": "More drowsiness and worsening of mood symptoms"
+},
+{
+"with": "amitriptyline",
+"severity": "major",
+"note": "Risk of serotonin syndrome and higher tricyclic levels"
+},
+{
+"with": "ciprofloxacin",
+"severity": "moderate",
+"note": "Additive QT prolongation risk"
+},
+{
+"with": "levofloxacin",
+"severity": "moderate",
+"note": "Additive QT prolongation risk"
+},
+{
+"with": "qt_prolonging",
+"severity": "major",
+"note": "Additive QT prolongation and risk of dangerous heart rhythm; avoid unless monitored"
+}
+]
+},
+{
+"id": "fluoxetine",
+"generic": "Fluoxetine",
+"brands": [
+"Prozac",
+"Fludac"
+],
+"class": "SSRI antidepressant",
+"class_tags": [
+"ssris"
+],
+"uses": [
+"Depression",
+"OCD",
+"Bulimia nervosa"
+],
+"interactions": [
+{
+"with": "nsaids",
+"severity": "moderate",
+"note": "Higher risk of GI bleeding"
+},
+{
+"with": "maois",
+"severity": "major",
+"note": "Risk of serotonin syndrome; never combine and leave a washout gap"
+},
+{
+"with": "sumatriptan",
+"severity": "moderate",
+"note": "Small risk of serotonin syndrome"
+},
+{
+"with": "tramadol",
+"severity": "major",
+"note": "Risk of serotonin syndrome and seizures"
+},
+{
+"with": "anticoagulants",
+"severity": "moderate",
+"note": "Higher risk of bleeding"
+},
+{
+"with": "antiplatelets",
+"severity": "moderate",
+"note": "Higher risk of bleeding"
+},
+{
+"with": "alcohol",
+"severity": "moderate",
+"note": "More drowsiness and worsening of mood symptoms"
+},
+{
+"with": "amitriptyline",
+"severity": "major",
+"note": "Risk of serotonin syndrome and higher tricyclic levels"
+}
+]
+},
+{
+"id": "alprazolam",
+"generic": "Alprazolam",
+"brands": [
+"Alprax",
+"Restyl"
+],
+"class": "Benzodiazepine",
+"class_tags": [
+"benzodiazepines"
+],
+"uses": [
+"Short-term anxiety",
+"Panic disorder (specialist)"
+],
+"interactions": [
+{
+"with": "alcohol",
+"severity": "major",
+"note": "Dangerous sedation and breathing depression"
+},
+{
+"with": "opioids",
+"severity": "major",
+"note": "Risk of profound sedation, breathing depression and death"
+},
+{
+"with": "grapefruit",
+"severity": "moderate",
+"note": "Grapefruit may raise alprazolam levels and sedation"
+},
+{
+"with": "chlorpheniramine",
+"severity": "moderate",
+"note": "Additive sedation"
+}
+]
+},
+{
+"id": "clonazepam",
+"generic": "Clonazepam",
+"brands": [
+"Rivotril",
+"Clonotril"
+],
+"class": "Benzodiazepine",
+"class_tags": [
+"benzodiazepines"
+],
+"uses": [
+"Seizure disorders (adjunct)",
+"Panic disorder",
+"Short-term anxiety"
+],
+"interactions": [
+{
+"with": "alcohol",
+"severity": "major",
+"note": "Dangerous sedation and breathing depression"
+},
+{
+"with": "opioids",
+"severity": "major",
+"note": "Risk of profound sedation, breathing depression and death"
+},
+{
+"with": "chlorpheniramine",
+"severity": "moderate",
+"note": "Additive sedation"
+}
+]
+},
+{
+"id": "diazepam",
+"generic": "Diazepam",
+"brands": [
+"Valium",
+"Calmpose"
+],
+"class": "Benzodiazepine",
+"class_tags": [
+"benzodiazepines"
+],
+"uses": [
+"Acute anxiety",
+"Muscle spasm",
+"Seizures and alcohol withdrawal (doctor-directed)"
+],
+"interactions": [
+{
+"with": "alcohol",
+"severity": "major",
+"note": "Dangerous sedation and breathing depression"
+},
+{
+"with": "opioids",
+"severity": "major",
+"note": "Risk of profound sedation, breathing depression and death"
+},
+{
+"with": "chlorpheniramine",
+"severity": "moderate",
+"note": "Additive sedation"
+}
+]
+},
+{
+"id": "amitriptyline",
+"generic": "Amitriptyline",
+"brands": [
+"Tryptomer"
+],
+"class": "Tricyclic antidepressant",
+"class_tags": [
+"qt_prolonging"
+],
+"uses": [
+"Depression",
+"Neuropathic pain",
+"Migraine prevention"
+],
+"interactions": [
+{
+"with": "ssris",
+"severity": "major",
+"note": "Risk of serotonin syndrome and higher tricyclic levels"
+},
+{
+"with": "maois",
+"severity": "major",
+"note": "Contraindicated: risk of serotonin syndrome and hypertensive crisis"
+},
+{
+"with": "alcohol",
+"severity": "major",
+"note": "Marked sedation and impaired coordination"
+},
+{
+"with": "ciprofloxacin",
+"severity": "moderate",
+"note": "Additive QT prolongation risk"
+},
+{
+"with": "levofloxacin",
+"severity": "moderate",
+"note": "Additive QT prolongation risk"
+},
+{
+"with": "qt_prolonging",
+"severity": "major",
+"note": "Additive QT prolongation and risk of dangerous heart rhythm; avoid unless monitored"
+},
+{
+"with": "epinephrine",
+"severity": "moderate",
+"note": "Tricyclics can exaggerate the blood-pressure response to adrenaline"
+},
+{
+"with": "tramadol",
+"severity": "major",
+"note": "Raised risk of seizures and serotonin syndrome"
+}
+]
+},
+{
+"id": "propranolol",
+"generic": "Propranolol",
+"brands": [
+"Inderal"
+],
+"class": "Non-selective beta blocker",
+"class_tags": [],
+"uses": [
+"Migraine prevention",
+"Essential tremor",
+"Anxiety physical symptoms",
+"Hypertension"
+],
+"interactions": [
+{
+"with": "insulin_regular",
+"severity": "moderate",
+"note": "May mask warning signs of low blood sugar (tremor, palpitations)"
+},
+{
+"with": "glimepiride",
+"severity": "moderate",
+"note": "May mask warning signs of low blood sugar (tremor, palpitations)"
+},
+{
+"with": "gliclazide",
+"severity": "moderate",
+"note": "May mask warning signs of low blood sugar (tremor, palpitations)"
+},
+{
+"with": "epinephrine",
+"severity": "moderate",
+"note": "Can blunt adrenaline response in anaphylaxis and cause high blood pressure"
+},
+{
+"with": "salbutamol",
+"severity": "moderate",
+"note": "Beta blockers can oppose the bronchodilator effect; avoid in asthma"
+},
+{
+"with": "timolol_eye",
+"severity": "moderate",
+"note": "Additive beta-blocking effect (slow heart rate, low blood pressure)"
+}
+]
+},
+{
+"id": "gabapentin",
+"generic": "Gabapentin",
+"brands": [
+"Gabapin"
+],
+"class": "Anticonvulsant / neuropathic pain agent",
+"class_tags": [],
+"uses": [
+"Neuropathic pain",
+"Focal seizures (adjunct)"
+],
+"interactions": []
+},
+{
+"id": "iron_folic_acid",
+"generic": "Iron + Folic acid (ferrous salt)",
+"brands": [
+"Fefol"
+],
+"class": "Mineral / vitamin supplement",
+"class_tags": [],
+"uses": [
+"Iron-deficiency anaemia",
+"Prevention of anaemia in pregnancy and adolescents"
+],
+"interactions": [
+{
+"with": "ciprofloxacin",
+"severity": "moderate",
+"note": "Binds the antibiotic and reduces absorption; take the antibiotic 2 hours before or 6 hours after (follow the label)"
+},
+{
+"with": "levofloxacin",
+"severity": "moderate",
+"note": "Binds the antibiotic and reduces absorption; take the antibiotic 2 hours before or 6 hours after (follow the label)"
+},
+{
+"with": "doxycycline",
+"severity": "moderate",
+"note": "Binds the antibiotic and reduces absorption; take the antibiotic 2 hours before or 6 hours after (follow the label)"
+},
+{
+"with": "levothyroxine",
+"severity": "moderate",
+"note": "Reduces levothyroxine absorption; separate by at least 4 hours"
+},
+{
+"with": "omeprazole",
+"severity": "minor",
+"note": "Reduced stomach acid lowers iron absorption"
+},
+{
+"with": "pantoprazole",
+"severity": "minor",
+"note": "Reduced stomach acid lowers iron absorption"
+},
+{
+"with": "antacids",
+"severity": "moderate",
+"note": "Reduces iron absorption; separate by 2 hours"
+}
+]
+},
+{
+"id": "vitamin_d3",
+"generic": "Vitamin D3 (Cholecalciferol)",
+"brands": [
+"Uprise-D3",
+"Calcirol"
+],
+"class": "Vitamin supplement",
+"class_tags": [],
+"uses": [
+"Vitamin D deficiency",
+"Bone health",
+"Rickets and osteomalacia"
+],
+"interactions": []
+},
+{
+"id": "calcium",
+"generic": "Calcium (carbonate or citrate) with or without vitamin D3",
+"brands": [
+"Shelcal",
+"Calcimax"
+],
+"class": "Mineral supplement",
+"class_tags": [],
+"uses": [
+"Calcium deficiency",
+"Osteoporosis prevention",
+"Pregnancy and lactation supplementation"
+],
+"interactions": [
+{
+"with": "ciprofloxacin",
+"severity": "moderate",
+"note": "Binds the antibiotic and reduces absorption; take the antibiotic 2 hours before or 6 hours after (follow the label)"
+},
+{
+"with": "levofloxacin",
+"severity": "moderate",
+"note": "Binds the antibiotic and reduces absorption; take the antibiotic 2 hours before or 6 hours after (follow the label)"
+},
+{
+"with": "doxycycline",
+"severity": "moderate",
+"note": "Binds the antibiotic and reduces absorption; take the antibiotic 2 hours before or 6 hours after (follow the label)"
+},
+{
+"with": "levothyroxine",
+"severity": "moderate",
+"note": "Reduces levothyroxine absorption; separate by at least 4 hours"
+}
+]
+},
+{
+"id": "vitamin_b12",
+"generic": "Vitamin B12 (Cyanocobalamin / Methylcobalamin)",
+"brands": [
+"Methycobal"
+],
+"class": "Vitamin supplement",
+"class_tags": [],
+"uses": [
+"B12 deficiency",
+"Pernicious anaemia",
+"Neuropathy due to deficiency"
+],
+"interactions": []
+},
+{
+"id": "folic_acid",
+"generic": "Folic acid",
+"brands": [
+"Folvite"
+],
+"class": "Vitamin supplement",
+"class_tags": [],
+"uses": [
+"Folate deficiency anaemia",
+"Prevention of neural tube defects (preconception and early pregnancy)"
+],
+"interactions": []
+},
+{
+"id": "clotrimazole",
+"generic": "Clotrimazole cream (1%)",
+"brands": [
+"Candid"
+],
+"class": "Topical antifungal",
+"class_tags": [],
+"uses": [
+"Ringworm (tinea)",
+"Athlete's foot",
+"Candidal skin and vaginal infection"
+],
+"interactions": []
+},
+{
+"id": "permethrin",
+"generic": "Permethrin cream (5%)",
+"brands": [
+"Scabper",
+"Permite"
+],
+"class": "Topical scabicide",
+"class_tags": [],
+"uses": [
+"Scabies",
+"Head lice (lotion)"
+],
+"interactions": []
+},
+{
+"id": "mupirocin",
+"generic": "Mupirocin ointment (2%)",
+"brands": [
+"T-Bact",
+"Bactroban"
+],
+"class": "Topical antibiotic",
+"class_tags": [],
+"uses": [
+"Impetigo",
+"Infected small skin wounds",
+"MRSA nasal decolonisation"
+],
+"interactions": []
+},
+{
+"id": "hydrocortisone_cream",
+"generic": "Hydrocortisone cream (1%)",
+"brands": [],
+"class": "Mild topical corticosteroid",
+"class_tags": [],
+"uses": [
+"Eczema",
+"Allergic and contact dermatitis",
+"Insect bites"
+],
+"interactions": []
+},
+{
+"id": "fluconazole",
+"generic": "Fluconazole",
+"brands": [
+"Forcan",
+"Zocon"
+],
+"class": "Oral antifungal",
+"class_tags": [
+"qt_prolonging"
+],
+"uses": [
+"Vaginal candidiasis",
+"Oral thrush",
+"Resistant fungal skin infections",
+"Cryptococcal infection (hospital)"
+],
+"interactions": [
+{
+"with": "ciprofloxacin",
+"severity": "moderate",
+"note": "Additive QT prolongation risk"
+},
+{
+"with": "levofloxacin",
+"severity": "moderate",
+"note": "Additive QT prolongation risk"
+},
+{
+"with": "qt_prolonging",
+"severity": "major",
+"note": "Additive QT prolongation and risk of dangerous heart rhythm; avoid unless monitored"
+},
+{
+"with": "warfarin",
+"severity": "major",
+"note": "Markedly raises INR and bleeding risk"
+},
+{
+"with": "atorvastatin",
+"severity": "moderate",
+"note": "Raises statin levels; risk of muscle injury"
+},
+{
+"with": "phenytoin",
+"severity": "major",
+"note": "Raises phenytoin levels to toxic range"
+}
+]
+},
+{
+"id": "terbinafine",
+"generic": "Terbinafine",
+"brands": [
+"Terbicip",
+"Lamisil"
+],
+"class": "Antifungal (allylamine)",
+"class_tags": [],
+"uses": [
+"Ringworm of body and scalp",
+"Nail fungus",
+"Athlete's foot"
+],
+"interactions": []
+},
+{
+"id": "calamine",
+"generic": "Calamine lotion",
+"brands": [
+"Lacto Calamine"
+],
+"class": "Topical soothing agent",
+"class_tags": [],
+"uses": [
+"Itching from insect bites, chickenpox, heat rash, sunburn"
+],
+"interactions": []
+},
+{
+"id": "benzoyl_peroxide",
+"generic": "Benzoyl peroxide gel (2.5-5%)",
+"brands": [
+"Benzac"
+],
+"class": "Topical anti-acne",
+"class_tags": [],
+"uses": [
+"Mild to moderate acne"
+],
+"interactions": []
+},
+{
+"id": "adapalene",
+"generic": "Adapalene gel (0.1%)",
+"brands": [
+"Adaferin",
+"Differin"
+],
+"class": "Topical retinoid",
+"class_tags": [],
+"uses": [
+"Acne"
+],
+"interactions": []
+},
+{
+"id": "acyclovir",
+"generic": "Acyclovir",
+"brands": [
+"Zovirax",
+"Acivir"
+],
+"class": "Antiviral",
+"class_tags": [],
+"uses": [
+"Herpes zoster (shingles)",
+"Chickenpox in adults and high-risk groups",
+"Herpes simplex"
+],
+"interactions": []
+},
+{
+"id": "albendazole",
+"generic": "Albendazole",
+"brands": [
+"Zentel",
+"Bandy"
+],
+"class": "Anthelmintic",
+"class_tags": [],
+"uses": [
+"Roundworm, hookworm, whipworm, pinworm",
+"Mass deworming"
+],
+"interactions": []
+},
+{
+"id": "ivermectin",
+"generic": "Ivermectin",
+"brands": [
+"Ivecop",
+"Iverheal"
+],
+"class": "Anti-parasitic",
+"class_tags": [],
+"uses": [
+"Scabies",
+"Strongyloidiasis",
+"Lice"
+],
+"interactions": []
+},
+{
+"id": "prednisolone",
+"generic": "Prednisolone",
+"brands": [
+"Wysolone",
+"Omnacortil"
+],
+"class": "Oral corticosteroid",
+"class_tags": [],
+"uses": [
+"Severe asthma or COPD flare",
+"Severe allergy",
+"Autoimmune and inflammatory conditions"
+],
+"interactions": [
+{
+"with": "nsaids",
+"severity": "moderate",
+"note": "Higher risk of stomach ulcer and bleeding"
+},
+{
+"with": "ciprofloxacin",
+"severity": "moderate",
+"note": "Higher risk of tendon rupture"
+},
+{
+"with": "levofloxacin",
+"severity": "moderate",
+"note": "Higher risk of tendon rupture"
+},
+{
+"with": "rifampicin",
+"severity": "moderate",
+"note": "Reduces steroid effect; dose may need increase"
+},
+{
+"with": "insulin_regular",
+"severity": "moderate",
+"note": "Steroids raise blood sugar; diabetic dose may need adjusting"
+},
+{
+"with": "glimepiride",
+"severity": "moderate",
+"note": "Steroids raise blood sugar; diabetic dose may need adjusting"
+},
+{
+"with": "gliclazide",
+"severity": "moderate",
+"note": "Steroids raise blood sugar; diabetic dose may need adjusting"
+},
+{
+"with": "metformin",
+"severity": "moderate",
+"note": "Steroids raise blood sugar; diabetic dose may need adjusting"
+},
+{
+"with": "dexamethasone",
+"severity": "minor",
+"note": "Duplicate corticosteroid therapy"
+}
+]
+},
+{
+"id": "dexamethasone",
+"generic": "Dexamethasone",
+"brands": [
+"Decdan",
+"Dexona"
+],
+"class": "Oral and injectable corticosteroid",
+"class_tags": [],
+"uses": [
+"Severe allergy",
+"Brain swelling",
+"Croup in children (single dose)",
+"Severe inflammation"
+],
+"interactions": [
+{
+"with": "nsaids",
+"severity": "moderate",
+"note": "Higher risk of stomach ulcer and bleeding"
+},
+{
+"with": "ciprofloxacin",
+"severity": "moderate",
+"note": "Higher risk of tendon rupture"
+},
+{
+"with": "levofloxacin",
+"severity": "moderate",
+"note": "Higher risk of tendon rupture"
+},
+{
+"with": "rifampicin",
+"severity": "moderate",
+"note": "Reduces steroid effect; dose may need increase"
+},
+{
+"with": "insulin_regular",
+"severity": "moderate",
+"note": "Steroids raise blood sugar; diabetic dose may need adjusting"
+},
+{
+"with": "glimepiride",
+"severity": "moderate",
+"note": "Steroids raise blood sugar; diabetic dose may need adjusting"
+},
+{
+"with": "gliclazide",
+"severity": "moderate",
+"note": "Steroids raise blood sugar; diabetic dose may need adjusting"
+},
+{
+"with": "metformin",
+"severity": "moderate",
+"note": "Steroids raise blood sugar; diabetic dose may need adjusting"
+},
+{
+"with": "prednisolone",
+"severity": "minor",
+"note": "Duplicate corticosteroid therapy"
+}
+]
+},
+{
+"id": "epinephrine",
+"generic": "Epinephrine (Adrenaline)",
+"brands": [
+"Adrenaline injection"
+],
+"class": "Emergency sympathomimetic",
+"class_tags": [],
+"uses": [
+"Anaphylaxis",
+"Severe asthma (emergency)",
+"Cardiac arrest (hospital protocols)"
+],
+"interactions": [
+{
+"with": "atenolol",
+"severity": "moderate",
+"note": "Can blunt adrenaline response in anaphylaxis and cause high blood pressure"
+},
+{
+"with": "metoprolol",
+"severity": "moderate",
+"note": "Can blunt adrenaline response in anaphylaxis and cause high blood pressure"
+},
+{
+"with": "propranolol",
+"severity": "moderate",
+"note": "Can blunt adrenaline response in anaphylaxis and cause high blood pressure"
+},
+{
+"with": "amitriptyline",
+"severity": "moderate",
+"note": "Tricyclics can exaggerate the blood-pressure response to adrenaline"
+}
+]
+},
+{
+"id": "anti_snake_venom",
+"generic": "Polyvalent anti-snake venom (Indian)",
+"brands": [],
+"class": "Antivenom",
+"class_tags": [],
+"uses": [
+"Bites by the Indian big four (cobra, krait, Russell's viper, saw-scaled viper)"
+],
+"interactions": []
+},
+{
+"id": "rabies_vaccine",
+"generic": "Rabies vaccine (cell culture)",
+"brands": [
+"Rabipur",
+"Abhayrab",
+"Verorab"
+],
+"class": "Vaccine",
+"class_tags": [],
+"uses": [
+"Post-exposure prophylaxis after animal bites",
+"Pre-exposure prophylaxis"
+],
+"interactions": []
+},
+{
+"id": "rabies_immunoglobulin",
+"generic": "Rabies immunoglobulin (human or equine)",
+"brands": [],
+"class": "Passive immunisation",
+"class_tags": [],
+"uses": [
+"Post-exposure prophylaxis for category III animal exposure (bites, scratches with bleeding, licks on broken skin)"
+],
+"interactions": []
+},
+{
+"id": "tetanus_toxoid",
+"generic": "Tetanus toxoid (TT or Td)",
+"brands": [
+"TT",
+"Td"
+],
+"class": "Vaccine",
+"class_tags": [],
+"uses": [
+"Tetanus prevention after wounds",
+"Routine immunisation and pregnancy"
+],
+"interactions": []
+},
+{
+"id": "oral_contraceptive",
+"generic": "Combined oral contraceptive pill",
+"brands": [
+"Mala-D",
+"Ovral L"
+],
+"class": "Hormonal contraceptive",
+"class_tags": [],
+"uses": [
+"Contraception",
+"Cycle regulation (on advice)"
+],
+"interactions": [
+{
+"with": "rifampicin",
+"severity": "major",
+"note": "Reduces contraceptive effect; use non-hormonal or additional contraception"
+},
+{
+"with": "phenytoin",
+"severity": "major",
+"note": "Reduces contraceptive effect; use other contraception"
+},
+{
+"with": "carbamazepine",
+"severity": "major",
+"note": "Reduces contraceptive effect; use other contraception"
+},
+{
+"with": "tranexamic_acid",
+"severity": "moderate",
+"note": "Higher risk of blood clots"
+}
+]
+},
+{
+"id": "tranexamic_acid",
+"generic": "Tranexamic acid",
+"brands": [
+"Tranexa"
+],
+"class": "Antifibrinolytic",
+"class_tags": [],
+"uses": [
+"Heavy menstrual bleeding",
+"Bleeding after trauma or surgery (doctor-directed)"
+],
+"interactions": [
+{
+"with": "oral_contraceptive",
+"severity": "moderate",
+"note": "Higher risk of blood clots"
+}
+]
+},
+{
+"id": "allopurinol",
+"generic": "Allopurinol",
+"brands": [
+"Zyloric"
+],
+"class": "Xanthine oxidase inhibitor",
+"class_tags": [],
+"uses": [
+"Gout prevention",
+"Uric acid kidney stones"
+],
+"interactions": [
+{
+"with": "amoxicillin",
+"severity": "minor",
+"note": "Higher rate of skin rash"
+}
+]
+},
+{
+"id": "colchicine",
+"generic": "Colchicine",
+"brands": [],
+"class": "Anti-gout agent",
+"class_tags": [],
+"uses": [
+"Acute gout attack",
+"Gout flare prevention"
+],
+"interactions": [
+{
+"with": "atorvastatin",
+"severity": "moderate",
+"note": "Higher risk of muscle toxicity"
+}
+]
+},
+{
+"id": "tamsulosin",
+"generic": "Tamsulosin",
+"brands": [
+"Urimax",
+"Veltam"
+],
+"class": "Alpha blocker",
+"class_tags": [],
+"uses": [
+"Benign prostate enlargement symptoms",
+"Ureteric stone passage (specialist use)"
+],
+"interactions": []
+},
+{
+"id": "oseltamivir",
+"generic": "Oseltamivir",
+"brands": [
+"Fluvir"
+],
+"class": "Antiviral (neuraminidase inhibitor)",
+"class_tags": [],
+"uses": [
+"Influenza treatment (especially severe or high-risk)",
+"Influenza prevention in selected contacts"
+],
+"interactions": []
+},
+{
+"id": "timolol_eye",
+"generic": "Timolol eye drops (0.25-0.5%)",
+"brands": [],
+"class": "Beta blocker eye drops",
+"class_tags": [],
+"uses": [
+"Glaucoma and raised eye pressure"
+],
+"interactions": [
+{
+"with": "atenolol",
+"severity": "moderate",
+"note": "Additive beta-blocking effect (slow heart rate, low blood pressure)"
+},
+{
+"with": "metoprolol",
+"severity": "moderate",
+"note": "Additive beta-blocking effect (slow heart rate, low blood pressure)"
+},
+{
+"with": "propranolol",
+"severity": "moderate",
+"note": "Additive beta-blocking effect (slow heart rate, low blood pressure)"
+}
+]
+},
+{
+"id": "artificial_tears",
+"generic": "Lubricant eye drops (carboxymethylcellulose)",
+"brands": [
+"Refresh Tears"
+],
+"class": "Ocular lubricant",
+"class_tags": [],
+"uses": [
+"Dry eyes",
+"Eye irritation from screens or dust"
+],
+"interactions": []
+},
+{
+"id": "labetalol",
+"generic": "Labetalol",
+"brands": [],
+"class": "Alpha and beta blocker",
+"class_tags": [],
+"uses": [
+"Hypertension in pregnancy",
+"Pre-eclampsia"
+],
+"interactions": []
+},
+{
+"id": "methyldopa",
+"generic": "Methyldopa",
+"brands": [
+"Alphadopa"
+],
+"class": "Centrally acting antihypertensive",
+"class_tags": [],
+"uses": [
+"Hypertension in pregnancy"
+],
+"interactions": []
+},
+{
+"id": "nifedipine",
+"generic": "Nifedipine (retard)",
+"brands": [
+"Depin"
+],
+"class": "Calcium channel blocker",
+"class_tags": [],
+"uses": [
+"Hypertension in pregnancy",
+"Severe hypertension (doctor-directed)"
+],
+"interactions": []
+},
+{
+"id": "sildenafil",
+"generic": "Sildenafil",
+"brands": [
+"Viagra",
+"Manforce",
+"Penegra",
+"Kamagra"
+],
+"class": "PDE-5 inhibitor",
+"class_tags": [],
+"uses": [
+"Erectile dysfunction"
+],
+"interactions": [
+{
+"with": "nitroglycerin_sl",
+"severity": "major",
+"note": "Severe, possibly fatal drop in blood pressure - never take together"
+},
+{
+"with": "alcohol",
+"severity": "moderate",
+"note": "Larger drop in blood pressure, dizziness"
+}
+]
+},
+{
+"id": "tadalafil",
+"generic": "Tadalafil",
+"brands": [
+"Cialis",
+"Tadacip",
+"Megalis"
+],
+"class": "PDE-5 inhibitor",
+"class_tags": [],
+"uses": [
+"Erectile dysfunction",
+"Benign prostatic hyperplasia"
+],
+"interactions": [
+{
+"with": "nitroglycerin_sl",
+"severity": "major",
+"note": "Severe, possibly fatal drop in blood pressure - never take together"
+},
+{
+"with": "alcohol",
+"severity": "moderate",
+"note": "Larger drop in blood pressure, dizziness"
+}
+]
+}
+]

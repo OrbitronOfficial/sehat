@@ -1,0 +1,1 @@
+doctor [('docdemo', 5.76), ('queue', 10.16), ('sorted', 54.06), ('start', 55.86), ('notes', 58.77), ('draft_click', 67.94), ('draft_ready', 70.98), ('approve', 76.57), ('approved', 79.06), ('end', 80.57)]

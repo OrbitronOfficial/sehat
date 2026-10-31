@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Saathi, the records guide">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E3F4F1"/><stop offset="1" stop-color="#BFE3DD"/></linearGradient>
+    <linearGradient id="coat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E9F0EE"/></linearGradient>
+    <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E8B48C"/><stop offset="1" stop-color="#D99B72"/></linearGradient>
+    <clipPath id="round"><circle cx="60" cy="60" r="58"/></clipPath>
+  </defs>
+  <circle cx="60" cy="60" r="58" fill="url(#bg)"/>
+  <g clip-path="url(#round)">
+    <!-- shoulders and white coat -->
+    <path d="M12 124c0-24 18-38 48-38s48 14 48 38z" fill="url(#coat)" stroke="#C9D6D2" stroke-width="1.2"/>
+    <!-- scrub top showing between the lapels -->
+    <path d="M46 86l14 22 14-22c-4 3-9 4.500-14 4.500S50 89 46 86z" fill="#0774C4"/>
+    <!-- lapels -->
+    <path d="M46 86l-9 7 15 23 8-8z" fill="#FFFFFF" stroke="#C9D6D2" stroke-width="1.2" stroke-linejoin="round"/>
+    <path d="M74 86l9 7-15 23-8-8z" fill="#FFFFFF" stroke="#C9D6D2" stroke-width="1.2" stroke-linejoin="round"/>
+    <!-- neck -->
+    <path d="M51 70h18v14c0 5-4 9-9 9s-9-4-9-9z" fill="#CF8F66"/>
+    <!-- stethoscope -->
+    <path d="M43 90c-3 12 1 22 9 25" fill="none" stroke="#2F3E46" stroke-width="2.600" stroke-linecap="round"/>
+    <path d="M77 90c3 10 1 17-4 21" fill="none" stroke="#2F3E46" stroke-width="2.600" stroke-linecap="round"/>
+    <circle cx="71" cy="113" r="5" fill="#E7ECEA" stroke="#2F3E46" stroke-width="2.200"/>
+    <circle cx="71" cy="113" r="1.800" fill="#0774C4"/>
+    <!-- ears -->
+    <ellipse cx="37.500" cy="54" rx="4" ry="6" fill="#D99B72"/>
+    <ellipse cx="82.500" cy="54" rx="4" ry="6" fill="#D99B72"/>
+    <!-- face -->
+    <path d="M39 48c0-14 9-23 21-23s21 9 21 23v6c0 13-9 23-21 23s-21-10-21-23z" fill="url(#skin)"/>
+    <!-- hair -->
+    <path d="M37 50c-2-18 8-30 23-30s25 11 23 29c-3-8-8-13-14-15-7 5-17 7-26 6-3 2-5 5-6 10z" fill="#2B2320"/>
+    <!-- eyebrows and eyes -->
+    <path d="M46 49.500c2.500-2 5.500-2 8 0M66 49.500c2.500-2 5.500-2 8 0" fill="none" stroke="#2B2320" stroke-width="1.800" stroke-linecap="round"/>
+    <ellipse cx="50" cy="55" rx="2.300" ry="2.800" fill="#231A17"/>
+    <ellipse cx="70" cy="55" rx="2.300" ry="2.800" fill="#231A17"/>
+    <circle cx="50.800" cy="54" r=".800" fill="#FFFFFF"/>
+    <circle cx="70.800" cy="54" r=".800" fill="#FFFFFF"/>
+    <!-- nose and a calm smile -->
+    <path d="M60 56v6.500c0 1.200-1 2-2.400 2" fill="none" stroke="#B9774F" stroke-width="1.600" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M52 68c4.500 4 11.500 4 16 0" fill="none" stroke="#8C4A2F" stroke-width="2" stroke-linecap="round"/>
+    <!-- cheeks -->
+    <ellipse cx="45.500" cy="63" rx="3.500" ry="2.200" fill="#E58F74" opacity=".35"/>
+    <ellipse cx="74.500" cy="63" rx="3.500" ry="2.200" fill="#E58F74" opacity=".35"/>
+    <!-- name badge -->
+    <rect x="80" y="100" width="13" height="9" rx="1.800" fill="#0774C4"/>
+    <path d="M83 104.500h7" stroke="#FFFFFF" stroke-width="1.400" stroke-linecap="round"/>
+  </g>
+  <circle cx="60" cy="60" r="58" fill="none" stroke="#9FCFC7" stroke-width="2"/>
+</svg>

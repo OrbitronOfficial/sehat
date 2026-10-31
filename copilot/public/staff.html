@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sehat Staff</title>
+<script>try{var th=localStorage.getItem("sehat_theme");if(th!=="dark"&&th!=="light")th=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=th}catch(e){document.documentElement.dataset.theme="light"}</script>
+<link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=IBM+Plex+Mono:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css?v=3f">
+<style>
+  .wrapx { max-width: 760px; margin: 0 auto; padding: 32px 16px 80px; display: grid; gap: 16px; }
+  .card { padding: 22px; }
+  .d-in { font: inherit; color: var(--ink); background: var(--card-solid); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; min-width: 0; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .t { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-top: 1px solid var(--line); }
+  .t:first-child { border-top: 0; } .t.done .tx { text-decoration: line-through; color: var(--muted); }
+  .t .body { display: grid; gap: 2px; min-width: 0; }
+  .tick { flex: none; width: 28px; height: 28px; border-radius: 9px; border: 2px solid var(--teal); background: transparent; color: #fff; font-weight: 800; cursor: pointer; display: grid; place-items: center; transition: background .2s ease, transform .15s ease; }
+  .tick:hover { background: var(--teal-tint); transform: scale(1.06); }
+  .t.done .tick { background: var(--teal); border-color: var(--teal); }
+  :root[data-theme="dark"] .t.done .tick { color: #04213F; }
+  .hd { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; } .hd h2 { margin: 0; font-size: 1.15rem; }
+  .hday + .hday { margin-top: 14px; } .hdate { font-weight: 700; padding: 6px 0; border-bottom: 1px solid var(--line); }
+  .tag.ok { background: var(--ok-bg); color: var(--ok); }
+  .meta { font-size: .8rem; color: var(--muted); }
+  .tag { font-size: .74rem; padding: 2px 9px; border-radius: 999px; background: var(--teal-tint); color: var(--teal-dark); font-weight: 600; margin-left: auto; white-space: nowrap; }
+  .tag.redo { background: var(--warn-bg); color: var(--warn); }
+  .err { color: var(--crit); font-size: .92rem; }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="/" aria-label="Sehat Copilot home"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Sehat Staff</span></a>
+  <div class="top-right"><span class="userchip" id="who" hidden></span></div>
+</header>
+<div class="wrapx">
+  <section id="joinBox" class="card" hidden>
+    <div class="kicker">Staff access</div>
+    <h1>Join your doctor's to-do list</h1>
+    <p class="meta">Enter the 6-character code your doctor gave you. You will only see the to-do list: no patients, prescriptions or recordings.</p>
+    <div class="row" style="margin-top:12px"><input class="d-in" id="code" placeholder="e.g. 4F9A2C" maxlength="12" style="text-transform:uppercase;letter-spacing:.2em;flex:1"><button class="btn primary" id="joinBtn">Join</button></div>
+    <p class="err" id="joinErr"></p>
+  </section>
+  <section id="listBox" hidden>
+    <div class="page-head"><div class="kicker" id="kick">To-do</div><h1 id="title">To-do</h1><p>Add tasks and tick them off. The doctor reviews what you add and complete each day.</p></div>
+    <div class="card">
+      <div class="row"><input class="d-in" id="txt" placeholder="e.g. Book Sunita Mehra's HbA1c test for Monday" style="flex:1"><button class="btn primary" id="addBtn">Add</button></div>
+      <p class="err" id="listErr"></p>
+    </div>
+    <div class="card"><div class="hd"><h2>Open</h2><span class="tag" id="openN"></span></div><div id="list"></div></div>
+    <div class="card"><div class="hd"><h2>History</h2><span class="meta">by date</span></div><div id="hist"></div></div>
+    <p class="meta">Shared with you by the doctor. <a href="#" id="leave">Leave this list</a></p>
+  </section>
+</div>
+<script>
+(function () {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const KEY = 'sehat_staff_token';
+  let token = null; try { token = localStorage.getItem(KEY); } catch (e) { /* private mode */ }
+  const ROLE = { pa: 'PA', nurse: 'Nurse', receptionist: 'Receptionist' };
+  async function api(body) {
+    const r = await fetch('/api/team', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) { const e = new Error(j.error || 'Request failed'); e.status = r.status; throw e; }
+    return j;
+  }
+  function show(joined) { $('joinBox').hidden = joined; $('listBox').hidden = !joined; $('who').hidden = !joined; }
+  const day = sec => new Date(sec * 1000).toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+  const time = sec => new Date(sec * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  function row(t) {
+    const tag = t.review === 'redo' ? '<span class="tag redo">Doctor asked to redo</span>' : t.review === 'pending' ? '<span class="tag">Waiting for review</span>' : t.done ? '<span class="tag ok">Reviewed</span>' : '';
+    return '<div class="t' + (t.done ? ' done' : '') + '"><button type="button" class="tick" data-id="' + t.id + '" data-done="' + (t.done ? '0' : '1') + '" aria-label="' + (t.done ? 'Mark not done' : 'Mark done') + '">' + (t.done ? '✓' : '') + '</button>' +
+      '<span class="body"><span class="tx">' + esc(t.text) + '</span><span class="meta">Added by ' + esc(t.by) + ' · ' + time(t.at) + (t.done_by ? ' · done by ' + esc(t.done_by) + ' at ' + time(t.done_at) : '') + '</span></span>' + tag + '</div>';
+  }
+  function paint(j) {
+    $('title').textContent = 'To-do'; $('kick').textContent = 'Shared by ' + j.doctor;
+    $('who').innerHTML = '<span class="who">' + esc(j.me.name) + ' · ' + esc(ROLE[j.me.role] || j.me.role) + '</span>';
+    const open = j.todos.filter(t => !t.done), done = j.todos.filter(t => t.done).sort((a, b) => (b.done_at || 0) - (a.done_at || 0));
+    $('openN').textContent = open.length ? open.length + ' open' : 'All done';
+    $('list').innerHTML = open.length ? open.map(row).join('') : '<p class="meta">Nothing open. Add a task above.</p>';
+    const groups = {};
+    done.forEach(t => { const k = day(t.done_at || t.at); (groups[k] = groups[k] || []).push(t); });
+    $('hist').innerHTML = done.length ? Object.keys(groups).map(k => '<div class="hday"><div class="hdate">' + esc(k) + ' <span class="meta">' + groups[k].length + ' done</span></div>' + groups[k].map(row).join('') + '</div>').join('') : '<p class="meta">Completed tasks appear here, grouped by date.</p>';
+  }
+  async function load(body) {
+    try { paint(await api(Object.assign({ token }, body))); show(true); $('listErr').textContent = ''; }
+    catch (e) { if (e.status === 403) { try { localStorage.removeItem(KEY); } catch (x) { /* ignore */ } token = null; show(false); $('joinErr').textContent = e.message; } else $('listErr').textContent = e.message; }
+  }
+  $('joinBtn').onclick = async () => {
+    $('joinErr').textContent = '';
+    try { const j = await api({ action: 'join', code: $('code').value }); token = j.token; try { localStorage.setItem(KEY, token); } catch (e) { /* private mode */ } load({ action: 'todos' }); }
+    catch (e) { $('joinErr').textContent = e.message; }
+  };
+  $('code').onkeydown = e => { if (e.key === 'Enter') $('joinBtn').click(); };
+  const add = () => { const v = $('txt').value.trim(); if (!v) return; $('txt').value = ''; load({ action: 'add', text: v }); };
+  $('addBtn').onclick = add; $('txt').onkeydown = e => { if (e.key === 'Enter') add(); };
+  const tick = e => { const b = e.target.closest('.tick'); if (b) load({ action: 'done', id: b.dataset.id, done: b.dataset.done === '1' }); };
+  $('list').onclick = tick; $('hist').onclick = tick;
+  $('leave').onclick = e => { e.preventDefault(); try { localStorage.removeItem(KEY); } catch (x) { /* ignore */ } token = null; location.assign('/login?role=staff'); };
+  if (token) load({ action: 'todos' }); else show(false);
+  setInterval(() => { if (token && document.visibilityState === 'visible') load({ action: 'todos' }); }, 20000);
+})();
+</script>
+<script src="/sehat-bar.js"></script>
+</body>
+</html>

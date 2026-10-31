@@ -57,7 +57,14 @@ button,input,select,textarea{font:inherit;color:inherit}
 
 /* surfaces (Copilot .card / .stat / .kicker / .badge / .flag) */
 .card{background:var(--card);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px;box-shadow:var(--shadow);position:relative;transition:transform .45s cubic-bezier(.2,.8,.2,1),box-shadow .45s ease,border-color .3s ease}
-.card:hover{box-shadow:var(--shadow-lg);border-color:rgba(142,190,249,.55)}
+.card:hover{box-shadow:var(--shadow-lg)}
+/* anything that responds to hover is clickable: lift on hover, press on click, keyboard focus ring */
+button.card{font:inherit;color:inherit;text-align:left;width:100%;cursor:pointer}
+.card.click{cursor:pointer}.card.click:hover{transform:translateY(-3px);border-color:rgba(142,190,249,.75)}.card.click:active{transform:translateY(0) scale(.98)}
+.card.click:focus-visible{outline:3px solid rgba(142,190,249,.8);outline-offset:2px}
+.kpi.click span{transition:color .2s}.kpi.click:hover span{color:var(--teal-dark)}
+.feed div.click{cursor:pointer;border-radius:12px;padding-left:8px;padding-right:8px;margin:0 -8px;transition:background .2s}.feed div.click:hover{background:var(--teal-tint)}.feed div.click:active{transform:scale(.99)}
+.feed .go{color:var(--teal);font-weight:700;opacity:0;transition:opacity .2s}.feed div.click:hover .go{opacity:1}
 .grid{display:grid;gap:16px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
 @media(max-width:900px){.g3,.g4{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}}@media(max-width:560px){.g3,.g4{grid-template-columns:1fr}}
 .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.sp{flex:1}

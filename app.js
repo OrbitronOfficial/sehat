@@ -55,13 +55,21 @@ V.dashboard = () => {
     supplier: [['Open purchase orders', d.pos.filter(p => p.supplier === R.org && ['sent', 'accepted'].includes(p.status)).length], ['On the road', d.pos.filter(p => p.supplier === R.org && p.status === 'dispatched').length], ['Delivered', d.pos.filter(p => p.supplier === R.org && p.status === 'delivered').length], ['Agents active', installed().length]],
     patient: [['Upcoming visits', d.appointments.filter(a => a.patient === R.org && a.status !== 'done').length], ['Medicines on the way', d.prescriptions.filter(p => mine(p) && p.status !== 'delivered').length], ['Journal entries', d.journal.length], ['Agents active', installed().length]],
   }[role] || [];
+  // where each KPI tile and activity line leads: [suite, tab] of the role's own suite
+  const SUITE = { hospital: 'sehat_hospital', doctor: 'sehat_doctor', pharmacy: 'sehat_pharmacy', nurse: 'sehat_nurse', supplier: 'sehat_supply', patient: 'sehat_copilot' }[role];
+  const TO = { hospital: ['appointments', 'appointments', 'beds'], doctor: ['consult', 'rxwriter', 'connect'], pharmacy: ['rxinbox', 'delivery', 'supply', 'supply'], nurse: ['tasks', 'taskhistory', 'vitals'], supplier: ['poinbox', 'fleet', 'supdash'], patient: ['appointments', 'orders', 'journal'] }[role] || [];
+  const kgo = i => TO[i] ? `openTab('${SUITE}','${TO[i]}')` : `go('market')`;
+  const feedGo = t => /PO|purchase|dispatch|restock|stock/i.test(t) ? ({ pharmacy: 'supply', hospital: 'supply', supplier: 'poinbox' }[role])
+    : /RX|prescription|packed|rider|delivered/i.test(t) ? ({ pharmacy: 'rxinbox', doctor: 'rxwriter', patient: 'orders' }[role])
+    : /task|vitals|handover|gave|held/i.test(t) ? ({ nurse: 'tasks', hospital: 'tasks' }[role])
+    : /booked|checked in|appointment/i.test(t) ? ({ hospital: 'appointments', patient: 'appointments', doctor: 'consult' }[role]) : null;
   return head(`Good ${new Date().getHours() < 12 ? 'morning' : 'afternoon'}, ${R.org.split(' ')[0] === 'Dr.' ? R.org : R.org.split(' ')[0]}`, 'Everything your agents did, live.') +
-    `<div class="grid g4">${k.map(([l, v]) => `<div class="card kpi"><b>${v}</b><span>${l}</span></div>`).join('')}</div>
+    `<div class="grid g4">${k.map(([l, v], i) => `<button class="card kpi click" onclick="${kgo(i)}"><b>${v}</b><span>${l} →</span></button>`).join('')}</div>
     <div class="grid g2" style="margin-top:14px">
       <div class="card"><div class="row"><h3>Your agents</h3><span class="sp"></span><button class="btn sm ghost" onclick="go('market')">+ Add agents</button></div>
-        <div class="grid g2" style="margin-top:12px">${installed().map(i => { const a = agent(i); return `<div class="card agent" style="cursor:pointer;padding:14px" onclick="go('${i}')"><span class="ic">${a.ic}</span><b>${a.name}</b><p>${a.cat}</p></div>`; }).join('') || '<p class="muted">No agents installed.</p>'}</div></div>
+        <div class="grid g2" style="margin-top:12px">${installed().map(i => { const a = agent(i); return `<button class="card agent click" style="padding:14px" onclick="go('${i}')"><span class="ic">${a.ic}</span><b>${a.name}</b><p>${a.cat || (a.tabs ? a.tabs.length + ' tools · open →' : 'Open →')}</p></button>`; }).join('') || '<p class="muted">No agents installed.</p>'}</div></div>
       <div class="card"><div class="row"><h3>Live activity</h3><span class="sp"></span><span class="pill">● live</span></div>
-        <div class="feed">${d.activity.slice(0, 9).map(a => `<div><b>${esc(a.who)}</b> ${esc(a.text)}<br><small>${ago(a.t)}</small></div>`).join('')}</div></div>
+        <div class="feed">${d.activity.slice(0, 9).map(a => { const to = feedGo(a.text); return `<div class="${to ? 'click' : ''}" ${to ? `onclick="openTab('${SUITE}','${to}')" role="button" tabindex="0"` : ''}><b>${esc(a.who)}</b> ${esc(a.text)}${to ? ' <span class="go">→</span>' : ''}<br><small>${ago(a.t)}</small></div>`; }).join('')}</div></div>
     </div>
     <p class="muted" style="margin-top:14px">Tip: open another tab as a different role (e.g. Doctor here, Pharmacy there) and watch prescriptions move between them live. <button class="link" style="color:var(--pri)" onclick="if(confirm('Reset all demo data?'))Store.reset()">Reset demo data</button></p>`;
 };

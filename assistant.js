@@ -6,6 +6,7 @@
 // - Answers: /api/assist (an LLM that understands and replies in any Indian language) when AI keys
 //   are set; otherwise a built-in keyword guide in English, Hindi, Hinglish and Punjabi.
 (() => {
+  if (window.top !== window) return;  // inside the live demo's panes: the outer page already has one
   const LANGS = [['en', 'English', 'en-IN'], ['hi', 'हिन्दी', 'hi-IN'], ['pa', 'ਪੰਜਾਬੀ', 'pa-IN'], ['bn', 'বাংলা', 'bn-IN'], ['ta', 'தமிழ்', 'ta-IN'],
     ['te', 'తెలుగు', 'te-IN'], ['mr', 'मराठी', 'mr-IN'], ['gu', 'ગુજરાતી', 'gu-IN'], ['kn', 'ಕನ್ನಡ', 'kn-IN'], ['ml', 'മലയാളം', 'ml-IN'], ['ur', 'اردو', 'ur-IN'], ['or', 'ଓଡ଼ିଆ', 'or-IN'], ['as', 'অসমীয়া', 'as-IN']];
   const get = () => { try { return localStorage.getItem('sehat_lang') || 'en'; } catch { return 'en'; } };

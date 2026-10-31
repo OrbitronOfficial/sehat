@@ -60,6 +60,6 @@ function pick(aid){const a=SUITES.concat(AGENTS).find(x=>x.id===aid);try{session
   document.getElementById('start').scrollIntoView({behavior:'smooth'})}
 function enter(k){try{sessionStorage.setItem('sehat_role',k);if(WORKSPACE[k])sessionStorage.removeItem('sehat_view')}catch(e){}location.href=WORKSPACE[k]||'app.html'}
 </script>
-<script src="assistant.js?v=2"></script>
+<script src="assistant.js?v=3"></script>
 </body>
 </html>

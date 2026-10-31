@@ -67,6 +67,51 @@ Store.onChange(() => {
 });
 show(new URLSearchParams(location.search).get('role') || 'doctor');
 </script>
-<script src="assistant.js?v=2"></script>
+<style>
+.dg{position:fixed;left:20px;bottom:74px;z-index:95;display:flex;align-items:flex-end;gap:10px;max-width:min(430px,calc(100vw - 40px))}
+.dg img{width:74px;height:74px;border-radius:50%;background:#EAF3FE;border:3px solid #fff;box-shadow:0 14px 30px -12px rgba(7,40,80,.5);flex:none;animation:dgb 3s ease-in-out infinite}
+@keyframes dgb{50%{transform:translateY(-5px)}}
+.dg .bub{position:relative;background:var(--card-solid);border:1px solid var(--line);border-radius:20px 20px 20px 6px;padding:14px 16px;box-shadow:0 24px 50px -20px rgba(7,40,80,.45);animation:dgin .4s cubic-bezier(.2,.8,.2,1)}
+@keyframes dgin{from{opacity:0;transform:translateY(10px) scale(.97)}}
+.dg .bub b{font-family:var(--display);color:var(--teal-dark)}.dg .bub p{margin:6px 0 10px;font-size:.92rem;line-height:1.5}
+.dg .bar{height:4px;border-radius:9px;background:var(--line);margin-bottom:10px;overflow:hidden}.dg .bar i{display:block;height:100%;background:linear-gradient(90deg,#8EBEF9,#0774C4);transition:width .4s}
+.dg .wait{font-size:.8rem;color:var(--warn);font-weight:600}.dg .ok{font-size:.8rem;color:var(--ok);font-weight:700}
+.dg .row{gap:6px}.dg.min .bub{display:none}
+</style>
+<div class="dg" id="dg"><img src="/saathi.svg" alt="Dr. Saathi, demo guide" onclick="dgEl.classList.toggle('min')" title="Show / hide the guide"><div class="bub" id="dgBub"></div></div>
+<script>
+// Dr. Saathi walks a presenter through the whole network, one role at a time. Each step switches to the
+// right pane (and tab inside it), says what to do, and moves on by itself when the shared store shows it happened.
+const dgEl = document.getElementById('dg'), frame = k => document.querySelector(`.pane[data-k="${k}"] iframe`)?.contentWindow;
+const openTab = (k, suite, tab) => { try { frame(k).eval(`suiteTab.${suite}='${tab}';render()`); } catch (e) {} };
+const rx0 = () => Store.db.prescriptions[0], po0 = () => Store.db.pos.find(p => p.supplier === ROLES.supplier.org);
+const TOUR = [
+  { role: 'doctor', t: 'Namaste! I am Dr. Saathi. I will walk you through Sehat, one role at a time. This is Dr. Bansal\'s clinic. Open a patient, record or type the consult, and approve the prescription the AI drafts.', done: () => Store.db.prescriptions.length > dgStart.rx, wait: 'Waiting for the doctor to approve a prescription…' },
+  { role: 'pharmacy', go: () => openTab('pharmacy', 'sehat_pharmacy', 'rxinbox'), t: 'The prescription just reached Jain Medicos, the nearest pharmacy with stock, with a live stock check. Tap Accept, then "Packed · mark ready".', done: () => ['ready', 'out for delivery', 'delivered'].includes(rx0()?.status), wait: 'Waiting for the pharmacist to pack it…' },
+  { role: 'pharmacy', go: () => openTab('pharmacy', 'sehat_pharmacy', 'delivery'), t: 'Packed! Now hand it to a rider: tap "Assign rider". The patient gets the ETA instantly.', done: () => ['out for delivery', 'delivered'].includes(rx0()?.status), wait: 'Waiting for a rider to be assigned…' },
+  { role: 'patient', t: 'Here is Rahul\'s app. His medicine tracker shows it on the way, and the prescription is already in his records. No queue at the counter.' },
+  { role: 'pharmacy', go: () => openTab('pharmacy', 'sehat_pharmacy', 'supply'), t: 'Now the shelves. Supply Chain AI predicts what runs out first (see the AI insight). Tap "Draft POs", check them, then "Send to distributor".', done: () => po0() && po0().status !== 'draft', wait: 'Waiting for a purchase order to be sent…' },
+  { role: 'supplier', go: () => openTab('supplier', 'sehat_supply', 'poinbox'), t: 'Punjab Pharma Distributors got the order live, sorted by urgency. Tap Accept, pick a vehicle, Dispatch, then Delivered.', done: () => po0()?.status === 'delivered', wait: 'Waiting for the delivery…' },
+  { role: 'pharmacy', go: () => openTab('pharmacy', 'sehat_pharmacy', 'supply'), t: 'Delivered, and Jain Medicos\' stock went up by itself. Doctor → pharmacy → patient → distributor, all connected. That is Sehat!' },
+];
+let dgI = 0, dgVoice = false, dgStart = { rx: Store.db.prescriptions.length };
+function dgSay(t) { if (!dgVoice || !('speechSynthesis' in window)) return; const u = new SpeechSynthesisUtterance(t); u.lang = 'en-IN'; speechSynthesis.cancel(); speechSynthesis.speak(u); }
+function dgShow(i) {
+  dgI = Math.max(0, Math.min(TOUR.length - 1, i)); const s = TOUR[dgI], r = STEPS.find(x => x[0] === s.role);
+  show(s.role); setTimeout(() => s.go?.(), 400);
+  const finished = s.done?.();
+  document.getElementById('dgBub').innerHTML = `<div class="bar"><i style="width:${(dgI + 1) / TOUR.length * 100}%"></i></div>
+    <b>Step ${dgI + 1} of ${TOUR.length} · ${r[1]} ${r[2]}</b><p>${s.t}</p>
+    ${s.done ? `<div class="${finished ? 'ok' : 'wait'}">${finished ? '✓ Done! Tap Next.' : '⏳ ' + s.wait}</div>` : ''}
+    <div class="row" style="margin-top:10px"><button class="btn sm ghost" onclick="dgShow(dgI-1)" ${dgI ? '' : 'disabled'}>← Back</button><button class="btn sm" onclick="dgShow(dgI+1)">${dgI === TOUR.length - 1 ? 'Finish' : 'Next →'}</button>
+    <span class="sp"></span><button class="link" onclick="dgVoice=!dgVoice;dgVoice?dgSay(TOUR[dgI].t):speechSynthesis.cancel();this.textContent=dgVoice?'🔊':'🔇'" title="Read aloud">${dgVoice ? '🔊' : '🔇'}</button><button class="link" onclick="dgEl.classList.add('min')" title="Hide">✕</button></div>`;
+  dgSay(s.t);
+}
+// when the step's action happens in any pane, cheer and move on
+Store.onChange(() => { const s = TOUR[dgI]; if (s.done && s.done()) { const b = document.querySelector('#dgBub .wait'); if (b) { b.className = 'ok'; b.textContent = '✓ Done! Moving on…'; setTimeout(() => { if (TOUR[dgI] === s) dgShow(dgI + 1); }, 1600); } } });
+// clicking a role tab yourself is fine; the guide stays on its step
+dgShow(0);
+</script>
+<script src="assistant.js?v=3"></script>
 </body>
 </html>

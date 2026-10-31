@@ -162,6 +162,6 @@ function openAgent(id){const a=SUITES.concat(AGENTS).find(x=>x.id===id),r=filt!=
 $('#ag').addEventListener('mousemove',e=>{const c=e.target.closest('.ac');if(!c)return;const r=c.getBoundingClientRect();c.style.setProperty('--mx',e.clientX-r.left+'px');c.style.setProperty('--my',e.clientY-r.top+'px')});
 drawAgents();
 </script>
-<script src="/hub/assistant.js?v=2"></script>
+<script src="/hub/assistant.js?v=3"></script>
 </body>
 </html>

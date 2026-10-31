@@ -119,6 +119,8 @@ class Handler(BaseHTTPRequestHandler):
         if path in ("", "/"):  # Sehat is the front door
             self.send_response(302); self.send_header("Location", "/hub/"); self.end_headers(); return
         base, rel = PUBLIC, PAGES.get(path.rstrip("/") or "/") or path.lstrip("/")
+        if path.rstrip("/") == "/v2":  # premium glass landing (v2)
+            path = "/hub/v2.html"
         if path.startswith("/hub/"):
             base, rel = HUB, (path[5:] or "index.html")
             if "/" in rel:  # only the hub's own top-level files, never copilot/ or .git

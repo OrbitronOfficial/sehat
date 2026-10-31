@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script>try{var th=localStorage.getItem("sehat_theme");if(th!=="dark"&&th!=="light")th=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=th}catch(e){document.documentElement.dataset.theme="light"}</script>
+<link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
+<meta name="theme-color" content="#0774C4">
+<title>Sehat · Care that connects itself</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Outfit:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/hub/style.css?v=9">
+<style>
+/* v2: premium glass. Sehat Copilot tokens from style.css, plus frosted layers, soft 3D and slow pastel light. */
+:root{--glass:rgba(255,255,255,.55);--glass-hi:rgba(255,255,255,.85);--glass-line:rgba(255,255,255,.7);--blur:saturate(180%) blur(22px)}
+:root[data-theme="dark"]{--glass:rgba(14,30,52,.5);--glass-hi:rgba(20,42,70,.75);--glass-line:rgba(142,190,249,.18)}
+body::before{display:none}
+.blobs{position:fixed;inset:0;z-index:-1;overflow:hidden;background:linear-gradient(180deg,#F7FAFE,#EDF3FB)}
+:root[data-theme="dark"] .blobs{background:linear-gradient(180deg,#06101D,#040A13)}
+.blobs i{position:absolute;width:46vw;height:46vw;border-radius:50%;filter:blur(70px);opacity:.55;animation:drift 22s ease-in-out infinite alternate}
+.blobs i:nth-child(1){background:#8EBEF9;left:-8vw;top:-10vw}
+.blobs i:nth-child(2){background:#C7B8FF;right:-10vw;top:10vh;animation-duration:27s;opacity:.4}
+.blobs i:nth-child(3){background:#9FE3D4;left:30vw;bottom:-18vw;animation-duration:31s;opacity:.35}
+:root[data-theme="dark"] .blobs i{opacity:.22}
+@keyframes drift{to{transform:translate3d(6vw,5vh,0) scale(1.12)}}
+.glass{background:var(--glass);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border:1px solid var(--glass-line);box-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 24px 60px -28px rgba(7,40,80,.35)}
+.wrap{max-width:1180px;margin:auto;padding:0 20px}
+/* floating nav */
+.fnav{position:sticky;top:14px;z-index:40;margin:14px auto 0;max-width:1140px;border-radius:999px;display:flex;align-items:center;gap:18px;padding:8px 10px 8px 18px}
+.fnav .links{margin-left:auto;display:flex;align-items:center;gap:20px}.fnav .links a:not(.btn){text-decoration:none;color:var(--muted);font-weight:600;font-size:.92rem}.fnav .links a:not(.btn):hover{color:var(--ink)}
+/* hero */
+.hero{display:grid;grid-template-columns:1fr 1.05fr;gap:40px;align-items:center;min-height:calc(100vh - 80px);padding:40px 0}
+.hero h1{font-size:clamp(40px,5.6vw,76px);line-height:1;letter-spacing:-.05em}
+.hero h1 .w{display:inline-block;opacity:0;transform:translateY(24px);animation:rise .8s cubic-bezier(.2,.8,.2,1) forwards}
+.hero h1 em{font-style:normal;background:linear-gradient(110deg,#0774C4,#8EBEF9,#0774C4);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:flow 6s linear infinite}
+@keyframes rise{to{opacity:1;transform:none}}@keyframes flow{to{background-position:-200% 0}}
+.hero p.lead{font-size:1.15rem;color:var(--muted);max-width:520px;margin:22px 0 28px}
+.trust{display:flex;gap:22px;margin-top:30px;flex-wrap:wrap}.trust b{display:block;font-family:var(--display);font-size:1.6rem;color:var(--teal-dark)}.trust span{font-size:.82rem;color:var(--muted)}
+/* 3D glass stack */
+.stage{perspective:1400px;height:560px;position:relative}
+.stack{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.gc{position:absolute;left:50%;top:50%;width:340px;margin:-95px 0 0 -170px;border-radius:26px;padding:20px 22px;cursor:pointer;transform-style:preserve-3d;
+  transition:transform .9s cubic-bezier(.2,.8,.2,1),opacity .6s,box-shadow .6s,border-color .6s;opacity:0}
+.gc .t{display:flex;align-items:center;gap:10px}.gc .ic{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;font-size:20px;background:var(--glass-hi);border:1px solid var(--glass-line)}
+.gc h4{font-family:var(--display);font-size:1.05rem;margin:0}.gc small{color:var(--muted);font-size:.8rem}
+.gc .st{margin-left:auto;font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--glass-hi);color:var(--muted)}
+.gc .body{margin-top:12px;font-size:.88rem;color:var(--muted)}.gc .bar{height:6px;border-radius:9px;background:rgba(7,116,196,.12);margin-top:12px;overflow:hidden}.gc .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#8EBEF9,#0774C4);border-radius:9px;transition:width 2.4s ease}
+.gc.done .st{background:var(--ok-bg);color:var(--ok)}.gc.done .bar i{width:100%}
+.gc.on{border-color:rgba(7,116,196,.55);box-shadow:0 0 0 1px rgba(142,190,249,.6),0 40px 80px -30px rgba(7,116,196,.6),0 0 60px -10px rgba(142,190,249,.7)}
+.gc.on .st{background:linear-gradient(180deg,#1A86D6,#0774C4);color:#fff}.gc.on .bar i{width:72%}
+.dots{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:center;gap:8px}.dots button{border:1px solid var(--glass-line);background:var(--glass);border-radius:999px;padding:6px 12px;font-size:.78rem;font-weight:600;color:var(--muted);cursor:pointer;-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur)}.dots button.on{color:#fff;background:#0774C4;border-color:#0774C4}
+/* sections */
+section{padding:70px 0}.sh{text-align:center;max-width:660px;margin:0 auto 34px}.sh h2{font-size:clamp(30px,3.6vw,46px);letter-spacing:-.04em}.sh p{color:var(--muted);font-size:1.05rem;margin-top:10px}
+.pills{display:flex;justify-content:center;flex-wrap:wrap;gap:4px;padding:5px;border-radius:999px;width:max-content;max-width:100%;margin:0 auto 26px;position:relative}
+.pills button{position:relative;z-index:1;border:0;background:none;padding:10px 18px;border-radius:999px;font-weight:600;color:var(--muted);cursor:pointer;transition:color .3s}
+.pills button.on{color:#fff}.pills .slider{position:absolute;z-index:0;top:5px;bottom:5px;border-radius:999px;background:linear-gradient(180deg,#1A86D6,#0774C4);box-shadow:0 10px 24px -10px rgba(7,116,196,.7);transition:left .45s cubic-bezier(.2,.8,.2,1),width .45s cubic-bezier(.2,.8,.2,1)}
+.panel{border-radius:30px;padding:34px;display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:center}
+.panel h3{font-size:1.8rem;letter-spacing:-.03em}.panel ul{list-style:none;padding:0;margin:16px 0 22px}.panel li{padding:9px 0;border-bottom:1px solid var(--glass-line);opacity:0;transform:translateX(-12px);animation:rise .5s forwards}
+.panel li::before{content:"✓";color:var(--teal);font-weight:800;margin-right:10px}
+.mini{border-radius:22px;padding:20px}.mini .row{justify-content:space-between}.mini .bars{display:flex;align-items:flex-end;gap:10px;height:150px;margin-top:16px}
+.mini .bars i{flex:1;border-radius:10px 10px 4px 4px;background:linear-gradient(180deg,#8EBEF9,#0774C4);height:0;transition:height 1s cubic-bezier(.2,.8,.2,1)}
+.mini .k{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.mini .k div{border-radius:14px;padding:10px 12px;background:var(--glass-hi);border:1px solid var(--glass-line)}.mini .k b{display:block;font-family:var(--display);font-size:1.3rem;color:var(--teal-dark)}.mini .k span{font-size:.76rem;color:var(--muted)}
+.chipsbar{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-bottom:24px}.chipsbar button{border:1px solid var(--glass-line);background:var(--glass);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border-radius:999px;padding:8px 16px;font-weight:600;font-size:.88rem;color:var(--muted);cursor:pointer}.chipsbar button.on{background:#0774C4;border-color:#0774C4;color:#fff}
+.ag{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.ac{border-radius:22px;padding:20px;position:relative;overflow:hidden;cursor:pointer;transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s;animation:pop .5s cubic-bezier(.2,.8,.2,1) both}
+.ac::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(260px circle at var(--mx,50%) var(--my,50%),rgba(142,190,249,.45),transparent 60%)}
+.ac:hover{transform:translateY(-6px)}.ac:hover::after{opacity:1}
+.ac .ic{font-size:28px}.ac b{display:block;font-family:var(--display);font-size:1.05rem;margin:8px 0 4px}.ac p{margin:0;color:var(--muted);font-size:.86rem}.ac .for{margin-top:10px;font-size:.74rem;font-weight:600;color:var(--teal-dark)}
+.ac.suite{border-color:rgba(7,116,196,.35)}
+@keyframes pop{from{opacity:0;transform:translateY(16px) scale(.97)}}
+.cta{border-radius:34px;padding:50px;text-align:center}.cta h2{font-size:clamp(28px,3.4vw,44px);letter-spacing:-.04em}
+footer{padding:30px 0 40px;color:var(--muted);font-size:.88rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+@media(max-width:900px){.hero{grid-template-columns:1fr;min-height:0}.stage{height:460px}.panel{grid-template-columns:1fr}.fnav .links a:not(.btn){display:none}.gc{width:290px;margin-left:-145px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.hero h1 .w,.panel li{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div class="blobs" aria-hidden="true"><i></i><i></i><i></i></div>
+<nav class="fnav glass"><a class="brand" href="/v2" aria-label="Sehat home"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Sehat</span></a>
+  <div class="links"><a href="#roles">Roles</a><a href="#agents">Agents</a><a href="/hub/demo.html">Live demo</a><button class="themebtn" onclick="flipTheme()" aria-label="Switch theme">◐</button><a class="btn sm" href="/hub/login.html">Log in</a></div></nav>
+
+<div class="wrap">
+<header class="hero">
+  <div>
+    <span class="pill">Built at GRAVITON 2026 · Team ANTIJAREX</span>
+    <h1 id="h1" style="margin-top:18px">Care that <em>connects</em> itself.</h1>
+    <p class="lead">One network for hospitals, doctors, nurses, pharmacies, distributors and patients. A prescription signed by a doctor reaches the nearest stocked pharmacy and then the patient's door, and when shelves run low the distributor restocks them.</p>
+    <div class="row"><a class="btn" href="#roles">Choose your role →</a><a class="btn ghost" href="/hub/demo.html">▶ Watch it live</a></div>
+    <div class="trust"><div><b>6</b><span>roles on one network</span></div><div><b id="nSuites">6</b><span>Sehat suites</span></div><div><b id="nAgents">11</b><span>single agents</span></div></div>
+  </div>
+  <div class="stage" id="stage"><div class="stack" id="stack"></div><div class="dots" id="dots"></div></div>
+</header>
+
+<section id="roles">
+  <div class="sh"><span class="eyebrow">Choose your role</span><h2>One workspace for every seat in healthcare</h2><p>Demo accounts, no sign-up. Pick a role to see what it gets, then step in.</p></div>
+  <div class="pills glass" id="pills"><span class="slider" id="slider"></span></div>
+  <div class="panel glass" id="panel"></div>
+</section>
+
+<section id="agents">
+  <div class="sh"><span class="eyebrow">Marketplace</span><h2>Install only what you need</h2><p>A whole suite for your role, or single agents like apps. Tap any card to open it.</p></div>
+  <div class="chipsbar" id="chips"></div>
+  <div class="ag" id="ag"></div>
+</section>
+
+<section><div class="cta glass"><span class="eyebrow">See it move</span><h2 style="margin:10px 0 12px">Doctor, pharmacy, distributor and patient, side by side.</h2><p class="muted" style="font-size:1rem">Sign a prescription in one pane and watch it travel through the others in real time.</p><a class="btn" style="margin-top:18px" href="/hub/demo.html">Open the live demo →</a></div></section>
+
+<footer><span>© 2026 Sehat · Team ANTIJAREX · CGC University</span><span>Explains and organises. Never diagnoses. Emergency: 112</span></footer>
+</div>
+
+<script src="/hub/data.js?v=8"></script>
+<script>
+function flipTheme(){var t=document.documentElement.dataset.theme==="dark"?"light":"dark";document.documentElement.dataset.theme=t;try{localStorage.setItem("sehat_theme",t)}catch(e){}}
+const $=s=>document.querySelector(s), reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+// headline words rise in one by one
+$('#h1').innerHTML=$('#h1').innerHTML.split(/(<em>.*?<\/em>|\s+)/).filter(x=>x&&x.trim()).map((w,i)=>`<span class="w" style="animation-delay:${.08*i}s">${w}</span>`).join(' ');
+$('#nSuites').textContent=SUITES.length; $('#nAgents').textContent=AGENTS.length;
+
+// 3D glass stack: the prescription journey, one step lit at a time
+const STEPS=[['📅','Appointment','City Care · Dr. Bansal','Booked from symptoms, earliest slot 10:30'],['📝','Prescription','Signed by the doctor','Paracetamol, Cetirizine · routed to stock'],['💊','Pharmacy','Jain Medicos · 1.2 km','Stock checked, packed in 6 min'],['🛵','Delivery','Gurpreet is on the way','Arriving in about 18 min'],['🚚','Restock','Punjab Pharma Distributors','AI-drafted PO accepted and dispatched']];
+let cur=0,timer;
+$('#stack').innerHTML=STEPS.map(([ic,h,s,b],i)=>`<div class="gc glass" data-i="${i}" onclick="show(${i},true)"><div class="t"><span class="ic">${ic}</span><div><h4>${h}</h4><small>${s}</small></div><span class="st"></span></div><div class="body">${b}</div><div class="bar"><i></i></div></div>`).join('');
+$('#dots').innerHTML=STEPS.map(([,h],i)=>`<button onclick="show(${i},true)">${h}</button>`).join('');
+function show(n,user){cur=n;
+  document.querySelectorAll('.gc').forEach((c,i)=>{const d=i-n;
+    c.style.opacity=1;
+    c.style.transform=`translate3d(${d*22}px,${d*54 - 30}px,${-Math.abs(d)*110}px) rotateX(${8}deg) rotateY(${-14}deg) scale(${i===n?1.04:.94})`;
+    c.style.zIndex=10-Math.abs(d); c.classList.toggle('on',i===n); c.classList.toggle('done',i<n);
+    c.querySelector('.st').textContent=i<n?'done':i===n?'live':'next';});
+  document.querySelectorAll('#dots button').forEach((b,i)=>b.classList.toggle('on',i===n));
+  if(user){clearInterval(timer);timer=setInterval(()=>show((cur+1)%STEPS.length),3200)}}
+setTimeout(()=>{show(0);if(!reduce)timer=setInterval(()=>show((cur+1)%STEPS.length),3200)},350);
+// mouse parallax on the whole stack
+$('#stage').addEventListener('mousemove',e=>{if(reduce)return;const r=e.currentTarget.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;$('#stack').style.transform=`rotateY(${x*14}deg) rotateX(${-y*10}deg)`});
+$('#stage').addEventListener('mouseleave',()=>$('#stack').style.transform='');
+
+// roles: pill switch + glass panel with features and a mini dashboard built from the live demo store
+const WHAT={hospital:['Live command centre: beds, OPD, ER','Appointment desk and ER triage','Duty roster and ward tasks','Inventory with AI purchase orders'],doctor:['Voice consult → AI-drafted prescription','Patients sorted by urgency','One tap to the pharmacy','Patient history on one screen'],nurse:['Ward to-do fed by doctors\' orders','Medicine round with given/held log','Vitals flagged out of range','Shift handover pre-filled'],pharmacy:['Prescriptions arrive with a stock check','AI stock-out prediction and PO drafts','Expiry tracker and refills due','Rider dispatch with live ETA'],patient:['Photo of a report → explained in Hindi','Family profiles and reminders','Live medicine tracker to the door','Emergency check with 112 guidance'],supplier:['Live PO inbox from pharmacies','Urgency by days of cover left','Accept → dispatch → deliver','Customer stock updates itself']};
+const d=Store.db, low=Object.values(d.stock).filter(s=>s.qty<s.min).length;
+const KPI={hospital:[['Bed occupancy',Math.round(Object.values(d.beds).reduce((s,b)=>s+b[1],0)/Object.values(d.beds).reduce((s,b)=>s+b[0],0)*100)+'%'],['OPD today',d.appointments.length]],doctor:[['In queue',d.appointments.filter(a=>a.status!=='done').length],['Rx sent',d.prescriptions.length]],nurse:[['Open tasks',d.tasks.filter(t=>!t.done).length],['Doses due',(d.mar||[]).filter(m=>!m.given).length]],pharmacy:[['Low-stock items',low],['Open POs',d.pos.filter(p=>!['delivered','received'].includes(p.status)).length]],patient:[['Family members',d.family.length],['Reminders',d.reminders.length]],supplier:[['Open orders',d.pos.filter(p=>p.supplier===ROLES.supplier.org&&['sent','accepted'].includes(p.status)).length],['Warehouse SKUs',Object.keys(d.warehouse||{}).length]]};
+const SUITE_OF=r=>SUITES.find(s=>s.for[0]===r)||SUITES.find(s=>s.for.includes(r));
+let roleNow='hospital';
+$('#pills').insertAdjacentHTML('beforeend',Object.entries(ROLES).map(([k,r])=>`<button data-r="${k}" onclick="pickRole('${k}')">${r.ic} ${r.label}</button>`).join(''));
+function pickRole(k){roleNow=k;const r=ROLES[k],s=SUITE_OF(k);
+  document.querySelectorAll('#pills button').forEach(b=>b.classList.toggle('on',b.dataset.r===k));
+  const b=$(`#pills button[data-r="${k}"]`),sl=$('#slider');sl.style.left=b.offsetLeft+'px';sl.style.width=b.offsetWidth+'px';
+  $('#panel').innerHTML=`<div><span class="eyebrow">${s.name} · ${s.price}</span><h3 style="margin-top:8px">${r.ic} ${r.org}</h3><p class="muted" style="margin:4px 0 0">${r.sub}</p>
+    <ul>${WHAT[k].map((x,i)=>`<li style="animation-delay:${.07*i}s">${x}</li>`).join('')}</ul><button class="btn" onclick="enter('${k}')">Enter as ${r.label} →</button></div>
+    <div class="mini glass"><div class="row"><b>Today</b><span class="pill">● live demo data</span></div><div class="bars">${[48,72,56,88,64,94,70].map(()=>'<i></i>').join('')}</div>
+    <div class="k">${KPI[k].map(([l,v])=>`<div><b>${v}</b><span>${l}</span></div>`).join('')}</div></div>`;
+  requestAnimationFrame(()=>document.querySelectorAll('.mini .bars i').forEach((el,i)=>el.style.height=[48,72,56,88,64,94,70][i]+'%'));}
+const WORKSPACE={patient:'/login?demo=1',doctor:'/login?role=doctor&demo=1',nurse:'/login?role=staff&demo=1'};
+function enter(k,view){try{sessionStorage.setItem('sehat_role',k);if(view&&!WORKSPACE[k])sessionStorage.setItem('sehat_view',view);else sessionStorage.removeItem('sehat_view')}catch(e){}location.href=WORKSPACE[k]||'/hub/app.html'}
+addEventListener('load',()=>pickRole('hospital'));addEventListener('resize',()=>pickRole(roleNow));
+
+// agents: filter chips + glass cards with a cursor glow; a card opens the role that uses it
+let filt='all';
+$('#chips').innerHTML=[['all','All']].concat(Object.entries(ROLES).map(([k,r])=>[k,r.label])).map(([k,l])=>`<button data-f="${k}" onclick="filt='${k}';drawAgents()">${l}</button>`).join('');
+function drawAgents(){document.querySelectorAll('#chips button').forEach(b=>b.classList.toggle('on',b.dataset.f===filt));
+  const list=SUITES.map(s=>({...s,suite:1})).concat(AGENTS).filter(a=>filt==='all'||a.for.includes(filt));
+  $('#ag').innerHTML=list.map((a,i)=>`<div class="ac glass ${a.suite?'suite':''}" style="animation-delay:${i*.03}s" onclick="openAgent('${a.id}')"><span class="ic">${a.ic}</span><b>${a.name}</b><p>${a.desc}</p><div class="for">${a.suite?'Suite · ':''}${a.price} · ${a.for.map(r=>ROLES[r].label).join(', ')}</div></div>`).join('');}
+function openAgent(id){const a=SUITES.concat(AGENTS).find(x=>x.id===id),r=filt!=='all'&&a.for.includes(filt)?filt:a.for[0];pickRole(r);enter(r,id)}
+$('#ag').addEventListener('mousemove',e=>{const c=e.target.closest('.ac');if(!c)return;const r=c.getBoundingClientRect();c.style.setProperty('--mx',e.clientX-r.left+'px');c.style.setProperty('--my',e.clientY-r.top+'px')});
+drawAgents();
+</script>
+</body>
+</html>

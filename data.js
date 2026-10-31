@@ -6,8 +6,28 @@ const ROLES = {
   hospital: { label: 'Hospital', ic: '🏥', org: 'City Care Hospital', sub: 'Sector 69, Mohali' },
   doctor:   { label: 'Doctor',   ic: '🩺', org: 'Dr. R. K. Bansal',   sub: 'General Physician · City Care' },
   pharmacy: { label: 'Pharmacy', ic: '💊', org: 'Jain Medicos',       sub: 'Sector 70, Mohali · 1.2 km' },
+  nurse:    { label: 'Nurse',    ic: '🧑‍⚕️', org: 'Sr. Anita Thomas',  sub: 'Ward B · City Care' },
   patient:  { label: 'Patient',  ic: '🙂', org: 'Rahul Mehra',        sub: '34 y · Mohali' },
 };
+
+// Sehat suites: one install gives a role its whole toolkit. `tabs` are feature views.
+const SUITES = [
+  { id: 'sehat_copilot', ic: '💚', name: 'Sehat Copilot', for: ['patient'], price: 'Free',
+    desc: 'Your personal health copilot: read reports from a photo, explain them in your language, family profiles, medicine reminders, journal and order tracking.',
+    tabs: [['records', 'Records & OCR'], ['family', 'Family'], ['reminders', 'Reminders'], ['journal', 'Journal'], ['orders', 'Medicines'], ['appointments', 'Book'], ['sos', 'Emergency']] },
+  { id: 'sehat_doctor', ic: '🩺', name: 'Sehat Doctor', for: ['doctor'], price: '₹999/mo',
+    desc: 'Clinic workspace: patients sorted by urgency, consultation notes that create the prescription and nurse tasks, history, labs and pharmacy chat.',
+    tabs: [['consult', 'Consult queue'], ['rxwriter', 'Prescriptions'], ['history', 'Patient history'], ['labs', 'Labs'], ['connect', 'Pharmacy chat']] },
+  { id: 'sehat_nurse', ic: '🧑‍⚕️', name: 'Sehat Nurse', for: ['nurse', 'hospital'], price: '₹499/mo',
+    desc: 'Ward to-do list fed by doctors\' orders, vitals entry that lands in the patient record, and task history by date.',
+    tabs: [['tasks', 'To-do'], ['vitals', 'Record vitals'], ['taskhistory', 'History']] },
+  { id: 'sehat_hospital', ic: '🏥', name: 'Sehat Hospital', for: ['hospital'], price: '₹4,999/mo',
+    desc: 'Run the whole hospital: live command centre, beds, appointments, ER triage, ward tasks and hospital inventory.',
+    tabs: [['command', 'Command centre'], ['beds', 'Beds'], ['appointments', 'Appointments'], ['triage', 'ER triage'], ['tasks', 'Ward tasks'], ['supply', 'Inventory']] },
+  { id: 'sehat_pharmacy', ic: '💊', name: 'Sehat Pharmacy', for: ['pharmacy'], price: '₹1,499/mo',
+    desc: 'Run the pharmacy: prescriptions straight from hospitals, doctor chat and calls, supply chain with auto POs, and delivery.',
+    tabs: [['rxinbox', 'Prescriptions'], ['connect', 'Doctor connect'], ['supply', 'Supply chain'], ['delivery', 'Delivery']] },
+];
 
 // Every agent a role can install. `for` = roles that can use it.
 const AGENTS = [
@@ -37,10 +57,11 @@ const AGENTS = [
 
 // Defaults when a role first logs in. A hospital that only wants appointments can remove the rest.
 const DEFAULT_INSTALLS = {
-  hospital: ['appointments', 'triage', 'supply'],
-  doctor: ['rxwriter', 'connect', 'labs'],
-  pharmacy: ['rxinbox', 'supply', 'connect', 'delivery'],
-  patient: ['appointments', 'orders', 'journal', 'labs', 'sos'],
+  hospital: ['sehat_hospital'],
+  doctor: ['sehat_doctor'],
+  nurse: ['sehat_nurse'],
+  pharmacy: ['sehat_pharmacy'],
+  patient: ['sehat_copilot'],
 };
 
 const DOCTORS = [
@@ -84,12 +105,23 @@ function seed() {
       { date: '2026-09-20', type: 'Reading', text: 'BP 128/84 mmHg' },
     ],
     triage: [],
+    tasks: [
+      { id: 'N1', patient: 'Sunita Mehra', bed: 'B-12', text: 'Check BP every 4 hours', due: '12:00', by: 'Dr. Meera Kaur', done: null },
+      { id: 'N2', patient: 'Aman Verma', bed: 'B-07', text: 'Dressing change, left knee', due: '13:30', by: 'Dr. Arjun Sethi', done: null },
+    ],
+    beds: { General: [40, 31], ICU: [10, 8], Maternity: [12, 6], Paediatric: [14, 9], Emergency: [8, 5] },
+    family: [
+      { name: 'Rahul Mehra', rel: 'Self', age: 34, cond: 'Borderline diabetes' },
+      { name: 'Sunita Mehra', rel: 'Mother', age: 61, cond: 'Hypertension' },
+      { name: 'Aanya Mehra', rel: 'Daughter', age: 7, cond: 'Vaccinations due' },
+    ],
+    reminders: [{ med: 'Metformin 500mg', time: '08:30', who: 'Rahul Mehra', taken: [] }, { med: 'Amlodipine 5mg', time: '21:00', who: 'Sunita Mehra', taken: [] }],
     activity: [{ t: Date.now(), who: 'Sehat', text: 'Workspace created' }],
   };
 }
 
 const Store = (() => {
-  const KEY = 'sehat_db_v1';
+  const KEY = 'sehat_db_v2';
   const ch = 'BroadcastChannel' in window ? new BroadcastChannel('sehat') : null;
   let db;
   try { db = JSON.parse(localStorage.getItem(KEY)) || seed(); } catch { db = seed(); }

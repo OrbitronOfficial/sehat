@@ -11,7 +11,18 @@ Built by team **ANTIJAREX** at **GRAVITON 2026** (CGC University).
 4. **Delivery Dispatch** assigns a rider; the patient tracks it step by step in My Medicines.
 5. **Supply Chain AI** predicts run-outs from daily usage and drafts purchase orders per distributor.
 
-## Agents
+## Sehat suites
+One install gives a role its whole toolkit.
+
+| Suite | For | Tools |
+|---|---|---|
+| Sehat Copilot | Patient | Report OCR + explain (EN/HI), family profiles, medicine reminders from prescriptions, journal, medicine tracking, booking, emergency |
+| Sehat Doctor | Doctor | Consult queue sorted by urgency, consult note → prescription + nurse tasks, patient history, labs, pharmacy chat |
+| Sehat Nurse | Nurse, Hospital | Ward to-do fed by doctors' orders, vitals with out-of-range flags, task history |
+| Sehat Hospital | Hospital | Command centre, beds, appointments, ER triage, ward tasks, inventory |
+| Sehat Pharmacy | Pharmacy | Prescription inbox, doctor connect, supply chain with auto POs, delivery |
+
+## Single agents
 | Agent | For |
 |---|---|
 | Appointment Desk | Hospital, Patient |

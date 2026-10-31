@@ -35,7 +35,7 @@ footer{border-top:1px solid var(--line);padding:24px 0;color:var(--mut);font-siz
   </div>
 </div>
 
-<section id="agents"><h2>11 agents, one network</h2><p class="sub">Each agent does one job well. Pick yours like apps.</p><div class="grid g3" id="cat"></div></section>
+<section id="agents"><h2>5 Sehat suites + 11 agents</h2><p class="sub">Install a whole suite for your role, or single agents like apps.</p><div class="grid g3" id="cat"></div></section>
 
 <section id="start"><h2>Choose your role</h2><p class="sub">Demo accounts, no sign-up. Tip: open two tabs as Doctor and Pharmacy and watch a prescription travel live.</p>
   <div class="grid g4" id="roles"></div></section>
@@ -44,9 +44,9 @@ footer{border-top:1px solid var(--line);padding:24px 0;color:var(--mut);font-siz
 </div>
 <script src="data.js"></script>
 <script>
-const WHAT={hospital:['Appointment queue','ER triage','Hospital inventory'],doctor:['e-Prescriptions','Pharmacy chat & call','Lab explainer'],pharmacy:['Prescription inbox','Supply chain & POs','Delivery dispatch'],patient:['Book visits','Track medicines','Health journal']};
+const WHAT={hospital:['Sehat Hospital','Beds, ER, appointments','Command centre'],doctor:['Sehat Doctor','Consult queue → Rx','Pharmacy chat & call'],nurse:['Sehat Nurse','Ward to-do from doctors','Vitals & history'],pharmacy:['Sehat Pharmacy','Rx inbox & supply chain','Delivery dispatch'],patient:['Sehat Copilot','Report OCR & family','Reminders & tracking']};
 document.getElementById('roles').innerHTML=Object.entries(ROLES).map(([k,r])=>`<button class="card role" onclick="enter('${k}')"><span class="ic">${r.ic}</span><h3 style="margin-top:6px">${r.label}</h3><span class="muted">${r.org}</span><ul>${WHAT[k].map(x=>`<li>${x}</li>`).join('')}</ul></button>`).join('');
-document.getElementById('cat').innerHTML=AGENTS.map(a=>`<div class="card agent"><span class="ic">${a.ic}</span><div class="row"><b>${a.name}</b><span class="sp"></span><span class="pill">${a.cat}</span></div><p>${a.desc}</p><span class="muted">For ${a.for.map(r=>ROLES[r].label).join(', ')}</span></div>`).join('');
+document.getElementById('cat').innerHTML=SUITES.map(a=>`<div class="card agent" style="border-color:var(--pri);background:linear-gradient(180deg,var(--soft),var(--card))"><span class="ic">${a.ic}</span><div class="row"><b>${a.name}</b><span class="sp"></span><span class="pill">Suite · ${a.tabs.length} tools</span></div><p>${a.desc}</p><span class="muted">For ${a.for.map(r=>ROLES[r].label).join(', ')}</span></div>`).join('')+AGENTS.map(a=>`<div class="card agent"><span class="ic">${a.ic}</span><div class="row"><b>${a.name}</b><span class="sp"></span><span class="pill">${a.cat}</span></div><p>${a.desc}</p><span class="muted">For ${a.for.map(r=>ROLES[r].label).join(', ')}</span></div>`).join('');
 function enter(k){try{sessionStorage.setItem('sehat_role',k)}catch(e){}location.href='app.html'}
 </script>
 </body>

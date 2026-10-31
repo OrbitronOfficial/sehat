@@ -10,7 +10,7 @@ function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add
 function logout() { try { sessionStorage.removeItem('sehat_role'); } catch {} location.href = 'index.html'; }
 const ago = t => { const m = Math.round((Date.now() - t) / 60000); return m < 1 ? 'just now' : m < 60 ? m + ' min ago' : Math.round(m / 60) + ' h ago'; };
 const installed = () => Store.db.installs[role] || [];
-const agent = id => AGENTS.find(a => a.id === id);
+const agent = id => AGENTS.find(a => a.id === id) || SUITES.find(s => s.id === id);
 const act = (text, fn = () => {}) => Store.update(fn, R.org, text);
 const id = p => p + Math.random().toString(36).slice(2, 6).toUpperCase();
 
@@ -41,6 +41,7 @@ V.dashboard = () => {
     hospital: [['Appointments today', d.appointments.length], ['Checked in', d.appointments.filter(a => a.status === 'checked-in').length], ['ER queue', d.triage.length], ['Agents active', installed().length]],
     doctor: [['Patients today', d.appointments.filter(a => a.doctor === R.org).length], ['Prescriptions sent', d.prescriptions.filter(p => p.doctor === R.org).length], ['Pharmacy queries', d.prescriptions.filter(p => p.status === 'query').length], ['Agents active', installed().length]],
     pharmacy: [['New prescriptions', d.prescriptions.filter(p => mine(p) && p.status === 'sent').length], ['Ready to hand over', d.prescriptions.filter(p => mine(p) && p.status === 'ready').length], ['Low-stock items', low], ['Open POs', d.pos.filter(p => p.status !== 'received').length]],
+    nurse: [['Open ward tasks', d.tasks.filter(t => !t.done).length], ['Done today', d.tasks.filter(t => t.done).length], ['Patients in queue', d.appointments.filter(a => a.status !== 'done').length], ['Agents active', installed().length]],
     patient: [['Upcoming visits', d.appointments.filter(a => a.patient === R.org && a.status !== 'done').length], ['Medicines on the way', d.prescriptions.filter(p => mine(p) && p.status !== 'delivered').length], ['Journal entries', d.journal.length], ['Agents active', installed().length]],
   }[role];
   return head(`Good ${new Date().getHours() < 12 ? 'morning' : 'afternoon'}, ${R.org.split(' ')[0] === 'Dr.' ? R.org : R.org.split(' ')[0]}`, 'Everything your agents did, live.') +

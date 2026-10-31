@@ -10,7 +10,7 @@
   ],
   "routes": [
     { "src": "/api/(.*)", "dest": "/copilot/api/index.py" },
-    { "src": "/", "status": 302, "headers": { "Location": "/hub/" } },
+    { "src": "/", "dest": "/v2.html" },
     { "src": "/hub/?", "dest": "/index.html" },
     { "src": "/v2/?", "dest": "/v2.html" },
     { "src": "/hub/(.*)", "dest": "/$1" },

@@ -21,7 +21,7 @@ body.sup .panes{grid-template-columns:1.1fr 1fr 1fr 1fr}.pane.supp{display:none}
 </style>
 </head>
 <body>
-<div class="top"><a class="brand" href="index.html" aria-label="Sehat home"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Sehat</span></a><span class="pill">● Live demo</span>
+<div class="top"><a class="brand" href="/" aria-label="Sehat home"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Sehat</span></a><span class="pill">● Live demo</span>
   <div class="steps-bar"><span><b>1</b> Doctor records & approves</span>→<span><b>2</b> Sehat routes to nearest stocked pharmacy</span>→<span><b>3</b> Pharmacist packs & dispatches</span>→<span><b>4</b> Patient tracks it live</span>→<span><b>5</b> Low stock → distributor restocks</span></div>
   <span class="sp"></span><button class="btn sm ghost" id="supBtn" onclick="document.body.classList.toggle('sup');this.textContent=document.body.classList.contains('sup')?'− Supplier pane':'+ Supplier pane'">+ Supplier pane</button><button class="btn sm ghost" onclick="if(confirm('Reset the network demo data?')){localStorage.removeItem('sehat_db_v2');location.reload()}">Reset</button></div>
 <div class="panes">

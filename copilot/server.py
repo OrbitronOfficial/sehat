@@ -116,11 +116,9 @@ class Handler(BaseHTTPRequestHandler):
         return data
 
     def _static(self, path):
-        if path in ("", "/"):  # Sehat is the front door
-            self.send_response(302); self.send_header("Location", "/hub/"); self.end_headers(); return
-        base, rel = PUBLIC, PAGES.get(path.rstrip("/") or "/") or path.lstrip("/")
-        if path.rstrip("/") == "/v2":  # premium glass landing (v2)
+        if path in ("", "/") or path.rstrip("/") == "/v2":  # Sehat's front door is the v2 glass landing; v1 stays at /hub/
             path = "/hub/v2.html"
+        base, rel = PUBLIC, PAGES.get(path.rstrip("/") or "/") or path.lstrip("/")
         if path.startswith("/hub/"):
             base, rel = HUB, (path[5:] or "index.html")
             if "/" in rel:  # only the hub's own top-level files, never copilot/ or .git

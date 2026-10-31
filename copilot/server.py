@@ -170,6 +170,8 @@ class Handler(BaseHTTPRequestHandler):
                 out = {"overview": pipeline.overview(b.get("patient"), b.get("records") or [], lang)}
             elif path == "/api/ask":
                 out = pipeline.ask(b.get("question"), b.get("records") or [], lang)
+            elif path == "/api/assist":  # Sehat Saathi: site guide that answers in the user's language
+                out = _assist(b)
             elif path == "/api/insights":
                 out = insights.build(b.get("records") or [], lang, vitals=b.get("vitals"), patient=b.get("patient"))
             elif path == "/api/journal_summary":
@@ -220,6 +222,38 @@ class Handler(BaseHTTPRequestHandler):
         except Exception as e:  # never leak a traceback to the page
             sys.stderr.write(f"Server error on {path}: {e!r}\n")
             return self._send(500, {"error": "Something went wrong on our side. Please try again."})
+
+
+ASSIST_PAGES = ("book", "meds", "report", "doctor", "pharmacy", "supply", "demo", "login")
+
+
+def _assist(b):
+    q = str(b.get("question") or "").strip()[:600]
+    if not q:
+        raise ValueError("Ask a question.")
+    lang = str(b.get("lang") or "en")[:5]
+    prompt = (
+        "You are Sehat Saathi, the guide for Sehat, a healthcare network app (hospitals, doctors, nurses, "
+        "pharmacies, distributors, patients). Features: Appointment Desk picks a specialist and slot from symptoms; "
+        "doctors record a consult and approve an AI-drafted prescription that is routed to the nearest pharmacy with "
+        "stock; patients track medicines to the door and get lab reports explained from a photo in their language; "
+        "pharmacies get AI stock-out predictions and send purchase orders to distributors, who accept, dispatch and "
+        "deliver. You explain and guide; you never diagnose or prescribe. For danger signs (chest pain, breathlessness, "
+        "unconsciousness, heavy bleeding, stroke signs, suicidal thoughts) tell them to call 112 or 108 now.\n"
+        "The user may write in any Indian language, script or Hinglish. Reply in the SAME language and script "
+        "as the user's message (Hindi in Devanagari gets Hindi in Devanagari, Hinglish gets Hinglish, Tamil gets Tamil)"
+        + ("" if lang == "en" else f"; if unsure, use the language with code '{lang}'")
+        + ". At most 3 short sentences.\n"
+        f"Return JSON only: {{\"reply\": string, \"go\": one of {list(ASSIST_PAGES)} or null}} where go is the page "
+        "that helps them next.\n"
+        f"User: {q}"
+    )
+    out, _model = llm.write_json(prompt)
+    reply = str((out or {}).get("reply") or "").strip()
+    if not reply:
+        raise llm.LLMError("empty reply")
+    go = out.get("go") if out.get("go") in ASSIST_PAGES else None
+    return {"reply": reply[:800], "go": go}
 
 
 def _saved_sample(sample_id):

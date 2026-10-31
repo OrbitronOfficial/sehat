@@ -10,25 +10,63 @@
 <link rel="stylesheet" href="style.css?v=9">
 <style>
 body{margin:0;height:100vh;display:flex;flex-direction:column}
-.top{display:flex;align-items:center;gap:14px;padding:12px 18px;border-bottom:1px solid var(--line);background:var(--card)}
-.steps-bar{display:flex;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--mut)}.steps-bar b{color:var(--pri)}
-.panes{flex:1;display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:10px;padding:10px;min-height:0}
-.pane{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--card);min-height:0}
-.pane h3{margin:0;padding:10px 14px;font-size:14px;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center}
-.pane iframe{flex:1;border:0;width:100%;background:#fff}
-body.sup .panes{grid-template-columns:1.1fr 1fr 1fr 1fr}.pane.supp{display:none}body.sup .pane.supp{display:flex}
-@media(max-width:1000px){.panes{grid-template-columns:1fr;overflow:auto}.pane{min-height:600px}}
+.top{display:flex;align-items:center;gap:14px;padding:10px 18px;flex-wrap:wrap}
+.roles{display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(7,116,196,.06);border:1px solid var(--line);flex-wrap:wrap}
+.roles button{border:0;background:none;border-radius:999px;padding:8px 14px;font-weight:600;font-size:.9rem;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:6px}
+.roles button.on{background:var(--card-solid);color:var(--teal-dark);box-shadow:0 4px 14px -6px rgba(7,40,80,.3)}
+.roles .n{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:.72rem;background:var(--teal-tint);color:var(--teal-dark)}
+.roles button.on .n{background:linear-gradient(135deg,#8EBEF9,#0774C4);color:#fff}
+.roles .ping{width:8px;height:8px;border-radius:50%;background:#DC2626;display:none}.roles button.new .ping{display:block;animation:p 1s infinite alternate}@keyframes p{to{opacity:.3}}
+.hint{padding:0 18px 8px;color:var(--muted);font-size:.9rem}.hint b{color:var(--teal-dark)}
+.panes{flex:1;display:grid;grid-template-columns:1fr;gap:10px;padding:0 18px 14px;min-height:0}
+.pane{display:none;flex-direction:column;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--card);min-height:0;box-shadow:var(--shadow)}
+.pane.on{display:flex}.pane iframe{flex:1;border:0;width:100%;background:#fff}
+.pane h3{margin:0;padding:9px 14px;font-size:14px;border-bottom:1px solid var(--line);display:none}
+body.split .panes{grid-template-columns:repeat(4,1fr)}body.split .pane{display:flex}body.split .pane h3{display:block}
+@media(max-width:900px){body.split .panes{grid-template-columns:1fr;overflow:auto}body.split .pane{min-height:560px}}
 </style>
 </head>
 <body>
-<div class="top"><a class="brand" href="/" aria-label="Sehat home"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Sehat</span></a><span class="pill">● Live demo</span>
-  <div class="steps-bar"><span><b>1</b> Doctor records & approves</span>→<span><b>2</b> Sehat routes to nearest stocked pharmacy</span>→<span><b>3</b> Pharmacist packs & dispatches</span>→<span><b>4</b> Patient tracks it live</span>→<span><b>5</b> Low stock → distributor restocks</span></div>
-  <span class="sp"></span><button class="btn sm ghost" id="supBtn" onclick="document.body.classList.toggle('sup');this.textContent=document.body.classList.contains('sup')?'− Supplier pane':'+ Supplier pane'">+ Supplier pane</button><button class="btn sm ghost" onclick="if(confirm('Reset the network demo data?')){localStorage.removeItem('sehat_db_v2');location.reload()}">Reset</button></div>
-<div class="panes">
-  <div class="pane"><h3>🩺 Sehat Doctor</h3><iframe src="/login?role=doctor&demo=1" title="Doctor"></iframe></div>
-  <div class="pane"><h3>💊 Sehat Pharmacy · Jain Medicos</h3><iframe src="app.html?role=pharmacy&view=sehat_pharmacy" title="Pharmacy"></iframe></div>
-  <div class="pane supp"><h3>🚚 Sehat Supply · Punjab Pharma</h3><iframe src="app.html?role=supplier&view=sehat_supply" title="Supplier" loading="lazy"></iframe></div>
-  <div class="pane"><h3>💚 Sehat Copilot · Patient</h3><iframe src="/login?demo=1" title="Patient"></iframe></div>
-</div>
+<div class="top topbar"><a class="brand" href="/" aria-label="Sehat home"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Sehat</span></a><span class="pill">● Live demo</span>
+  <div class="roles" id="roles"></div>
+  <span class="sp"></span>
+  <button class="btn sm ghost" id="splitBtn" onclick="toggleSplit()">⇆ Side by side</button>
+  <button class="btn sm ghost" onclick="if(confirm('Reset the network demo data?')){localStorage.removeItem('sehat_db_v2');location.reload()}">Reset</button></div>
+<p class="hint" id="hint"></p>
+<div class="panes" id="panes"></div>
+<script src="data.js?v=8"></script>
+<script>
+// One role on screen at a time. Every pane stays loaded in the background so the shared store keeps
+// them in sync; a red dot marks a role whose screen changed since you last looked at it.
+const STEPS = [
+  ['doctor', '🩺', 'Doctor', '/login?role=doctor&demo=1', 'Record a consult and approve the AI-drafted prescription. Sehat routes it to the nearest pharmacy with stock.'],
+  ['pharmacy', '💊', 'Pharmacy', 'app.html?role=pharmacy&view=sehat_pharmacy', 'The prescription arrives with a stock check: accept, pack, send a rider. In Supply chain, draft POs and send them to the distributor.'],
+  ['supplier', '🚚', 'Supplier', 'app.html?role=supplier&view=sehat_supply', 'Punjab Pharma gets the purchase order live: accept, dispatch, deliver. The pharmacy\'s stock goes up by itself.'],
+  ['patient', '💚', 'Patient', '/login?demo=1', 'The patient sees the medicine moving from pharmacy to door, and it lands in their records.'],
+];
+let cur = 'doctor';
+document.getElementById('roles').innerHTML = STEPS.map(([k, ic, l], i) => `<button data-k="${k}" onclick="show('${k}')"><span class="n">${i + 1}</span>${ic} ${l}<span class="ping"></span></button>`).join('');
+document.getElementById('panes').innerHTML = STEPS.map(([k, ic, l, src]) => `<div class="pane" data-k="${k}"><h3>${ic} ${l}</h3><iframe src="${src}" title="${l}"></iframe></div>`).join('');
+function show(k) {
+  cur = k; const s = STEPS.find(x => x[0] === k);
+  document.querySelectorAll('.roles button').forEach(b => { b.classList.toggle('on', b.dataset.k === k); if (b.dataset.k === k) b.classList.remove('new'); });
+  document.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.dataset.k === k));
+  document.getElementById('hint').innerHTML = `<b>Step ${STEPS.indexOf(s) + 1} · ${s[2]}.</b> ${s[4]}`;
+}
+function toggleSplit() { const on = document.body.classList.toggle('split'); document.getElementById('splitBtn').textContent = on ? '▣ One at a time' : '⇆ Side by side'; }
+// mark the role that a network change concerns, so the presenter knows where to click next
+let seen = JSON.stringify(Store.db.prescriptions.map(p => p.status)) + JSON.stringify(Store.db.pos.map(p => p.status));
+Store.onChange(() => {
+  const d = Store.db, now = JSON.stringify(d.prescriptions.map(p => p.status)) + JSON.stringify(d.pos.map(p => p.status)); if (now === seen) return; seen = now;
+  const rx = d.prescriptions[0], po = d.pos[0], who = new Set();
+  if (rx && ['sent', 'query'].includes(rx.status)) who.add('pharmacy');
+  if (rx && ['out for delivery', 'delivered', 'ready'].includes(rx.status)) who.add('patient');
+  if (po && ['sent', 'accepted'].includes(po.status)) who.add('supplier');
+  if (po && ['dispatched', 'delivered'].includes(po.status)) who.add('pharmacy');
+  who.forEach(k => { if (k !== cur) document.querySelector(`.roles button[data-k="${k}"]`)?.classList.add('new'); });
+});
+show(new URLSearchParams(location.search).get('role') || 'doctor');
+</script>
+<script src="assistant.js?v=2"></script>
 </body>
 </html>

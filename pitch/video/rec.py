@@ -125,10 +125,31 @@ def senior(r):
     r.js("useSenior('Sunita Mehra', false)"); r.pause(300)
 
 
-CLIPS = {"home": home, "login": login, "demo": demo, "records": records, "journal": journal, "senior": senior}
+# opening trio: the same booking seen by a patient, the doctor and the pharmacy
+def tp(r):
+    r.page.goto(BASE + "/hub/app.html?role=patient&view=sehat_copilot&room=VIDEO"); r.pause(2500)
+    r.click(".tabs button >> text=Book", 1500)
+    r.move("#ap_sug .row >> nth=0"); r.pause(1500)
+    r.click("#ap_sug .row button >> nth=0", 2500); r.scroll(300); r.pause(2000)
+
+
+def td(r):
+    r.page.goto(BASE + "/hub/app.html?role=doctor&view=sehat_doctor&room=VIDEO"); r.pause(3000)
+    r.move(".card h3 >> nth=0"); r.pause(1200)
+    r.move("button[onclick='csSave()']"); r.pause(400); r.js("csSave()"); r.pause(2200)
+    r.move("button[onclick='rxSend()']"); r.pause(400); r.js("rxSend()"); r.pause(2500)
+
+
+def tph(r):
+    r.page.goto(BASE + "/hub/app.html?role=pharmacy&view=sehat_pharmacy&room=VIDEO"); r.pause(3000)
+    r.move(".card h3 >> nth=0"); r.pause(1200)
+    r.move("button:has-text('send bill')"); r.pause(400); r.js("rxAccept(Store.db.prescriptions.find(p=>p.status==='sent').id)"); r.pause(2500); r.scroll(200); r.pause(2000)
+
+
+CLIPS = {"home": home, "login": login, "demo": demo, "records": records, "journal": journal, "senior": senior, "tp": tp, "td": td, "tph": tph}
 if __name__ == "__main__":
     names = sys.argv[1:] or list(CLIPS)
     with sync_playwright() as pw:
-        if "demo" in names or not sys.argv[1:]: reset_room(pw)
+        if "demo" in names or "tp" in names or not sys.argv[1:]: reset_room(pw)
         for n in names:
             with Rec(pw, n) as r: CLIPS[n](r)

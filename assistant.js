@@ -87,7 +87,7 @@
   // ---- built-in guide (no AI key needed): English, Hindi (Devanagari), Hinglish, Punjabi (Gurmukhi) ----
   const PAGES = {
     book: ['Book a visit', HUB + 'app.html', 'hospital', 'appointments'], meds: ['Track my medicines', '/app'], report: ['Explain a report', '/app'],
-    doctor: ['Doctor workspace', '/login?role=doctor&demo=1'], pharmacy: ['Pharmacy workspace', HUB + 'app.html', 'pharmacy', 'sehat_pharmacy'],
+    doctor: ['Doctor workspace', HUB + 'app.html', 'doctor', 'sehat_doctor'], pharmacy: ['Pharmacy workspace', HUB + 'app.html', 'pharmacy', 'sehat_pharmacy'],
     supply: ['Supplier inbox', HUB + 'app.html', 'supplier', 'sehat_supply'], demo: ['Live demo', HUB + 'demo.html'], login: ['Choose a role', HUB + 'login.html'],
   };
   const RULES = [

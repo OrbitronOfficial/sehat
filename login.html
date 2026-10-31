@@ -84,6 +84,9 @@ input:focus{box-shadow:inset 0 0 0 2px var(--blue),0 0 0 6px color-mix(in srgb,v
 .st .t{height:8px;border-radius:9px;background:var(--line);margin-top:7px;overflow:hidden}.st .t i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--b2),var(--blue));border-radius:9px;transition:width 1.2s .9s cubic-bezier(.2,.8,.2,1)}
 .fl.on .st .t i{width:var(--w)}
 .ghost{background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line);margin-top:10px}.ghost:after{display:none}
+.lk{border:0;background:none;padding:0;color:var(--blue);font-weight:800;cursor:pointer}.lk:hover{text-decoration:underline}
+.bk.su{text-align:left}.su select{width:100%;padding:14px 16px;border-radius:16px;border:0;background:var(--bg);box-shadow:inset 0 0 0 1px var(--line);outline:0}
+.su .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .foot{grid-column:1/-1;color:var(--mute);font-size:13.5px;text-align:center}
 @media(max-width:900px){.wrap{grid-template-columns:1fr;padding-top:20px}.left{padding-top:56px}.stage{height:340px}.f{padding:24px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important}.fl{transition:none}}
@@ -113,6 +116,7 @@ input:focus{box-shadow:inset 0 0 0 2px var(--blue),0 0 0 6px color-mix(in srgb,v
         <p class="msg" id="msg" aria-live="polite"></p>
         <button class="go" id="go" type="submit">Log in</button>
       </form>
+      <p class="sb" style="text-align:center;margin:14px 0 0">New to Sehat? <button type="button" class="lk" onclick="signupForm()">Create an account</button></p>
       <div class="dv"></div>
       <div class="dl mono">DEMO ACCOUNTS · NO SIGN-UP</div>
       <div class="rl" id="rl"></div>
@@ -122,13 +126,13 @@ input:focus{box-shadow:inset 0 0 0 2px var(--blue),0 0 0 6px color-mix(in srgb,v
   </div>
   <div class="foot">Explains and organises. Never diagnoses. Emergency: 112</div>
 </div>
-<script src="data.js?v=8"></script>
+<script src="data.js?v=10"></script>
 <script>
 var reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
 // Prototype auth: the owner's password is checked as a SHA-256 hash in the browser. A real build uses server-side auth.
 var OWNER = { email: 'yashjain.vis@gmail.com', h: '1484c13c9fc7ab1a7062679e01ca34f1cc3d9dc1fe271920f6f1d51fd83086b0', name: 'Yash' };
 var sha = async function (t) { return [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)))].map(function (b) { return b.toString(16).padStart(2, '0'); }).join(''); };
-var WORKSPACE = { patient: '/login?demo=1', doctor: '/login?role=doctor&demo=1', nurse: '/login?role=staff&demo=1' };
+var WORKSPACE = {patient:'/hub/app.html?role=patient&view=sehat_copilot',doctor:'/hub/app.html?role=doctor&view=sehat_doctor',nurse:'/hub/app.html?role=nurse&view=sehat_nurse'};
 function enter(k) { try { sessionStorage.setItem('sehat_role', k); } catch (e) {} location.href = WORKSPACE[k] || 'app.html'; }
 
 // The six roles, with "signed in" stats read live from the shared demo store.
@@ -140,7 +144,7 @@ function stats(k) {
   var tasks = d.tasks.length, done = d.tasks.filter(function (t) { return t.done; }).length, mar = d.mar || [], given = mar.filter(function (m) { return m.given; }).length;
   var rem = d.reminders.length, taken = d.reminders.filter(function (r) { return r.taken.indexOf(today) > -1; }).length, onway = d.prescriptions.filter(function (p) { return p.patient === ROLES.patient.org && p.status !== 'delivered'; }).length;
   return {
-    hospital: [['Beds occupied', occ + ' / ' + tot, pct(occ, tot)], ['ER queue', d.triage.length + ' waiting', Math.min(100, d.triage.length * 20)], ['Appointments today', d.appointments.length, Math.min(100, d.appointments.length * 15)]],
+    hospital: [['Beds occupied', occ + ' / ' + tot, pct(occ, tot)], ['Staff on duty', (d.roster || []).filter(function (p) { return p.on; }).length + ' / ' + (d.roster || []).length, pct((d.roster || []).filter(function (p) { return p.on; }).length, (d.roster || []).length)], ['Appointments today', d.appointments.length, Math.min(100, d.appointments.length * 15)]],
     doctor: [['Consults waiting', d.appointments.filter(function (a) { return a.status !== 'done'; }).length, Math.min(100, d.appointments.length * 20)], ['Prescriptions sent', d.prescriptions.length, Math.min(100, d.prescriptions.length * 20)], ['Pharmacy queries', d.prescriptions.filter(function (p) { return p.status === 'query'; }).length, 20]],
     pharmacy: [['Rx in inbox', d.prescriptions.filter(function (p) { return p.status === 'sent'; }).length, 60], ['Stock health', pct(ok, stock.length) + '%', pct(ok, stock.length)], ['Out for delivery', d.prescriptions.filter(function (p) { return p.status === 'out for delivery'; }).length, 40]],
     nurse: [['Ward tasks done', done + ' / ' + tasks, pct(done, tasks)], ['Doses given', given + ' / ' + mar.length, pct(given, mar.length)], ['Tasks open', tasks - done, pct(tasks - done, tasks)]],
@@ -181,22 +185,48 @@ function login(i) {
   if (busy) return; busy = true; sel = i; msg.textContent = ''; rbs.forEach(function (b, j) { b.setAttribute('aria-pressed', j === i); });
   type(em, R[i][3], function () { type(pw, 'demo-1234', function () { go.classList.add('ld'); go.textContent = 'Signing in…'; setTimeout(function () { show(i); go.classList.remove('ld'); go.textContent = 'Log in'; }, reduce ? 0 : 1100); }); });
 }
-function show(i) {
+function show(i, who) {
   var r = R[i];
-  bk.innerHTML = '<svg class="ck" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" pathLength="1"/><path pathLength="1" d="M30 52l14 14 27-30"/></svg><h2>Signed in</h2><p class="sb" style="margin-bottom:0">' + r[0] + ' ' + r[1] + ' · ' + r[2] + '</p>' +
+  bk.innerHTML = '<svg class="ck" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" pathLength="1"/><path pathLength="1" d="M30 52l14 14 27-30"/></svg><h2>' + (who ? 'Welcome, ' + who.replace(/[<>&"]/g, '').split(' ')[0] : 'Signed in') + '</h2><p class="sb" style="margin-bottom:0">' + r[0] + ' ' + r[1] + ' · ' + r[2] + '</p>' +
     '<div class="st">' + stats(r[4]).map(function (m) { return '<div><div class="r"><span>' + m[0] + '</span><span class="mono">' + m[1] + '</span></div><div class="t"><i style="--w:' + m[2] + '%"></i></div></div>'; }).join('') + '</div>' +
     '<p class="sb" style="font-size:12px;margin:-6px 0 8px">Live numbers from the demo network</p><button class="go" type="button" id="en">Enter workspace →</button><button class="go ghost" type="button" id="sr">Switch role</button>';
   document.getElementById('sr').onclick = back; document.getElementById('en').onclick = function () { enter(r[4]); }; fl.classList.add('on');
 }
 function back() { fl.classList.remove('on'); busy = false; sel = -1; em.value = ''; pw.value = ''; rbs.forEach(function (b) { b.setAttribute('aria-pressed', false); }); }
+// ---- create account (prototype: saved on this device, password stored only as a salted SHA-256 hash) ----
+function accounts() { try { return JSON.parse(localStorage.getItem('sehat_accounts') || '[]'); } catch (x) { return []; } }
+function signupForm() {
+  if (busy) return; busy = true; bk.classList.add('su');
+  bk.innerHTML = '<h2>Create account</h2><p class="sb">Join the Sehat network in a minute.</p><form id="sf" novalidate>' +
+    '<label for="sn">Full name</label><input id="sn" autocomplete="name" placeholder="e.g. Priya Sharma">' +
+    '<label for="se">Email</label><input id="se" type="email" autocomplete="email" placeholder="you@hospital.org">' +
+    '<div class="two"><div><label for="sp">Password</label><input id="sp" type="password" autocomplete="new-password" placeholder="8+ characters"></div><div><label for="sp2">Confirm</label><input id="sp2" type="password" autocomplete="new-password"></div></div>' +
+    '<label for="sr2">I am a</label><select id="sr2">' + R.map(function (r, i) { return '<option value="' + i + '">' + r[0] + ' ' + r[1] + '</option>'; }).join('') + '</select>' +
+    '<p class="msg" id="smsg" aria-live="polite"></p><button class="go" type="submit">Create account</button><button class="go ghost" type="button" id="sx">Back to log in</button>' +
+    '<p class="sb" style="font-size:12px;margin:12px 0 0">Prototype: your account is saved on this device only.</p></form>';
+  fl.classList.add('on');
+  document.getElementById('sx').onclick = function () { back(); bk.classList.remove('su'); };
+  document.getElementById('sf').onsubmit = async function (e) {
+    e.preventDefault();
+    var n = document.getElementById('sn').value.trim(), m = document.getElementById('se').value.trim().toLowerCase(), p = document.getElementById('sp').value, p2 = document.getElementById('sp2').value, ri = +document.getElementById('sr2').value, sm = document.getElementById('smsg');
+    var err = !n ? 'Please enter your name.' : !/^\S+@\S+\.\S+$/.test(m) ? 'Please enter a valid email.' : p.length < 8 ? 'Password needs at least 8 characters.' : p !== p2 ? 'The two passwords do not match.' : accounts().some(function (a) { return a.email === m; }) || m === OWNER.email ? 'An account with this email already exists. Log in instead.' : '';
+    if (err) { sm.textContent = err; return; }
+    var salt = Array.from(crypto.getRandomValues(new Uint8Array(12)), function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+    var list = accounts(); list.push({ name: n, email: m, role: R[ri][4], salt: salt, h: await sha(salt + ':' + p), at: Date.now() });
+    try { localStorage.setItem('sehat_accounts', JSON.stringify(list)); sessionStorage.setItem('sehat_user', n); } catch (x) {}
+    bk.classList.remove('su'); show(ri, n);
+  };
+}
 document.getElementById('fm').onsubmit = async function (e) {
   e.preventDefault();
   var bad = !em.value || !pw.value, owner = !bad && em.value.trim().toLowerCase() === OWNER.email && await sha(pw.value) === OWNER.h;
   if (owner) { try { sessionStorage.setItem('sehat_user', OWNER.name); } catch (x) {} msg.style.color = 'var(--blue)'; msg.textContent = 'Signed in as ' + OWNER.name + '. Pick a workspace below.'; return; }
+  var acc = !bad && accounts().find(function (a) { return a.email === em.value.trim().toLowerCase(); });
+  if (acc && await sha(acc.salt + ':' + pw.value) === acc.h) { try { sessionStorage.setItem('sehat_user', acc.name); } catch (x) {} busy = true; show(KEYS.indexOf(acc.role), acc.name); return; }
   msg.style.color = ''; msg.textContent = bad ? 'Enter your email and password, or pick a demo account below.' : 'Wrong email or password. You can still pick a demo account below.';
   var t = bad ? (!em.value ? em : pw) : go; t.classList.remove('shake'); void t.offsetWidth; t.classList.add('shake');
 };
 </script>
-<script src="assistant.js?v=4"></script>
+<script src="assistant.js?v=5"></script>
 </body>
 </html>

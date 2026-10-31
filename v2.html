@@ -107,7 +107,7 @@ footer{padding:30px 0 40px;color:var(--muted);font-size:.88rem;display:flex;just
 <footer><span>© 2026 Sehat · Team ANTIJAREX · CGC University</span><span>Explains and organises. Never diagnoses. Emergency: 112</span></footer>
 </div>
 
-<script src="/hub/data.js?v=8"></script>
+<script src="/hub/data.js?v=10"></script>
 <script>
 function flipTheme(){var t=document.documentElement.dataset.theme==="dark"?"light":"dark";document.documentElement.dataset.theme=t;try{localStorage.setItem("sehat_theme",t)}catch(e){}}
 const $=s=>document.querySelector(s), reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -134,7 +134,7 @@ $('#stage').addEventListener('mousemove',e=>{if(reduce)return;const r=e.currentT
 $('#stage').addEventListener('mouseleave',()=>$('#stack').style.transform='');
 
 // roles: pill switch + glass panel with features and a mini dashboard built from the live demo store
-const WHAT={hospital:['Live command centre: beds, OPD, ER','Appointment desk and ER triage','Duty roster and ward tasks','Inventory with AI purchase orders'],doctor:['Voice consult → AI-drafted prescription','Patients sorted by urgency','One tap to the pharmacy','Patient history on one screen'],nurse:['Ward to-do fed by doctors\' orders','Medicine round with given/held log','Vitals flagged out of range','Shift handover pre-filled'],pharmacy:['Prescriptions arrive with a stock check','AI stock-out prediction and PO drafts','Expiry tracker and refills due','Rider dispatch with live ETA'],patient:['Photo of a report → explained in Hindi','Family profiles and reminders','Live medicine tracker to the door','Emergency check with 112 guidance'],supplier:['Live PO inbox from pharmacies','Urgency by days of cover left','Accept → dispatch → deliver','Customer stock updates itself']};
+const WHAT={hospital:['Live command centre: beds and OPD','Appointment desk','Duty roster and ward tasks','Inventory with AI purchase orders'],doctor:['Voice consult → AI-drafted prescription','Patients sorted by urgency','One tap to the pharmacy','Patient history on one screen'],nurse:['Ward to-do fed by doctors\' orders','Medicine round with given/held log','Vitals flagged out of range','Shift handover pre-filled'],pharmacy:['Prescriptions arrive with a stock check','AI stock-out prediction and PO drafts','Expiry tracker and refills due','Rider dispatch with live ETA'],patient:['Photo of a report → explained in Hindi','Family profiles and reminders','Live medicine tracker to the door','Emergency check with 112 guidance'],supplier:['Live PO inbox from pharmacies','Urgency by days of cover left','Accept → dispatch → deliver','Customer stock updates itself']};
 const d=Store.db, low=Object.values(d.stock).filter(s=>s.qty<s.min).length;
 const KPI={hospital:[['Bed occupancy',Math.round(Object.values(d.beds).reduce((s,b)=>s+b[1],0)/Object.values(d.beds).reduce((s,b)=>s+b[0],0)*100)+'%'],['OPD today',d.appointments.length]],doctor:[['In queue',d.appointments.filter(a=>a.status!=='done').length],['Rx sent',d.prescriptions.length]],nurse:[['Open tasks',d.tasks.filter(t=>!t.done).length],['Doses due',(d.mar||[]).filter(m=>!m.given).length]],pharmacy:[['Low-stock items',low],['Open POs',d.pos.filter(p=>!['delivered','received'].includes(p.status)).length]],patient:[['Family members',d.family.length],['Reminders',d.reminders.length]],supplier:[['Open orders',d.pos.filter(p=>p.supplier===ROLES.supplier.org&&['sent','accepted'].includes(p.status)).length],['Warehouse SKUs',Object.keys(d.warehouse||{}).length]]};
 const SUITE_OF=r=>SUITES.find(s=>s.for[0]===r)||SUITES.find(s=>s.for.includes(r));
@@ -148,7 +148,7 @@ function pickRole(k){roleNow=k;const r=ROLES[k],s=SUITE_OF(k);
     <div class="mini glass"><div class="row"><b>Today</b><span class="pill">● live demo data</span></div><div class="bars">${[48,72,56,88,64,94,70].map(()=>'<i></i>').join('')}</div>
     <div class="k">${KPI[k].map(([l,v])=>`<div><b>${v}</b><span>${l}</span></div>`).join('')}</div></div>`;
   requestAnimationFrame(()=>document.querySelectorAll('.mini .bars i').forEach((el,i)=>el.style.height=[48,72,56,88,64,94,70][i]+'%'));}
-const WORKSPACE={patient:'/login?demo=1',doctor:'/login?role=doctor&demo=1',nurse:'/login?role=staff&demo=1'};
+const WORKSPACE={patient:'/hub/app.html?role=patient&view=sehat_copilot',doctor:'/hub/app.html?role=doctor&view=sehat_doctor',nurse:'/hub/app.html?role=nurse&view=sehat_nurse'};
 function enter(k,view){try{sessionStorage.setItem('sehat_role',k);if(view&&!WORKSPACE[k])sessionStorage.setItem('sehat_view',view);else sessionStorage.removeItem('sehat_view')}catch(e){}location.href=WORKSPACE[k]||'/hub/app.html'}
 addEventListener('load',()=>pickRole('hospital'));addEventListener('resize',()=>pickRole(roleNow));
 
@@ -162,6 +162,6 @@ function openAgent(id){const a=SUITES.concat(AGENTS).find(x=>x.id===id),r=filt!=
 $('#ag').addEventListener('mousemove',e=>{const c=e.target.closest('.ac');if(!c)return;const r=c.getBoundingClientRect();c.style.setProperty('--mx',e.clientX-r.left+'px');c.style.setProperty('--my',e.clientY-r.top+'px')});
 drawAgents();
 </script>
-<script src="/hub/assistant.js?v=4"></script>
+<script src="/hub/assistant.js?v=5"></script>
 </body>
 </html>

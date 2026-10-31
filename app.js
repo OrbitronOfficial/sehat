@@ -9,13 +9,13 @@ const askedView = QS.get('view') || (() => { try { const v = sessionStorage.getI
 let view = askedView || 'dashboard';
 // Patient, doctor and nurse have their full Sehat Copilot workspace on the same site.
 const WORKSPACE = { patient: ['/app', 'Sehat Copilot'], doctor: ['/doctor.html', 'Sehat Doctor'], nurse: ['/staff.html', 'Sehat Nurse'] }[role];
-// Patient, doctor and nurse land in their Sehat Copilot workspace unless they asked for a network page.
-if (WORKSPACE && !askedView) { location.replace(WORKSPACE[0]); throw new Error('opening workspace'); }
+// Every role stays in the hub; the full Copilot workspace is one click away in the sidebar.
+if (!askedView && WORKSPACE) view = { patient: 'sehat_copilot', doctor: 'sehat_doctor', nurse: 'sehat_nurse' }[role];
 
 function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('on'); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('on'), 2200); }
 function logout() { try { sessionStorage.removeItem('sehat_role'); } catch {} location.href = 'login.html'; }
 const ago = t => { const m = Math.round((Date.now() - t) / 60000); return m < 1 ? 'just now' : m < 60 ? m + ' min ago' : Math.round(m / 60) + ' h ago'; };
-const installed = () => Store.db.installs[role] || [];
+const installed = () => (Store.db.installs[role] || []).filter(i => agent(i));  // skips agents that were retired
 const agent = id => AGENTS.find(a => a.id === id) || SUITES.find(s => s.id === id);
 const act = (text, fn = () => {}) => Store.update(fn, R.org, text);
 const id = p => p + Math.random().toString(36).slice(2, 6).toUpperCase();
@@ -46,7 +46,7 @@ V.dashboard = () => {
   const d = Store.db, mine = rx => role === 'patient' ? rx.patient === R.org : role === 'pharmacy' ? rx.pharmacy === R.org : true;
   const low = Object.values(d.stock).filter(s => s.qty < s.min).length;
   const k = {
-    hospital: [['Appointments today', d.appointments.length], ['Checked in', d.appointments.filter(a => a.status === 'checked-in').length], ['ER queue', d.triage.length], ['Agents active', installed().length]],
+    hospital: [['Appointments today', d.appointments.length], ['Checked in', d.appointments.filter(a => a.status === 'checked-in').length], ['Beds free', Object.values(d.beds).reduce((s, b) => s + b[0] - b[1], 0)], ['Agents active', installed().length]],
     doctor: [['Patients today', d.appointments.filter(a => a.doctor === R.org).length], ['Prescriptions sent', d.prescriptions.filter(p => p.doctor === R.org).length], ['Pharmacy queries', d.prescriptions.filter(p => p.status === 'query').length], ['Agents active', installed().length]],
     pharmacy: [['New prescriptions', d.prescriptions.filter(p => mine(p) && p.status === 'sent').length], ['Ready to hand over', d.prescriptions.filter(p => mine(p) && p.status === 'ready').length], ['Low-stock items', low], ['Open POs', d.pos.filter(p => !['received', 'delivered'].includes(p.status)).length]],
     nurse: [['Open ward tasks', d.tasks.filter(t => !t.done).length], ['Done today', d.tasks.filter(t => t.done).length], ['Patients in queue', d.appointments.filter(a => a.status !== 'done').length], ['Agents active', installed().length]],
@@ -110,24 +110,6 @@ function apBook() {
   toast(`Booked ${a.slot} with ${doc.name}`);
 }
 function apCheck(aid) { act('checked in a patient', d => { d.appointments.find(a => a.id === aid).status = 'checked-in'; }); }
-
-// ----- ER Triage -----
-V.triage = () => {
-  const q = [...Store.db.triage].sort((a, b) => b.score - a.score);
-  return head('🚑 ER Triage', 'Score each walk-in. The queue re-orders itself by urgency.') +
-    `<div class="grid g2"><div class="card"><label>Patient</label><input id="tr_n" value="Walk-in #${Store.db.triage.length + 1}">
-      <div class="grid g3"><div><label>Pulse</label><input id="tr_p" type="number" value="118"></div><div><label>SpO₂ %</label><input id="tr_o" type="number" value="91"></div><div><label>Systolic BP</label><input id="tr_b" type="number" value="96"></div></div>
-      <label>Symptoms</label><input id="tr_s" value="chest pain, sweating"><button class="btn" style="margin-top:12px" onclick="trAdd()">Add to queue</button></div>
-     <div class="card"><h3>Queue</h3>${q.map(t => `<div class="row" style="padding:8px 0;border-bottom:1px solid var(--line)"><span class="pill ${t.score >= 6 ? 'bad' : t.score >= 3 ? 'warn' : 'ok'}">${t.score >= 6 ? 'RED' : t.score >= 3 ? 'YELLOW' : 'GREEN'}</span><b>${esc(t.name)}</b><span class="muted">${esc(t.why)}</span><span class="sp"></span><button class="link" onclick="trDone('${t.id}')">Seen ✓</button></div>`).join('') || '<p class="muted">Queue is empty.</p>'}</div></div>`;
-};
-function trAdd() {
-  const p = +$('#tr_p').value, o = +$('#tr_o').value, b = +$('#tr_b').value, s = $('#tr_s').value, why = [];
-  let sc = 0; if (p > 120 || p < 50) { sc += 2; why.push('pulse'); } if (o < 92) { sc += 3; why.push('low SpO₂'); } if (b < 90 || b > 180) { sc += 2; why.push('BP'); }
-  if (/chest|breath|unconscious|bleed|seizure|stroke/i.test(s)) { sc += 3; why.push(s); }
-  const n = $('#tr_n').value;
-  act(`triaged ${n} as ${sc >= 6 ? 'RED' : sc >= 3 ? 'YELLOW' : 'GREEN'}`, d => d.triage.push({ id: id('T'), name: n, score: sc, why: why.join(', ') || 'stable' }));
-}
-function trDone(tid) { act('cleared an ER case', d => { d.triage = d.triage.filter(t => t.id !== tid); }); }
 
 // ----- e-Prescription Writer (doctor) -----
 let draft = [];

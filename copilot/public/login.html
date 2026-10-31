@@ -160,7 +160,10 @@
           var j = await team({ action: "join", code: inv.code });
           localStorage.setItem("sehat_staff_token", j.token);
           location.assign("/staff.html");
-        } catch (err) { $("e-code").textContent = err.message; btn.disabled = false; }
+        } catch (err) {  // team backend unavailable (e.g. no database on the host): open the Sehat Nurse suite instead
+          try { sessionStorage.setItem("sehat_role", "nurse"); } catch (e2) {}
+          location.assign("/hub/app.html?role=nurse&view=sehat_nurse");
+        }
       });
       $("sf").addEventListener("submit", async function (e) {
         e.preventDefault();

@@ -64,7 +64,7 @@ function rmFrom(pid) {
 
 // ---------- Sehat Doctor ----------
 V.consult = () => {
-  const d = Store.db, urg = a => (d.triage.find(t => t.name === a.patient)?.score || 0) * 10 + (/chest|breath|bleed|faint/i.test(a.reason) ? 30 : 0) + (a.status === 'checked-in' ? 5 : 0);
+  const d = Store.db, urg = a => (/chest|breath|bleed|faint/i.test(a.reason) ? 30 : 0) + (a.status === 'checked-in' ? 5 : 0);
   const q = d.appointments.filter(a => a.status !== 'done').sort((a, b) => urg(b) - urg(a));
   return head('Consult queue', 'Patients sorted by urgency. Your note creates the prescription and the nurse\'s tasks in one go.') +
     `<div class="grid g2"><div class="card"><h3>Waiting (${q.length})</h3>${q.map((a, i) => `<div class="row" style="padding:9px 0;border-bottom:1px solid var(--line)"><span class="pill ${urg(a) >= 30 ? 'bad' : urg(a) >= 5 ? 'warn' : ''}">${urg(a) >= 30 ? 'urgent' : a.status}</span><div><b>${esc(a.patient)}</b> · ${a.slot}<br><span class="muted">${esc(a.reason)}</span></div><span class="sp"></span><button class="btn sm ghost" onclick="$('#cs_p').value='${esc(a.patient)}'">Open</button></div>`).join('') || '<p class="muted">Queue is clear.</p>'}</div>
@@ -117,7 +117,7 @@ V.taskhistory = () => {
 // ---------- Sehat Hospital ----------
 V.command = () => {
   const d = Store.db, beds = Object.values(d.beds), tot = beds.reduce((s, b) => s + b[0], 0), occ = beds.reduce((s, b) => s + b[1], 0);
-  const k = [['Bed occupancy', Math.round(occ / tot * 100) + '%'], ['OPD today', d.appointments.length], ['ER queue', d.triage.length], ['Open ward tasks', d.tasks.filter(t => !t.done).length], ['Low-stock items', Object.values(d.stock).filter(s => s.qty < s.min).length], ['Prescriptions to pharmacy', d.prescriptions.length]];
+  const k = [['Bed occupancy', Math.round(occ / tot * 100) + '%'], ['OPD today', d.appointments.length], ['Staff on duty', (d.roster || []).filter(p => p.on).length], ['Open ward tasks', d.tasks.filter(t => !t.done).length], ['Low-stock items', Object.values(d.stock).filter(s => s.qty < s.min).length], ['Prescriptions to pharmacy', d.prescriptions.length]];
   return head('Command centre', 'The whole hospital on one screen, updated live by every agent.') +
     `<div class="grid g3">${k.map(([l, v]) => `<div class="card kpi"><b>${v}</b><span>${l}</span></div>`).join('')}</div>
     <div class="grid g2" style="margin-top:14px"><div class="card"><h3>Departments</h3>${Object.entries(d.beds).map(([n, [t, o]]) => `<div style="margin:8px 0"><div class="row"><b>${n}</b><span class="sp"></span><span class="muted">${o}/${t}</span></div><div class="steps"><span class="on" style="flex:${o}"></span><span style="flex:${t - o}"></span></div></div>`).join('')}</div>

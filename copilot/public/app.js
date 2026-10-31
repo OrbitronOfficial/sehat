@@ -790,6 +790,43 @@ async function ocrOnDevice(dataUrl, signal) {
     if (worker) { try { worker.terminate().catch(() => {}); } catch (e) { /* ignore */ } }
   }
 }
+/* PDF backup reader: a typed PDF gives its text straight from pdf.js; a scanned one has its first pages
+   drawn to images and read with the same on-device OCR as photos. */
+let pdfjsLoading = null;
+function loadPdfjs() {
+  if (window.pdfjsLib) return Promise.resolve();
+  if (!pdfjsLoading) {
+    pdfjsLoading = new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+      s.onload = () => { window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'; resolve(); };
+      s.onerror = () => { pdfjsLoading = null; reject(new Error(t('err_busy'))); };
+      document.head.appendChild(s);
+    });
+  }
+  return pdfjsLoading;
+}
+async function pdfOnDevice(dataUrl, signal) {
+  await loadPdfjs();
+  const bin = atob(String(dataUrl).split(',')[1] || ''), bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  const pdf = await window.pdfjsLib.getDocument({ data: bytes }).promise, pages = Math.min(pdf.numPages, 5);
+  let text = '';
+  for (let n = 1; n <= pages; n++) {
+    const c = await (await pdf.getPage(n)).getTextContent();
+    text += c.items.map(it => it.str + (it.hasEOL ? '\n' : ' ')).join('') + '\n';
+  }
+  if (text.replace(/\s/g, '').length >= 40) return text;
+  text = '';  // scanned PDF: OCR the first pages as images
+  for (let n = 1; n <= Math.min(pages, 3); n++) {
+    if (signal && signal.aborted) break;
+    const page = await pdf.getPage(n), vp = page.getViewport({ scale: 2 }), cv = document.createElement('canvas');
+    cv.width = vp.width; cv.height = vp.height;
+    await page.render({ canvasContext: cv.getContext('2d'), viewport: vp }).promise;
+    text += await ocrOnDevice(cv.toDataURL('image/jpeg', 0.9), signal) + '\n';
+  }
+  return text;
+}
 /* One read with the time limits: 75 s for each /api/extract call, 60 s for the on-device backup reader.
    run = { ctl: AbortController }. Shared with bulk.js. */
 async function extractLimited(run, name, outMime, data, dataUrl, isImg, sampleId) {
@@ -802,10 +839,11 @@ async function extractLimited(run, name, outMime, data, dataUrl, isImg, sampleId
       res = await api('/api/extract', { filename: name, mime: outMime, data, lang, sample_id: sampleId || null, skip: skipGet() }, sig);
       skipSet(res.resting);
     } catch (e) {
-      if (e.code !== 'vision_unavailable' || !isImg) throw e;
+      const isPdf = outMime === 'application/pdf';
+      if (e.code !== 'vision_unavailable' || !(isImg || isPdf)) throw e;
       clearTimeout(run.tm);
       let text = '';
-      try { text = await ocrOnDevice(dataUrl, sig); } catch (e2) { throw new Error(t('err_busy')); }
+      try { text = isPdf ? await pdfOnDevice(dataUrl, sig) : await ocrOnDevice(dataUrl, sig); } catch (e2) { throw new Error(t('err_busy')); }
       if (text.replace(/\s/g, '').length < 20) throw new Error(t('err_busy'));
       lim(READ_LIMIT_MS);
       res = await api('/api/extract', { filename: name, mime: 'text/plain', data: textToBase64(text), lang, ocr: 'tesseract' }, sig);

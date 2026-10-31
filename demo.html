@@ -46,12 +46,12 @@ body.split .panes{grid-template-columns:repeat(4,1fr)}body.split .pane{display:f
 <div class="stats" id="stats"></div>
 <p class="hint" id="hint"></p>
 <div class="panes" id="panes"></div>
-<script src="data.js?v=8"></script>
+<script src="data.js?v=10"></script>
 <script>
 // One role on screen at a time. Every pane stays loaded in the background so the shared store keeps
 // them in sync; a red dot marks a role whose screen changed since you last looked at it.
 const STEPS = [
-  ['doctor', '🩺', 'Doctor', '/login?role=doctor&demo=1', 'Record a consult and approve the AI-drafted prescription. Sehat routes it to the nearest pharmacy with stock.'],
+  ['doctor', '🩺', 'Doctor', 'app.html?role=doctor&view=sehat_doctor', 'Save the consult note, then sign the prescription. Sehat routes it to the nearest pharmacy with stock.'],
   ['pharmacy', '💊', 'Pharmacy', 'app.html?role=pharmacy&view=sehat_pharmacy', 'The prescription arrives with a stock check: accept, pack, send a rider. In Supply chain, draft POs and send them to the distributor.'],
   ['supplier', '🚚', 'Supplier', 'app.html?role=supplier&view=sehat_supply', 'Punjab Pharma gets the purchase order live: accept, dispatch, deliver. The pharmacy\'s stock goes up by itself.'],
   ['patient', '💚', 'Patient', '/login?demo=1', 'The patient sees the medicine moving from pharmacy to door, and it lands in their records.'],
@@ -98,7 +98,7 @@ const dgEl = document.getElementById('dg'), frame = k => document.querySelector(
 const openTab = (k, suite, tab) => { try { frame(k).eval(`suiteTab.${suite}='${tab}';render()`); } catch (e) {} };
 const rx0 = () => Store.db.prescriptions[0], po0 = () => Store.db.pos.find(p => p.supplier === ROLES.supplier.org);
 const TOUR = [
-  { role: 'doctor', t: 'Namaste! I am Dr. Saathi. I will walk you through Sehat, one role at a time. This is Dr. Bansal\'s clinic. Open a patient, record or type the consult, and approve the prescription the AI drafts.', done: () => Store.db.prescriptions.length > dgStart.rx, wait: 'Waiting for the doctor to approve a prescription…' },
+  { role: 'doctor', t: 'Namaste! I am Dr. Saathi. I will walk you through Sehat, one role at a time. This is Dr. Bansal\'s clinic. In the Consult queue, tap "Save note → write prescription", then "Sign & send to pharmacy".', done: () => Store.db.prescriptions.length > dgStart.rx, wait: 'Waiting for the doctor to approve a prescription…' },
   { role: 'pharmacy', go: () => openTab('pharmacy', 'sehat_pharmacy', 'rxinbox'), t: 'The prescription just reached Jain Medicos, the nearest pharmacy with stock, with a live stock check. Tap Accept, then "Packed · mark ready".', done: () => ['ready', 'out for delivery', 'delivered'].includes(rx0()?.status), wait: 'Waiting for the pharmacist to pack it…' },
   { role: 'pharmacy', go: () => openTab('pharmacy', 'sehat_pharmacy', 'delivery'), t: 'Packed! Now hand it to a rider: tap "Assign rider". The patient gets the ETA instantly.', done: () => ['out for delivery', 'delivered'].includes(rx0()?.status), wait: 'Waiting for a rider to be assigned…' },
   { role: 'patient', t: 'Here is Rahul\'s app. His medicine tracker shows it on the way, and the prescription is already in his records. No queue at the counter.' },
@@ -168,6 +168,6 @@ async function autoPlay() {
   autoOn = false; btn.classList.remove('on'); btn.textContent = '▶ Auto-play';
 }
 </script>
-<script src="assistant.js?v=4"></script>
+<script src="assistant.js?v=5"></script>
 </body>
 </html>

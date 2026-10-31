@@ -17,22 +17,43 @@ function openTab(suite, tab) { suiteTab[suite] = tab; go(suite); }
 
 // ---------- marketplace: suites first ----------
 V.market = () => {
-  const card = (a, big) => { const on = installed().includes(a.id), ok = a.for.includes(role);
+  // Each role sees only what it can install: its own suite and the single agents made for it.
+  const mine = a => a.for.includes(role), suites = SUITES.filter(mine), agents = AGENTS.filter(mine);
+  const card = (a, big) => { const on = installed().includes(a.id);
     return `<div class="card agent" style="${big ? 'border-color:var(--pri);background:linear-gradient(180deg,var(--soft),var(--card))' : ''}"><span class="ic">${a.ic}</span><div class="row"><b>${a.name}</b><span class="sp"></span><span class="pill">${a.cat || 'Suite · ' + a.tabs.length + ' tools'}</span></div><p>${a.desc}</p>
-      <div class="row"><span class="muted">${a.price} · for ${a.for.map(r => ROLES[r].label).join(', ')}</span><span class="sp"></span>${ok ? `<button class="btn sm ${on ? 'ghost' : ''}" onclick="toggle('${a.id}')">${on ? 'Remove' : 'Install'}</button>` : ''}</div></div>`; };
-  return head('Agent Marketplace', 'Install a full Sehat suite for your role, or pick single agents. A hospital that only wants appointments installs just Appointment Desk.') +
-    `<h3 style="margin-bottom:12px">Sehat suites</h3><div class="grid g3">${SUITES.map(s => card(s, true)).join('')}</div>
-     <h3 style="margin:26px 0 12px">Single agents</h3><div class="grid g3">${AGENTS.map(a => card(a)).join('')}</div>`;
+      <div class="row"><span class="muted">${a.price}</span><span class="sp"></span><button class="btn sm ${on ? 'ghost' : ''}" onclick="toggle('${a.id}')">${on ? 'Remove' : 'Install'}</button></div></div>`; };
+  return head('Agent Marketplace', `Everything made for a ${R.label.toLowerCase()}. Install the full suite, or only the single agents you need.`) +
+    (suites.length ? `<h3 style="margin-bottom:12px">Your suite</h3><div class="grid g3">${suites.map(s => card(s, true)).join('')}</div>` : '') +
+    (agents.length ? `<h3 style="margin:26px 0 12px">Single agents for ${R.label.toLowerCase()}s</h3><div class="grid g3">${agents.map(a => card(a)).join('')}</div>` : '');
 };
 
 // ---------- Sehat Copilot (patient) ----------
-V.records = () => head('Records & OCR', 'Photo or PDF of a lab report or prescription → read by AI → every value explained in your language.') +
-  `<div class="grid g2"><div class="card"><label>Upload a photo or PDF of a report</label><input type="file" id="oc_f" accept="image/*,application/pdf">
-    <div class="row" style="margin-top:8px"><button class="btn sm" onclick="ocRead()">Read with AI</button><span id="oc_p" class="muted"></span></div>
-    <label>Report text (from the file, or paste)</label><textarea id="lb_t" style="min-height:150px">Haemoglobin 10.4 g/dL\nFasting Blood Sugar 118 mg/dL\nHbA1c 6.4 %\nVitamin D 14 ng/mL</textarea>
-    <div class="row" style="margin-top:10px"><select id="lb_l" style="width:auto">${[['en', 'English'], ['hi', 'हिन्दी'], ['pa', 'ਪੰਜਾਬੀ'], ['bn', 'বাংলা'], ['ta', 'தமிழ்'], ['te', 'తెలుగు'], ['mr', 'मराठी'], ['gu', 'ગુજરાતી'], ['kn', 'ಕನ್ನಡ'], ['ml', 'മലയാളം']].map(([v, l]) => `<option value="${v}">${l}</option>`).join('')}</select>
-      <button class="btn" onclick="ocExplain()">Explain</button><button class="btn ghost" onclick="lbSave();toast('Saved to journal')">Save to journal</button></div></div>
-   <div class="card" id="lb_o"><p class="muted">Explained values appear here.</p></div></div>`;
+V.records = () => head('Records & OCR', 'Upload a photo or PDF of a lab report or prescription. AI reads it and explains it in your language.') +
+  `<style>
+  .rc-drop{display:flex;flex-direction:column;align-items:center;gap:6px;padding:26px 18px;border:1.5px dashed rgba(7,116,196,.35);border-radius:20px;background:linear-gradient(180deg,rgba(234,243,254,.7),rgba(255,255,255,.4));cursor:pointer;text-align:center;transition:border-color .2s}
+  .rc-drop:hover{border-color:var(--teal)}.rc-drop b{font-family:var(--display)}.rc-drop input{display:none}
+  .rc-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}.rc-bar select{width:auto}
+  .rc-st{margin-top:10px;font-size:.88rem;color:var(--muted);min-height:20px}
+  .rc-pt{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:16px;background:var(--teal-tint);margin-bottom:12px}.rc-pt .av{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#fff;font-size:20px}
+  .rc-med{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}.rc-med:last-child{border:0}
+  .rc-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}.rc-chips span{font-size:.76rem;padding:2px 8px;border-radius:999px;background:var(--teal-tint);color:var(--teal-dark);font-weight:600}
+  .rc-sec{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin:16px 0 6px}
+  .rc-x p{margin:4px 0}.rc-x ul{margin:4px 0 0;padding-left:18px}
+  </style>
+  <div class="grid g2"><div class="card">
+    <label class="rc-drop" for="oc_f"><span style="font-size:30px">📄</span><b id="oc_n">Choose a photo or PDF</b><span class="muted">Lab report, prescription or discharge summary</span><input type="file" id="oc_f" accept="image/*,application/pdf" onchange="$('#oc_n').textContent=this.files[0]?.name||'Choose a photo or PDF'"></label>
+    <div class="rc-bar"><select id="lb_l" aria-label="Explain in">${[['en', 'English'], ['hi', 'हिन्दी'], ['pa', 'ਪੰਜਾਬੀ'], ['bn', 'বাংলা'], ['ta', 'தமிழ்'], ['te', 'తెలుగు'], ['mr', 'मराठी'], ['gu', 'ગુજરાતી'], ['kn', 'ಕನ್ನಡ'], ['ml', 'മലയാളം']].map(([v, l]) => `<option value="${v}">${l}</option>`).join('')}</select>
+      <button class="btn" onclick="ocRead()">✨ Read with AI</button></div>
+    <div class="rc-st" id="oc_p"></div>
+    <details style="margin-top:6px"><summary class="muted" style="cursor:pointer">Or paste report text</summary>
+      <textarea id="lb_t" style="min-height:120px;margin-top:8px" placeholder="Haemoglobin 10.4 g/dL&#10;Fasting Blood Sugar 118 mg/dL"></textarea>
+      <button class="btn sm ghost" style="margin-top:8px" onclick="ocRec=null;ocExplain()">Explain this text</button></details>
+  </div>
+  <div class="card" id="lb_o"><p class="muted">Your report, read and explained, appears here.</p></div></div>`;
+// The live store re-renders the page on every change (a save, another tab): keep the result on screen.
+let ocLast = null;
+const ocKeep = () => { ocLast = { o: $('#lb_o').innerHTML, p: $('#oc_p').innerHTML, l: $('#lb_l').value, n: $('#oc_n').textContent }; };
+V.records.after = () => { if (!ocLast) return; $('#lb_o').innerHTML = ocLast.o; $('#oc_p').innerHTML = ocLast.p; $('#lb_l').value = ocLast.l; $('#oc_n').textContent = ocLast.n; };
 // The AI reader (/api/extract) reads photos and PDFs, lab reports or prescriptions; /api/explain writes the
 // explanation in the chosen language. Without AI, the on-device OCR + lab-value checker is the backup.
 let ocRec = null;
@@ -50,41 +71,60 @@ function recText(r) {
 }
 async function ocRead() {
   const f = $('#oc_f').files[0]; if (!f) return toast('Choose a photo or PDF first');
-  $('#oc_p').textContent = 'Reading with AI…'; ocRec = null;
+  $('#oc_p').innerHTML = '<span class="pill">⏳ Reading with AI…</span>'; ocRec = null; $('#lb_o').innerHTML = '<p class="muted">Reading your document…</p>';
   try {
     const { mime, data } = await fileToData(f);
     const res = await postJSON('/api/extract', { filename: f.name, mime, data, lang: $('#lb_l').value });
-    ocRec = res.record; $('#lb_t').value = recText(ocRec) || '(nothing readable found)';
-    $('#oc_p').textContent = `Read by AI · ${(ocRec.tests || []).length} tests, ${(ocRec.medicines || []).length} medicines`; ocExplain();
+    ocRec = res.record; $('#lb_t').value = recText(ocRec);
+    $('#oc_p').innerHTML = `<span class="pill ok">✓ Read by AI</span> ${(ocRec.tests || []).length} tests · ${(ocRec.medicines || []).length} medicines`; ocExplain();
   } catch (e) {
     if (f.type === 'application/pdf' || !window.Tesseract) { $('#oc_p').textContent = 'AI reader is busy. Try again in a minute.'; return; }
     $('#oc_p').textContent = 'AI busy · reading on this device… 0%';
     try {
       const { data } = await Tesseract.recognize(f, 'eng', { logger: m => { if (m.status === 'recognizing text') $('#oc_p').textContent = 'Reading on this device… ' + Math.round(m.progress * 100) + '%'; } });
-      $('#lb_t').value = data.text.trim(); $('#oc_p').textContent = `Read on this device · ${Math.round(data.confidence)}% confidence (less accurate)`; lbRun();
+      $('#lb_t').value = data.text.trim(); $('#oc_p').textContent = `Read on this device · ${Math.round(data.confidence)}% confidence (less accurate)`; document.querySelector('details') && (document.querySelector('details').open = true); lbParse().length ? lbRun() : ($('#lb_o').innerHTML = '<p class="muted">The device reader could not find clear values. Try again when the AI reader is free.</p>');
     } catch (e2) { $('#oc_p').textContent = 'Could not read this file: ' + e2.message; }
   }
 }
 async function ocExplain() {
   const lang = $('#lb_l').value, out = $('#lb_o'), cls = { critical: 'bad', high: 'warn', low: 'warn', normal: 'ok', unknown: '' };
-  if (!ocRec) {  // typed or pasted text: lab values are checked here; anything else is read by the AI first
+  if (!ocRec) {  // pasted text: lab values are checked here; anything else is read by the AI first
+    if (!$('#lb_t').value.trim()) return toast('Choose a file or paste text first');
     if (lbParse().length) return lbRun();
     out.innerHTML = '<p class="muted">Reading the text with AI…</p>';
     try { ocRec = (await postJSON('/api/extract', { filename: 'pasted.txt', mime: 'text/plain', data: textToB64($('#lb_t').value), lang })).record; }
     catch (e) { out.innerHTML = '<p class="muted">No lab values found in this text, and the AI reader is busy. Try a clearer photo or paste values like "Haemoglobin 10.4 g/dL".</p>'; return; }
   }
-  const r = ocRec;
-  const pt = r.patient || {};
-  out.innerHTML = `<h3>${(r.tests || []).length} values · ${(r.medicines || []).length} medicines</h3>` + (pt.name ? `<p class="muted" style="margin:4px 0 8px">👤 <b style="color:var(--ink)">${esc(pt.name)}</b>${pt.age ? ' · ' + esc(pt.age) : ''}${pt.sex ? ' · ' + esc(pt.sex) : ''}${r.doctor ? ' · ' + esc(r.doctor) : ''}${r.date ? ' · ' + esc(r.date) : ''}</p>` : '') +
-    (r.tests || []).map(t => `<div style="padding:7px 0;border-bottom:1px solid var(--line)"><b>${esc(t.name)}</b> ${esc(t.value ?? '')} ${esc(t.unit || '')} <span class="pill ${cls[t.flag] ?? ''}">${esc(t.flag || 'unknown')}</span>${t.ref_text ? `<br><small class="muted">Normal ${esc(t.ref_text)}</small>` : ''}</div>`).join('') +
-    (r.medicines || []).map(m => `<div style="padding:7px 0;border-bottom:1px solid var(--line)">💊 <b>${esc(m.name)}</b> <span class="muted">${esc([m.strength, m.dose, m.frequency, m.duration].filter(Boolean).join(' · '))}</span></div>`).join('') +
-    '<p class="muted" id="oc_x">Writing the explanation…</p>';
+  const r = ocRec, pt = r.patient || {}, tests = r.tests || [], meds = r.medicines || [];
+  const meta = [pt.age, pt.sex, r.doctor, r.date].filter(Boolean).map(esc).join(' · ');
+  out.innerHTML = `<div class="row" style="margin-bottom:10px"><h3>${esc(r.title || 'Your document')}</h3><span class="sp"></span><button class="btn sm ghost" onclick="ocSave()">📔 Save to journal</button></div>` +
+    (pt.name || meta ? `<div class="rc-pt"><span class="av">👤</span><div><b>${esc(pt.name || 'Patient')}</b><br><span class="muted">${meta}</span></div></div>` : '') +
+    (tests.length ? '<div class="rc-sec">Test results</div>' + tests.map(t => `<div class="rc-med"><div style="flex:1"><b>${esc(t.name)}</b> ${esc(t.value ?? '')} ${esc(t.unit || '')}${t.ref_text ? `<br><small class="muted">Normal ${esc(t.ref_text)}</small>` : ''}</div><span class="pill ${cls[t.flag] ?? ''}">${esc(t.flag || 'unknown')}</span></div>`).join('') : '') +
+    (meds.length ? '<div class="rc-sec">Medicines</div>' + meds.map(m => `<div class="rc-med"><span style="font-size:20px">💊</span><div style="flex:1"><b>${esc(m.name)}</b>${m.strength ? ` <span class="muted">${esc(m.strength)}</span>` : ''}<div class="rc-chips">${[m.dose, m.frequency, m.timing, m.duration].filter(Boolean).map(x => `<span>${esc(x)}</span>`).join('')}</div><small class="muted" data-purpose="${esc(m.name)}"></small></div></div>`).join('') : '') +
+    (!tests.length && !meds.length ? '<p class="muted">Nothing readable was found. Try a sharper, well-lit photo.</p>' : '') +
+    '<div class="ai rc-x" id="oc_x" style="margin-top:14px"><span style="font-size:22px">🤖</span><div><span class="eyebrow">AI explanation</span><p class="muted">Writing it in your language…</p></div></div>';
   try {
     const x = (await postJSON('/api/explain', { record: r, lang })).explanation || {};
-    $('#oc_x').outerHTML = `<div class="ai" style="margin-top:12px"><span style="font-size:22px">🤖</span><div><span class="eyebrow">AI explanation</span><p style="margin:6px 0">${esc(x.summary || '')}</p>` +
-      (x.findings || []).map(f => `<p style="margin:4px 0"><b>${esc(f.name)}</b>: ${esc(f.meaning)}</p>`).join('') + (x.medicines || []).map(m => `<p style="margin:4px 0">💊 <b>${esc(m.name)}</b>: ${esc(m.purpose)}</p>`).join('') +
-      ((x.questions || []).length ? `<p style="margin:8px 0 2px"><b>Ask your doctor</b></p><ul style="margin:0">${x.questions.map(q => `<li>${esc(q)}</li>`).join('')}</ul>` : '') + '</div></div><p class="muted">Explains, never diagnoses. Show this to your doctor.</p>';
-  } catch (e) { $('#oc_x').textContent = 'The explanation is busy right now. The values above are read and flagged.'; }
+    (x.medicines || []).forEach(m => { const el = [...out.querySelectorAll('[data-purpose]')].find(e => e.dataset.purpose === m.name); if (el) el.textContent = m.purpose; });
+    const findings = tests.length ? (x.findings || []).filter(f => tests.some(t => t.name === f.name)) : [];  // no test results, no "all normal" line
+    $('#oc_x').innerHTML = `<span style="font-size:22px">🤖</span><div><span class="eyebrow">AI explanation</span><p>${esc(x.summary || '')}</p>` +
+      (findings.length ? findings.map(f => `<p><b>${esc(f.name)}</b>: ${esc(f.meaning)}</p>`).join('') : '') +
+      ((x.questions || []).length ? `<div class="rc-sec">Ask your doctor</div><ul>${x.questions.map(q => `<li>${esc(q)}</li>`).join('')}</ul>` : '') +
+      '<p class="muted" style="margin-top:10px">Explains, never diagnoses. Show this to your doctor.</p></div>'; ocKeep();
+  } catch (e) { $('#oc_x').innerHTML = '<span style="font-size:22px">🤖</span><div><span class="eyebrow">AI explanation</span><p class="muted">The explanation is busy right now. The values above are read and flagged.</p></div>'; ocKeep(); }
+}
+// Save what was read: an AI-read record (tests or medicines), else the lab values typed or pasted.
+function ocSave() {
+  const r = ocRec, today = new Date().toISOString().slice(0, 10);
+  if (r && ((r.tests || []).length || (r.medicines || []).length)) {
+    const parts = [...(r.tests || []).map(t => `${t.name} ${t.value ?? ''} ${t.unit || ''} (${t.flag || 'unknown'})`.replace(/\s+/g, ' ')), ...(r.medicines || []).map(m => [m.name, m.dose, m.frequency, m.duration].filter(Boolean).join(' '))];
+    const who = (r.patient || {}).name ? ` for ${r.patient.name}` : '';
+    act(`saved ${r.doc_type || 'a record'}${who} to the journal`, d => d.journal.unshift({ date: r.date || today, type: (r.tests || []).length ? 'Lab' : 'Prescription', text: `${r.title || 'Record'}${who}: ${parts.join(', ')}` }));
+    return toast('Saved to journal');
+  }
+  const rows = lbParse();
+  if (!rows.length) return toast('Read a report first. Nothing to save yet.');
+  lbSave(); toast('Saved to journal');
 }
 function textToB64(t) { return btoa(String.fromCharCode(...new TextEncoder().encode(t))); }
 

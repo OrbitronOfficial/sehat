@@ -162,12 +162,4 @@ points(s, 0.7, 1.95, 12, [('🔗', 'Connected, not another single app', 'Patient
                         ('🗣️', 'Indian languages, end to end', 'Reports, chat, voice and Senior Mode'), ('🔒', 'Consent built in', 'Patients decide who sees what'),
                         ('🧓', 'Designed for elders too', 'The Dadi / Nani test: big buttons, voice, SOS'), ('🧱', 'Honest foundation', 'Sehat Copilot was our earlier patient app; at GRAVITON we built the network around it')], 19)
 
-# 12 · team + ask
-s = slide('Team ANTIJAREX', 'Team & ask')
-text(s, 0.7, 1.9, 5.8, 2.6, ['Team members: (add names and roles)', '', 'CGC University · GRAVITON 2026 (24 h, open innovation)'], 20, gap=6)
-box(s, 6.9, 1.9, 5.75, 3.0, TINT)
-text(s, 7.2, 2.1, 5.2, 0.5, 'Our ask', 24, True, BLUE, DISPLAY)
-text(s, 7.2, 2.75, 5.2, 2.0, ['A 30-day pilot in Mohali: 1 hospital, 5 pharmacies, 1 distributor and their patients.', 'Mentorship on health-data compliance.'], 17, gap=8)
-text(s, 0.7, 5.5, 12, 0.6, 'sehat-ashen.vercel.app', 30, True, BLUE, DISPLAY)
-
 out = os.path.join(HERE, 'Sehat-GRAVITON-2026.pptx'); prs.save(out); print(out)

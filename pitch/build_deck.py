@@ -12,6 +12,7 @@ SHOT = lambda n: os.path.join(HERE, 'shots', n + '.png')
 BLUE, LIGHT, INK, MUTED, WHITE, TINT, GREEN, LINE = (RGBColor(0x07, 0x74, 0xC4), RGBColor(0x8E, 0xBE, 0xF9), RGBColor(0x0F, 0x17, 0x2A), RGBColor(0x5B, 0x6B, 0x80),
                                                    RGBColor(255, 255, 255), RGBColor(0xEA, 0xF3, 0xFE), RGBColor(0x05, 0x96, 0x69), RGBColor(0xDC, 0xE7, 0xF5))
 DISPLAY, BODY = 'Manrope', 'Plus Jakarta Sans'
+LINK = 'https://sehat-ashen.vercel.app'
 prs = Presentation(); prs.slide_width, prs.slide_height = Inches(13.333), Inches(7.5)
 BLANK = prs.slide_layouts[6]
 N = [0]
@@ -42,7 +43,8 @@ def slide(title, kicker=None):
     box(s, 0, 0, 13.333, 0.1, BLUE, MSO_SHAPE.RECTANGLE)
     if kicker: text(s, 0.7, 0.42, 9, 0.4, kicker.upper(), 13, True, BLUE)
     text(s, 0.7, 0.75, 12, 0.9, title, 36, True, INK, DISPLAY)
-    text(s, 0.7, 6.95, 9, 0.35, 'Sehat  ·  Team ANTIJAREX  ·  GRAVITON 2026', 11, False, MUTED)
+    f = text(s, 0.7, 6.95, 9, 0.35, [(('Sehat  ·  Team ANTIJAREX  ·  GRAVITON 2026  ·  ', False, MUTED), ('sehat-ashen.vercel.app', True, BLUE))], 11)
+    f.text_frame.paragraphs[0].runs[-1].hyperlink.address = LINK
     text(s, 12.0, 6.95, 0.7, 0.35, str(N[0]), 11, True, MUTED, align=PP_ALIGN.RIGHT)
     return s
 
@@ -78,8 +80,10 @@ m = box(s, 0.7, 1.35, 0.9, 0.9, BLUE); m.text_frame.text = '+'; m.text_frame.par
 text(s, 1.8, 1.3, 5, 1, 'Sehat', 54, True, INK, DISPLAY)
 text(s, 0.7, 2.55, 6.2, 1.6, 'Your health, connected:\nfrom doctor to doorstep.', 34, True, INK, DISPLAY, gap=2)
 text(s, 0.7, 4.25, 5.9, 1.2, 'One app for patients and families, live-connected to hospitals, doctors, pharmacies and suppliers. In your language.', 18, False, MUTED)
-text(s, 0.7, 5.8, 6, 0.4, 'GRAVITON 2026  ·  Team ANTIJAREX  ·  CGC University', 14, True, BLUE)
-text(s, 0.7, 6.2, 6, 0.4, 'Live: sehat-ashen.vercel.app', 14, False, MUTED)
+text(s, 0.7, 5.55, 6, 0.4, 'GRAVITON 2026  ·  Team ANTIJAREX  ·  CGC University', 14, True, BLUE)
+btn = box(s, 0.7, 6.15, 4.6, 0.7, BLUE); btn.adjustments[0] = 0.5
+tf = btn.text_frame; tf.text = '🔗  Try it live: sehat-ashen.vercel.app'; p = tf.paragraphs[0]; p.alignment = PP_ALIGN.CENTER
+r = p.runs[0]; r.font.size = Pt(16); r.font.bold = True; r.font.color.rgb = WHITE; r.font.name = BODY; btn.click_action.hyperlink.address = LINK  # whole button is the link, so the text keeps its white style
 shot(s, 'home', 7.0, 1.4, 5.7)
 
 # 2 · problem, told for the patient

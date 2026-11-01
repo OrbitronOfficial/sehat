@@ -43,8 +43,7 @@ def slide(title, kicker=None):
     box(s, 0, 0, 13.333, 0.1, BLUE, MSO_SHAPE.RECTANGLE)
     if kicker: text(s, 0.7, 0.42, 9, 0.4, kicker.upper(), 13, True, BLUE)
     text(s, 0.7, 0.75, 12, 0.9, title, 36, True, INK, DISPLAY)
-    f = text(s, 0.7, 6.95, 9, 0.35, [(('Sehat  ·  Team ANTIJAREX  ·  GRAVITON 2026  ·  ', False, MUTED), ('sehat-ashen.vercel.app', True, BLUE))], 11)
-    f.text_frame.paragraphs[0].runs[-1].hyperlink.address = LINK
+    text(s, 0.7, 6.95, 9, 0.35, 'Sehat  ·  Team ANTIJAREX  ·  GRAVITON 2026', 11, False, MUTED)
     text(s, 12.0, 6.95, 0.7, 0.35, str(N[0]), 11, True, MUTED, align=PP_ALIGN.RIGHT)
     return s
 
